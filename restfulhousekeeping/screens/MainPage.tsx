@@ -1,4 +1,4 @@
-// MainTabs.tsx
+// MainPage.tsx
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
 import MoreScreen from './MoreScreen';
@@ -6,7 +6,7 @@ import AccountScreen from './AccountScreen';
 
 const Tab = createBottomTabNavigator();
 
-export default function MainTabs() {
+export default function MainPage() {
   return (
     <Tab.Navigator>
       <Tab.Screen name='Home' component={HomeScreen} />

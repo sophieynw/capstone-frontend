@@ -3,9 +3,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import './global.css';
-import LoginPage from '@/screens/LoginPage';
+import LoginPage from './screens/LoginPage';
 import React from 'react';
-import MainTabs from './screens/MainTabs';
+import MainPage from './screens/MainPage';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -19,7 +19,7 @@ export default function App() {
             screenOptions={{ headerShown: false }}
           >
             <Stack.Screen name='Login' component={LoginPage} />
-            <Stack.Screen name='MainTabs' component={MainTabs} />
+            <Stack.Screen name='MainTabs' component={MainPage} />
           </Stack.Navigator>
         </NavigationContainer>
       </GluestackUIProvider>

@@ -35,7 +35,7 @@ export default function LoginPage({ navigation }: any) {
         <Pressable style={globalStyles.button}>
           <Text
             style={globalStyles.buttonText}
-            onPress={() => navigation.navigate('MainTabs')} // TODO: actual security implementation required
+            onPress={() => navigation.navigate('MainPage')} // TODO: actual security implementation required
           >
             Log In
           </Text>
