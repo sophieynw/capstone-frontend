@@ -32,13 +32,11 @@ export default function LoginPage({ navigation }: any) {
           secureTextEntry
         />
 
-        <Pressable style={globalStyles.button}>
-          <Text
-            style={globalStyles.buttonText}
-            onPress={() => navigation.navigate('MainPage')} // TODO: actual security implementation required
-          >
-            Log In
-          </Text>
+        <Pressable
+          style={globalStyles.button}
+          onPress={() => navigation.navigate('MainPage')} // TODO: actual security implementation required
+        >
+          <Text style={globalStyles.buttonText}>Log In</Text>
         </Pressable>
 
         <Text style={globalStyles.link}>Find Password</Text>
