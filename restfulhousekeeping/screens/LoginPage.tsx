@@ -59,8 +59,8 @@ export default function LoginPage({ navigation }: any) {
 
         <Pressable
           style={globalStyles.button}
-          //onPress={() => navigation.navigate('MainPage')} // Uncomment this line, and comment out the line below if you want to navigate to MainPage without authentication
-          onPress={handleLogin}
+          onPress={() => navigation.navigate('MainPage')} // Uncomment this line, and comment out the line below if you want to navigate to MainPage without authentication
+          //onPress={handleLogin}
         >
           <Text style={globalStyles.buttonText}>Log In</Text>
         </Pressable>
