@@ -13,6 +13,7 @@ import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import './global.css';
 import LoginPage from './screens/LoginPage';
 import MainPage from './screens/MainPage';
+import PropertyDetailsScreen from './screens/PropertyDetailsScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -27,6 +28,7 @@ export default function App() {
           >
             <Stack.Screen name='Login' component={LoginPage} />
             <Stack.Screen name='MainPage' component={MainPage} />
+            <Stack.Screen name='PropertyDetails' component={PropertyDetailsScreen}/>
           </Stack.Navigator>
         </NavigationContainer>
       </GluestackUIProvider>
