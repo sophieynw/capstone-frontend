@@ -1,3 +1,10 @@
+/* Run these commands to fix any potential issues with dependencies.
+git checkout -- package.json package-lock.json
+rm -rf node_modules
+npm ci
+npx expo start -c
+*/
+
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
