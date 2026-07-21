@@ -1,43 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import './global.css';
-import { globalStyles } from './styles/globalStyles';
-import { Image } from 'react-native';
+import LoginPage from './screens/LoginPage';
+import React from 'react';
+import MainPage from './screens/MainPage';
 
 export default function App() {
+  const Stack = createNativeStackNavigator();
+
   return (
-    <GluestackUIProvider mode="light">
-      <View style={globalStyles.screen}>
-      <Text style={globalStyles.title}>RESTful Housekeeping</Text>
-      <Text style={globalStyles.subtitle}>Cleaning accountability made simple</Text>
-
-      <Image
-        source={require('./assets/clean.png')}
-        style={globalStyles.logoImage}/>
-
-    <View style={globalStyles.card}>
-      <Text>Email</Text>
-      <TextInput
-        style={globalStyles.input}
-        placeholder="Enter your email"
-        keyboardType="email-address"/>
-
-      <Text>Password</Text>
-      <TextInput
-        style={globalStyles.input}
-        placeholder="Enter your password"
-        secureTextEntry/>
-
-      <Pressable style={globalStyles.button}>
-        <Text style={globalStyles.buttonText}>Log In</Text>
-      </Pressable>
-
-      <Text style={globalStyles.link}>Find Password</Text>
-    </View>
-
-    <StatusBar style="auto" />
-  </View>
-</GluestackUIProvider>
+    <SafeAreaProvider>
+      <GluestackUIProvider mode='light'>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName='Login'
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name='Login' component={LoginPage} />
+            <Stack.Screen name='MainTabs' component={MainPage} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </GluestackUIProvider>
+    </SafeAreaProvider>
   );
 }
