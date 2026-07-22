@@ -5,32 +5,24 @@ npm ci
 npx expo start -c
 */
 
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import './global.css';
-import LoginPage from './screens/LoginPage';
-import MainPage from './screens/MainPage';
 import { AuthProvider } from '@/auth/AuthProvider';
+import Navigation from '@/Navigation';
+import * as SecureStore from 'expo-secure-store';
 
 export default function App() {
-  const Stack = createNativeStackNavigator();
+  useEffect(() => {
+    SecureStore.deleteItemAsync('token');
+  }, []);
 
   return (
     <SafeAreaProvider>
       <GluestackUIProvider mode='light'>
         <AuthProvider>
-          <NavigationContainer>
-            <Stack.Navigator
-              initialRouteName='LoginPage'
-              screenOptions={{ headerShown: false }}
-            >
-              <Stack.Screen name='LoginPage' component={LoginPage} />
-              <Stack.Screen name='MainPage' component={MainPage} />
-            </Stack.Navigator>
-          </NavigationContainer>
+          <Navigation />
         </AuthProvider>
       </GluestackUIProvider>
     </SafeAreaProvider>
