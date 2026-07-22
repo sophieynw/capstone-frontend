@@ -14,9 +14,10 @@ import Navigation from '@/Navigation';
 import * as SecureStore from 'expo-secure-store';
 
 export default function App() {
-  useEffect(() => {
-    SecureStore.deleteItemAsync('token');
-  }, []);
+  // TODO: Uncomment in production
+  // useEffect(() => {
+  //   SecureStore.deleteItemAsync('token');
+  // }, []);
 
   return (
     <SafeAreaProvider>
