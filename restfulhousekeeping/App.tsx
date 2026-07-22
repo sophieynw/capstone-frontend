@@ -13,7 +13,7 @@ import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import './global.css';
 import LoginPage from './screens/LoginPage';
 import MainPage from './screens/MainPage';
-import PropertyDetailsScreen from './screens/PropertyDetailsScreen';
+import { AuthProvider } from '@/auth/AuthProvider';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -21,16 +21,17 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <GluestackUIProvider mode='light'>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName='Login'
-            screenOptions={{ headerShown: false }}
-          >
-            <Stack.Screen name='Login' component={LoginPage} />
-            <Stack.Screen name='MainPage' component={MainPage} />
-            <Stack.Screen name='PropertyDetails' component={PropertyDetailsScreen}/>
-          </Stack.Navigator>
-        </NavigationContainer>
+        <AuthProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName='LoginPage'
+              screenOptions={{ headerShown: false }}
+            >
+              <Stack.Screen name='LoginPage' component={LoginPage} />
+              <Stack.Screen name='MainPage' component={MainPage} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </AuthProvider>
       </GluestackUIProvider>
     </SafeAreaProvider>
   );

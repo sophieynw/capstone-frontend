@@ -4,20 +4,23 @@ import '../global.css';
 import { globalStyles } from '@/styles/globalStyles';
 import { Image } from 'react-native';
 import { useState } from 'react';
-import * as SecureStore from 'expo-secure-store';
 import api from '@/api';
+import { useContext } from 'react';
+import { AuthContext } from '@/auth/AuthContext';
 
 export default function LoginPage({ navigation }: any) {
-  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async () => {
     try {
-      const response = await api.post('/api/v1/auth/authenticate', { username, password });
-      const { token } = response.data;
-
-      await SecureStore.setItemAsync('user_token', token);
+      const response = await api.post('/api/v1/auth/authenticate', {
+        username,
+        password,
+      });
+      const { token, user } = response.data;
+      await login(token, user);
       Alert.alert('Login successful', 'You have been logged in successfully.');
       navigation.navigate('MainPage');
     } catch (error) {
@@ -25,7 +28,7 @@ export default function LoginPage({ navigation }: any) {
       Alert.alert('Login failed', 'Invalid username or password.');
     }
   };
-  
+
   return (
     <View style={globalStyles.screen}>
       <Text style={globalStyles.title}>RESTful Housekeeping</Text>
@@ -57,11 +60,7 @@ export default function LoginPage({ navigation }: any) {
           onChangeText={setPassword}
         />
 
-        <Pressable
-          style={globalStyles.button}
-          onPress={() => navigation.navigate('MainPage')} // Uncomment this line, and comment out the line below if you want to navigate to MainPage without authentication
-          //onPress={handleLogin}
-        >
+        <Pressable style={globalStyles.button} onPress={handleLogin}>
           <Text style={globalStyles.buttonText}>Log In</Text>
         </Pressable>
 
