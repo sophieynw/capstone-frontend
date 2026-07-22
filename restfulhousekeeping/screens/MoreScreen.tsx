@@ -1,18 +1,21 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { Button, ButtonText } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button, ButtonText } from 'components/ui/button';
+import { Card } from 'components/ui/card';
 
 export default function MoreScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Properties / Cleanings</Text>
 
-      <Card className="w-full max-w-96">
+      <Card className='w-full max-w-96'>
         <Text style={styles.propertyName}>Union Condo</Text>
         <Text>123 Union St, Oakville</Text>
         <Text>Next Cleaning: Today, 2:00 PM</Text>
 
-        <Button className="mt-4" onPress={() => navigation.navigate('PropertyDetails')}>
+        <Button
+          className='mt-4'
+          onPress={() => navigation.navigate('PropertyDetails')}
+        >
           <ButtonText>View Details</ButtonText>
         </Button>
       </Card>
