@@ -1,14 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, TextInput, Pressable, Alert } from 'react-native';
 import '../global.css';
-import { globalStyles } from 'styles/globalStyles';
+import { globalStyles } from '@/styles/globalStyles';
 import { Image } from 'react-native';
 import { useState } from 'react';
 import api from '../api/api';
 import { useContext } from 'react';
-import { AuthContext } from 'auth/AuthContext';
+import { AuthContext } from '@/auth/AuthContext';
 
-export default function LoginPage() {
+export default function LoginPage({ navigation }: any) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);
@@ -59,7 +59,11 @@ export default function LoginPage() {
           onChangeText={setPassword}
         />
 
-        <Pressable style={globalStyles.button} onPress={handleLogin}>
+        <Pressable
+          style={globalStyles.button}
+          onPress={handleLogin}
+          // onPress={navigation.navigate('MainPage')}
+        >
           <Text style={globalStyles.buttonText}>Log In</Text>
         </Pressable>
 

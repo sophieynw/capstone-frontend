@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { Card } from 'components/ui/card';
-import { Button, ButtonText } from 'components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Button, ButtonText } from '@/components/ui/button';
 
 export default function PropertyDetailsScreen() {
   return (

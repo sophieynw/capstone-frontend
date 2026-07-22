@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthContext } from '@/auth/AuthContext';
 import LoginPage from './screens/LoginPage';
 import MainPage from './screens/MainPage';
+import PropertyDetailsScreen from '@/screens/PropertyDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,10 @@ export default function Navigation() {
         ) : (
           <Stack.Screen name='LoginPage' component={LoginPage} />
         )}
+        <Stack.Screen
+          name='PropertyDetails'
+          component={PropertyDetailsScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
