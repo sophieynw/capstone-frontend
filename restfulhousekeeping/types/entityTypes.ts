@@ -1,6 +1,6 @@
 export enum Role {
-  MANAGER = 'manager',
-  CLEANER = 'cleaner',
+  MANAGER = 'MANAGER',
+  CLEANER = 'CLEANER',
 }
 
 export interface Organization {
