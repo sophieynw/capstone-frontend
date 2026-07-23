@@ -5,6 +5,7 @@ import { AuthContext } from '@/auth/AuthContext';
 import LoginPage from './screens/LoginPage';
 import MainPage from './screens/MainPage';
 import PropertyDetailsScreen from '@/screens/PropertyDetailsScreen';
+import ManageTeamScreen from '@/screens/home/ManageTeamScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,11 @@ export default function Navigation() {
         <Stack.Screen
           name='PropertyDetails'
           component={PropertyDetailsScreen}
+        />
+        <Stack.Screen
+          name='ManageTeamScreen'
+          component={ManageTeamScreen}
+          options={{ presentation: 'modal' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

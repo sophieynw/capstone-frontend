@@ -18,9 +18,9 @@ export default function App() {
   const queryClient = new QueryClient();
 
   // TODO: Uncomment in production
-  useEffect(() => {
-    SecureStore.deleteItemAsync('token');
-  }, []);
+  // useEffect(() => {
+  //   SecureStore.deleteItemAsync('token');
+  // }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,8 +1,8 @@
-import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
-import { useContext } from 'react';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { useContext, useState } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { toTitleCase } from '@/utils/helpers';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
 import {
@@ -10,6 +10,8 @@ import {
   AvatarFallbackText,
   AvatarImage,
 } from '@/components/ui/avatar';
+import { AddIcon, EditIcon } from '@/components/ui/icon';
+import ManageTeamScreen from '@/screens/home/ManageTeamScreen';
 
 type CleaningCardProps = {
   readonly location: string;
@@ -31,7 +33,7 @@ function CleaningCard({ location, date, cleaner }: CleaningCardProps) {
         </View>
         {/* Right Side (Image) */}
         <Avatar className='w-20 h-20'>
-          <AvatarFallbackText>Jane Doe is test</AvatarFallbackText>
+          <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
           <AvatarImage
             source={{
               uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60',
@@ -43,7 +45,7 @@ function CleaningCard({ location, date, cleaner }: CleaningCardProps) {
   );
 }
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: any) {
   const { user } = useContext(AuthContext);
 
   return (
@@ -61,13 +63,15 @@ export default function HomeScreen() {
 
       {/* Buttons */}
       <View style={styles.vContainer}>
-        <Button>
-          <ButtonText>Manage Properties</ButtonText>
-        </Button>
-        <Button>
+        {/*<Button>*/}
+        {/*  <ButtonText>Manage Properties</ButtonText>*/}
+        {/*</Button>*/}
+        <Button onPress={() => navigation.navigate('ManageTeamScreen')}>
+          <ButtonIcon as={EditIcon} />
           <ButtonText>Manage Team</ButtonText>
         </Button>
         <Button>
+          <ButtonIcon as={AddIcon} />
           <ButtonText>Create Cleaning</ButtonText>
         </Button>
       </View>
