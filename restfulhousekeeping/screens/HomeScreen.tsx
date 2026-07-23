@@ -11,7 +11,6 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 import { AddIcon, EditIcon } from '@/components/ui/icon';
-import ManageTeamScreen from '@/screens/home/ManageTeamScreen';
 
 type CleaningCardProps = {
   readonly location: string;

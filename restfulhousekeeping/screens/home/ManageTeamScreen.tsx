@@ -1,11 +1,12 @@
 // screens/home/ManageTeamScreen.tsx
 import { Text } from '@/components/ui/text';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import {
   Icon,
   MailIcon,
   MessageCircleIcon,
+  PhoneIcon,
   TrashIcon,
 } from '@/components/ui/icon';
 import { Heading } from '@/components/ui/heading';
@@ -23,25 +24,34 @@ type CleanerCardProps = {
 
 function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
   return (
-    <Card style={styles.card}>
-      <View className='flex-row items-center justify-between'>
+    <Card className='w-full gap-1.5'>
+      <View className='flex-row items-center'>
         {/* Left (Image) */}
-        <Avatar className='w-10 h-10'>
-          <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
+        <Avatar className='h-10 w-10'>
+          <AvatarFallbackText>{name}</AvatarFallbackText>
           <AvatarImage
             source={{
-              uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60',
+              uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
             }}
           />
         </Avatar>
-
         {/* Middle (Text) */}
-        <View className='flex-1 ml-3 gap-0'>
+        <View className='ml-3 flex-1 gap-0'>
           <Heading size='md'>{name}</Heading>
-          <Text>{phoneNumber}</Text>
-        </View>
 
-        {/* Right */}
+          <View className='flex-row items-center gap-2'>
+            <Icon as={PhoneIcon} size='sm' />
+            <Text
+              className='underline'
+              onPress={() =>
+                Linking.openURL(`tel:${phoneNumber.replace(/\D/g, '')}`)
+              }
+            >
+              {phoneNumber}
+            </Text>
+          </View>
+        </View>
+        {/* Right (Icons) */}
         <View className='flex-row gap-3'>
           <Icon as={MessageCircleIcon} />
           <Icon as={TrashIcon} />
@@ -54,11 +64,12 @@ function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
 export default function ManageTeamScreen() {
   return (
     <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.screenContent}
+      // style={styles.screen}
+      contentContainerStyle={{ padding: 24, gap: 12 }}
+      className='flex-1 bg-gray-100 p-2'
     >
       {/* Header */}
-      <View style={styles.hContainer}>
+      <View className='flex-1 flex-row justify-center gap-4'>
         {/*<Text style={styles.title}>My Cleaning Team</Text>*/}
         <Heading size='2xl'>My Cleaning Team</Heading>
         <Button>
@@ -68,7 +79,7 @@ export default function ManageTeamScreen() {
       </View>
 
       {/* Cleaner Cards */}
-      <View className='flex-col p-3 gap-3'>
+      <View className='flex-col p-2 gap-3'>
         <CleanerCard name='Katie McEwan' phoneNumber='647-222-3344' />
         <CleanerCard name='Robert Fleming' phoneNumber='416-555-0184' />
         <CleanerCard name='Maya Patel' phoneNumber='905-555-7821' />
@@ -79,44 +90,3 @@ export default function ManageTeamScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-
-  screenContent: {
-    padding: 24,
-    gap: 24,
-  },
-
-  vContainer: {
-    flex: 1,
-    gap: 12,
-    // borderWidth: 1,
-    // borderColor: 'gray',
-  },
-
-  hContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-    gap: 12,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-  },
-
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
-  card: {
-    gap: 6,
-  },
-});
