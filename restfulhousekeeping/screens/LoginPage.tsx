@@ -7,6 +7,7 @@ import { useState } from 'react';
 import api from '../api/api';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
+import { authenticate } from '@/api/auth';
 
 export default function LoginPage({ navigation }: any) {
   const [username, setUsername] = useState('');
@@ -15,11 +16,7 @@ export default function LoginPage({ navigation }: any) {
 
   const handleLogin = async () => {
     try {
-      const response = await api.post('/api/v1/auth/authenticate', {
-        username,
-        password,
-      });
-      const { token, user } = response.data;
+      const { token, user } = await authenticate(username, password);
       await login(token, user);
       Alert.alert('Login successful', 'You have been logged in successfully.');
     } catch (error) {

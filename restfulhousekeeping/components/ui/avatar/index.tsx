@@ -101,8 +101,7 @@ const AvatarImage = React.forwardRef<
       className={avatarImageStyle({
         class: className,
       })}
-      // @ts-expect-error - resizeMode is React Native specific
-      resizeMode="cover"
+      resizeMode='cover'
     />
   );
 });
@@ -134,5 +133,5 @@ export {
   AvatarFallback,
   AvatarFallbackText,
   AvatarGroup,
-  AvatarImage
+  AvatarImage,
 };

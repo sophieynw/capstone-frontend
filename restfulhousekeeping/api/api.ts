@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
@@ -8,6 +8,7 @@ const api = axios.create({
     android: 'http://10.0.2.2:50000',
     ios: 'http://127.0.0.1:50000',
   }),
+  timeout: 10_000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -24,4 +25,7 @@ api.interceptors.request.use(
   },
 );
 
-export default api;
+export async function request<T>(config: AxiosRequestConfig): Promise<T> {
+  const response = await api.request<T>(config);
+  return response.data;
+}
