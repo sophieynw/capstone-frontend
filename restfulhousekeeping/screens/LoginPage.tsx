@@ -4,12 +4,11 @@ import '../global.css';
 import { globalStyles } from '@/styles/globalStyles';
 import { Image } from 'react-native';
 import { useState } from 'react';
-import api from '../api/apiClient';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { authenticate } from '@/api/auth';
 
-export default function LoginPage({ navigation }: any) {
+export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);

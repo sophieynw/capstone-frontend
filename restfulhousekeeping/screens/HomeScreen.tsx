@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { toFriendlyDate, toTitleCase } from '@/utils/helpers';
@@ -11,21 +11,17 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 import { AddIcon, EditIcon } from '@/components/ui/icon';
-import { styles } from '@/styles/screenStyles';
 import { Cleaning } from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
 
+// region CardCard
+
 type CleaningCardProps = {
-  readonly cleaningRecord: Cleaning;
-  readonly imageUri?: string;
+  readonly cleaning: Cleaning;
   navigation: any;
 };
 
-function CleaningCard({
-  cleaningRecord,
-  imageUri,
-  navigation,
-}: CleaningCardProps) {
+function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
   return (
     <Pressable
       onPress={() => {
@@ -37,29 +33,26 @@ function CleaningCard({
           {/* Left Side (Text) */}
           <View className='gap-2'>
             {/* TODO: change this to property name after implementing GET property API */}
-            <Heading size='md'>{cleaningRecord.propertyId}</Heading>
+            <Heading size='md'>{cleaning.propertyId}</Heading>
             <View className='gap-1'>
-              <Text>{toFriendlyDate(cleaningRecord.dateTimeStart)}</Text>
+              <Text>{toFriendlyDate(cleaning.dateTimeStart)}</Text>
               <Text>
                 Assigned to{' '}
                 {/* TODO: change this to cleaner name after implementing GET cleaners API */}
-                {cleaningRecord.cleanerId
-                  ? `${cleaningRecord.cleanerId} ${cleaningRecord.cleanerId}`
+                {cleaning.cleanerId
+                  ? `${cleaning.cleanerId} ${cleaning.cleanerId}`
                   : 'Unassigned'}
               </Text>
             </View>
           </View>
+
           {/* Right Side (Image) */}
           <Avatar className='w-20 h-20'>
             <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
             <AvatarImage
-              source={
-                imageUri
-                  ? { uri: imageUri }
-                  : {
-                      uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
-                    }
-              }
+              source={{
+                uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
+              }}
             />
           </Avatar>
         </View>
@@ -67,6 +60,8 @@ function CleaningCard({
     </Pressable>
   );
 }
+
+// endregion CleaningCard
 
 export default function HomeScreen({ navigation }: any) {
   const { user } = useContext(AuthContext);
@@ -87,7 +82,7 @@ export default function HomeScreen({ navigation }: any) {
       contentContainerStyle={styles.screenContent}
     >
       {/* Header */}
-      <View style={styles.vContainer}>
+      <View style={styles.vStack}>
         <Text style={styles.title}>
           {toTitleCase(user?.role ?? '')} Dashboard
         </Text>
@@ -95,10 +90,7 @@ export default function HomeScreen({ navigation }: any) {
       </View>
 
       {/* Buttons */}
-      <View style={styles.hContainer}>
-        {/*<Button>*/}
-        {/*  <ButtonText>Manage Properties</ButtonText>*/}
-        {/*</Button>*/}
+      <View style={styles.hStack}>
         <Button
           className='rounded-full w-40'
           size='lg'
@@ -118,8 +110,8 @@ export default function HomeScreen({ navigation }: any) {
       </View>
 
       {/* Info */}
-      {/* Made them buttons for now in case we want them to open something */}
-      <ScrollView horizontal contentContainerStyle={styles.hContainer}>
+      {/* Made them buttons for now in case we want them to open something later */}
+      <ScrollView horizontal contentContainerStyle={styles.hStack}>
         <Button variant='outline' className='rounded-full' disabled>
           <ButtonText># Upcoming</ButtonText>
         </Button>
@@ -131,13 +123,13 @@ export default function HomeScreen({ navigation }: any) {
         </Button>
       </ScrollView>
 
-      {/* Cleaning Cards */}
-      <View style={styles.vContainer}>
+      {/* Upcoming Cleanings */}
+      <View style={styles.vStack}>
         <Text style={styles.sectionTitle}>Upcoming Cleanings</Text>
         {cleanings?.map((cleaning) => (
           <CleaningCard
             key={cleaning.id}
-            cleaningRecord={cleaning}
+            cleaning={cleaning}
             navigation={navigation}
           />
         ))}
@@ -147,3 +139,32 @@ export default function HomeScreen({ navigation }: any) {
     </ScrollView>
   );
 }
+
+export const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  screenContent: {
+    padding: 24,
+    gap: 20,
+  },
+  vStack: {
+    flex: 1,
+    gap: 12,
+  },
+  hStack: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+});

@@ -38,7 +38,6 @@ function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
         {/* Middle (Text) */}
         <View className='ml-3 flex-1 gap-0'>
           <Heading size='md'>{name}</Heading>
-
           <View className='flex-row items-center gap-2'>
             <Icon as={PhoneIcon} size='sm' />
             <Text
