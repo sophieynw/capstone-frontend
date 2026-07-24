@@ -1,0 +1,10 @@
+// api/cleaningsApi.ts
+import { request } from '@/api/apiClient';
+import { Cleaning } from '@/types/entityTypes';
+
+export function getUpcomingCleanings(userId: number): Promise<Cleaning[]> {
+  return request<Cleaning[]>({
+    method: 'GET',
+    url: `/cleanings/upcoming/${userId}`,
+  });
+}
