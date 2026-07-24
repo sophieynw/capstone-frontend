@@ -1,6 +1,6 @@
 // screens/home/ManageTeamScreen.tsx
 import { Text } from '@/components/ui/text';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, ScrollView, View } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import {
   Icon,
@@ -24,7 +24,7 @@ type CleanerCardProps = {
 
 function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
   return (
-    <Card className='w-full gap-1.5'>
+    <Card className='w-full gap-1.5 rounded-4xl'>
       <View className='flex-row items-center'>
         {/* Left (Image) */}
         <Avatar className='h-10 w-10'>
@@ -64,23 +64,22 @@ function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
 export default function ManageTeamScreen() {
   return (
     <ScrollView
-      // style={styles.screen}
-      contentContainerStyle={{ padding: 24, gap: 12 }}
-      className='flex-1 bg-gray-100 p-2'
+      contentContainerStyle={{ gap: 12 }}
+      className='flex-1 bg-gray-100 p-5'
     >
       {/* Header */}
-      <View className='flex-1 flex-row justify-center gap-4'>
-        {/*<Text style={styles.title}>My Cleaning Team</Text>*/}
+      <View className='flex-1 flex-row justify-between p-2'>
         <Heading size='2xl'>My Cleaning Team</Heading>
         <Button>
+        <Button className='rounded-full'>
           <ButtonIcon as={MailIcon} />
           <ButtonText>Invite</ButtonText>
         </Button>
       </View>
 
-      {/* Cleaner Cards */}
+      {/* Content / Cleaner Cards */}
       <View className='flex-col p-2 gap-3'>
-        <CleanerCard name='Katie McEwan' phoneNumber='647-222-3344' />
+        <CleanerCard name='Katie McEwan' phoneNumber='226-224-0336' />
         <CleanerCard name='Robert Fleming' phoneNumber='416-555-0184' />
         <CleanerCard name='Maya Patel' phoneNumber='905-555-7821' />
         <CleanerCard name='Daniel Brooks' phoneNumber='289-555-4190' />

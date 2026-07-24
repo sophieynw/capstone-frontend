@@ -1,5 +1,5 @@
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
-import { useContext, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { toTitleCase } from '@/utils/helpers';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 import { AddIcon, EditIcon } from '@/components/ui/icon';
+import { styles } from '@/styles/screenStyles';
 
 type CleaningCardProps = {
   readonly location: string;
@@ -20,7 +21,7 @@ type CleaningCardProps = {
 
 function CleaningCard({ location, date, cleaner }: CleaningCardProps) {
   return (
-    <Card style={styles.card}>
+    <Card className='gap-6 rounded-3xl'>
       <View className='flex-row items-center justify-between'>
         {/* Left Side (Text) */}
         <View className='gap-2'>
@@ -61,30 +62,36 @@ export default function HomeScreen({ navigation }: any) {
       </View>
 
       {/* Buttons */}
-      <View style={styles.vContainer}>
+      <View style={styles.hContainer}>
         {/*<Button>*/}
         {/*  <ButtonText>Manage Properties</ButtonText>*/}
         {/*</Button>*/}
-        <Button onPress={() => navigation.navigate('ManageTeamScreen')}>
+        <Button
+          className='rounded-full w-40'
+          onPress={() => navigation.navigate('ManageTeamScreen')}
+        >
           <ButtonIcon as={EditIcon} />
-          <ButtonText>Manage Team</ButtonText>
+          <ButtonText>My Team</ButtonText>
         </Button>
-        <Button>
+        <Button
+          className='rounded-full w-40'
+          onPress={() => navigation.navigate('NewCleaningScreen')}
+        >
           <ButtonIcon as={AddIcon} />
-          <ButtonText>Create Cleaning</ButtonText>
+          <ButtonText>New Cleaning</ButtonText>
         </Button>
       </View>
 
       {/* Info */}
       {/* Made them buttons for now in case we want them to open something */}
       <ScrollView horizontal contentContainerStyle={styles.hContainer}>
-        <Button disabled>
+        <Button variant='outline' className='rounded-full' disabled>
           <ButtonText># Upcoming</ButtonText>
         </Button>
-        <Button disabled>
+        <Button variant='outline' className='rounded-full' disabled>
           <ButtonText># Issues</ButtonText>
         </Button>
-        <Button disabled>
+        <Button variant='outline' className='rounded-full' disabled>
           <ButtonText># Unassigned</ButtonText>
         </Button>
       </ScrollView>
@@ -116,44 +123,3 @@ export default function HomeScreen({ navigation }: any) {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-
-  screenContent: {
-    padding: 24,
-    gap: 24,
-  },
-
-  vContainer: {
-    flex: 1,
-    gap: 12,
-    // borderWidth: 1,
-    // borderColor: 'gray',
-  },
-
-  hContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-    gap: 12,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-  },
-
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
-  card: {
-    gap: 6,
-  },
-});
