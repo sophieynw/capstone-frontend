@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
-import { toTitleCase } from '@/utils/helpers';
+import { toFriendlyDate, toTitleCase } from '@/utils/helpers';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
@@ -12,18 +12,18 @@ import {
 } from '@/components/ui/avatar';
 import { AddIcon, EditIcon } from '@/components/ui/icon';
 import { styles } from '@/styles/screenStyles';
+import { Cleaning } from '@/types/entityTypes';
+import { useUpcomingCleanings } from '@/hooks/useCleanings';
 
 type CleaningCardProps = {
-  readonly location: string;
-  readonly date: string;
-  readonly cleaner?: string;
+  readonly cleaningRecord: Cleaning;
+  readonly imageUri?: string;
   navigation: any;
 };
 
 function CleaningCard({
-  location,
-  date,
-  cleaner,
+  cleaningRecord,
+  imageUri,
   navigation,
 }: CleaningCardProps) {
   return (
@@ -36,19 +36,30 @@ function CleaningCard({
         <View className='flex-row items-center justify-between'>
           {/* Left Side (Text) */}
           <View className='gap-2'>
-            <Heading size='md'>{location}</Heading>
+            {/* TODO: change this to property name after implementing GET property API */}
+            <Heading size='md'>{cleaningRecord.propertyId}</Heading>
             <View className='gap-1'>
-              <Text>{date}</Text>
-              <Text>Assigned to {cleaner}</Text>
+              <Text>{toFriendlyDate(cleaningRecord.dateTimeStart)}</Text>
+              <Text>
+                Assigned to{' '}
+                {/* TODO: change this to cleaner name after implementing GET cleaners API */}
+                {cleaningRecord.cleanerId
+                  ? `${cleaningRecord.cleanerId} ${cleaningRecord.cleanerId}`
+                  : 'Unassigned'}
+              </Text>
             </View>
           </View>
           {/* Right Side (Image) */}
           <Avatar className='w-20 h-20'>
             <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
             <AvatarImage
-              source={{
-                uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60',
-              }}
+              source={
+                imageUri
+                  ? { uri: imageUri }
+                  : {
+                      uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
+                    }
+              }
             />
           </Avatar>
         </View>
@@ -59,6 +70,16 @@ function CleaningCard({
 
 export default function HomeScreen({ navigation }: any) {
   const { user } = useContext(AuthContext);
+  const { data: cleanings, isLoading, isError, error } = useUpcomingCleanings();
+
+  if (isLoading) {
+    return <Text>Loading cleanings...</Text>;
+  }
+
+  if (isError) {
+    console.error(error);
+    return <Text>Could not load cleanings.</Text>;
+  }
 
   return (
     <ScrollView
@@ -80,6 +101,7 @@ export default function HomeScreen({ navigation }: any) {
         {/*</Button>*/}
         <Button
           className='rounded-full w-40'
+          size='lg'
           onPress={() => navigation.navigate('ManageTeamScreen')}
         >
           <ButtonIcon as={EditIcon} />
@@ -87,6 +109,7 @@ export default function HomeScreen({ navigation }: any) {
         </Button>
         <Button
           className='rounded-full w-40'
+          size='lg'
           onPress={() => navigation.navigate('NewCleaningScreen')}
         >
           <ButtonIcon as={AddIcon} />
@@ -111,30 +134,15 @@ export default function HomeScreen({ navigation }: any) {
       {/* Cleaning Cards */}
       <View style={styles.vContainer}>
         <Text style={styles.sectionTitle}>Upcoming Cleanings</Text>
-        <CleaningCard
-          date='Jul 22 2026 2:30pm'
-          location='UNION AVE. CONDO'
-          cleaner='Katie M.'
-          navigation={navigation}
-        />
-        <CleaningCard
-          date='Jul 23 2026 1:30pm'
-          location='MAIN ST. CONDO'
-          cleaner='Katie M.'
-          navigation={navigation}
-        />
-        <CleaningCard
-          date='Jul 24 2026 2:00pm'
-          location='APPLE DR. HOUSE'
-          cleaner='Katie M.'
-          navigation={navigation}
-        />
-        <CleaningCard
-          date='Jul 25 2026 2:45pm'
-          location='UNION AVE. CONDO'
-          cleaner='Katie M.'
-          navigation={navigation}
-        />
+        {cleanings?.map((cleaning) => (
+          <CleaningCard
+            key={cleaning.id}
+            cleaningRecord={cleaning}
+            navigation={navigation}
+          />
+        ))}
+
+        {cleanings?.length === 0 && <Text>No upcoming cleanings.</Text>}
       </View>
     </ScrollView>
   );

@@ -1,5 +1,5 @@
 // api/organization.ts
-import { request } from './api';
+import { request } from './apiClient';
 import { Organization } from '@/types/entityTypes';
 
 export function getOrganization(userId: string) {

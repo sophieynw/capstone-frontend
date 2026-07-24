@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
 
   screenContent: {
     padding: 24,
-    gap: 24,
+    gap: 20,
   },
 
   vContainer: {

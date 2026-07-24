@@ -68,9 +68,9 @@ export default function ManageTeamScreen() {
       className='flex-1 bg-gray-100 p-5'
     >
       {/* Header */}
-      <View className='flex-1 flex-row justify-between p-2'>
+      <View className='flex-1 flex-row justify-between p-2 items-center'>
         <Heading size='2xl'>My Cleaning Team</Heading>
-        <Button className='rounded-full'>
+        <Button className='rounded-full' size='lg'>
           <ButtonIcon as={MailIcon} />
           <ButtonText>Invite</ButtonText>
         </Button>

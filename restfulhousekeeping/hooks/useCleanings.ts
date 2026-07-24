@@ -1,9 +1,15 @@
+import { useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../api/api';
 
-export function useCleanings(userId: string) {
+import { AuthContext } from '@/auth/AuthContext';
+import { getUpcomingCleanings } from '@/api/cleaningsApi';
+
+export function useUpcomingCleanings() {
+  const { user } = useContext(AuthContext);
+
   return useQuery({
-    queryKey: ['organizationId'],
-    queryFn: () => api.getOrganization(userId),
+    queryKey: ['upcoming-cleanings', user?.id],
+    queryFn: () => getUpcomingCleanings(user!.id),
+    enabled: !!user?.id,
   });
 }

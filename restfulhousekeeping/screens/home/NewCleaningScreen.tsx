@@ -112,9 +112,9 @@ export default function NewCleaningScreen() {
       className='flex-1 bg-gray-100 p-5'
     >
       {/* Header */}
-      <View className='flex-1 flex-row justify-between p-2'>
+      <View className='flex-1 flex-row justify-between p-2 items-center'>
         <Heading size='2xl'>New Cleaning</Heading>
-        <Button className='rounded-full'>
+        <Button className='rounded-full' size='lg'>
           <ButtonIcon as={CheckIcon} />
           <ButtonText>Save</ButtonText>
         </Button>

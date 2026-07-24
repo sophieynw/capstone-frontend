@@ -1,8 +1,8 @@
 // types/entityTypes.ts
 
 export enum Role {
-  MANAGER = 'Manager',
-  CLEANER = 'Cleaner',
+  MANAGER = 'MANAGER',
+  CLEANER = 'CLEANER',
 }
 
 export interface Organization {
@@ -22,26 +22,26 @@ export interface User {
   role: Role;
 }
 
-export interface CleaningRecord {
+export interface Cleaning {
   id: number;
-  manager: User;
-  cleaner: User | null;
-  property: Property;
-  dateTimeStart: Date;
-  dateTimeEnd: Date;
-  dateTimeStarted: Date | null;
-  dateTimeCompleted: Date | null;
-  notes: String | null;
-  checklistItems: ChecklistItem[] | null;
+  managerId: number;
+  cleanerId: number | null;
+  propertyId: number;
+  dateTimeStart: string;
+  dateTimeEnd: string;
+  dateTimeStarted: string | null;
+  dateTimeCompleted: string | null;
+  notes: string | null;
+  cleaningChecklistItems: CleaningChecklistItem[];
   isComplete: boolean;
 }
 
-export interface ChecklistItem {
+interface CleaningChecklistItem {
   id: number;
-  propertyId: number;
-  cleaningId: number;
   description: string;
-  isCompleted: boolean;
+  frequencyDays: number;
+  lastCompleted: string | null;
+  isComplete: boolean;
 }
 
 export interface Property {

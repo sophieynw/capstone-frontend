@@ -4,7 +4,7 @@ import '../global.css';
 import { globalStyles } from '@/styles/globalStyles';
 import { Image } from 'react-native';
 import { useState } from 'react';
-import api from '../api/api';
+import api from '../api/apiClient';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { authenticate } from '@/api/auth';

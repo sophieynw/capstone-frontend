@@ -1,5 +1,5 @@
 // api/auth.ts
-import { request } from './api';
+import { request } from './apiClient';
 import { User } from '@/types/entityTypes';
 
 type LoginResponse = {
