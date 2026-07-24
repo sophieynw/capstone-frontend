@@ -4,7 +4,6 @@ rm -rf node_modules
 npm ci
 npx expo start -c
 */
-
 import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
