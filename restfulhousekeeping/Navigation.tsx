@@ -7,6 +7,7 @@ import MainPage from './screens/MainPage';
 import PropertyDetailsScreen from '@/screens/PropertyDetailsScreen';
 import ManageTeamScreen from '@/screens/home/ManageTeamScreen';
 import NewCleaningScreen from '@/screens/home/NewCleaningScreen';
+import CleaningDetailsScreen from '@/screens/CleaningDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +36,11 @@ export default function Navigation() {
         <Stack.Screen
           name='NewCleaningScreen'
           component={NewCleaningScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen
+          name='CleaningDetailsScreen'
+          component={CleaningDetailsScreen}
           options={{ presentation: 'modal' }}
         />
       </Stack.Navigator>

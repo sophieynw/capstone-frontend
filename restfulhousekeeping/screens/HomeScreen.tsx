@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { toTitleCase } from '@/utils/helpers';
@@ -17,31 +17,43 @@ type CleaningCardProps = {
   readonly location: string;
   readonly date: string;
   readonly cleaner?: string;
+  navigation: any;
 };
 
-function CleaningCard({ location, date, cleaner }: CleaningCardProps) {
+function CleaningCard({
+  location,
+  date,
+  cleaner,
+  navigation,
+}: CleaningCardProps) {
   return (
-    <Card className='gap-6 rounded-3xl'>
-      <View className='flex-row items-center justify-between'>
-        {/* Left Side (Text) */}
-        <View className='gap-2'>
-          <Heading size='md'>{location}</Heading>
-          <View className='gap-1'>
-            <Text>{date}</Text>
-            <Text>Assigned to {cleaner}</Text>
+    <Pressable
+      onPress={() => {
+        navigation.navigate('CleaningDetailsScreen');
+      }}
+    >
+      <Card className='gap-6 rounded-3xl'>
+        <View className='flex-row items-center justify-between'>
+          {/* Left Side (Text) */}
+          <View className='gap-2'>
+            <Heading size='md'>{location}</Heading>
+            <View className='gap-1'>
+              <Text>{date}</Text>
+              <Text>Assigned to {cleaner}</Text>
+            </View>
           </View>
+          {/* Right Side (Image) */}
+          <Avatar className='w-20 h-20'>
+            <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
+            <AvatarImage
+              source={{
+                uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60',
+              }}
+            />
+          </Avatar>
         </View>
-        {/* Right Side (Image) */}
-        <Avatar className='w-20 h-20'>
-          <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
-          <AvatarImage
-            source={{
-              uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60',
-            }}
-          />
-        </Avatar>
-      </View>
-    </Card>
+      </Card>
+    </Pressable>
   );
 }
 
@@ -103,21 +115,25 @@ export default function HomeScreen({ navigation }: any) {
           date='Jul 22 2026 2:30pm'
           location='UNION AVE. CONDO'
           cleaner='Katie M.'
+          navigation={navigation}
         />
         <CleaningCard
           date='Jul 23 2026 1:30pm'
           location='MAIN ST. CONDO'
           cleaner='Katie M.'
+          navigation={navigation}
         />
         <CleaningCard
           date='Jul 24 2026 2:00pm'
           location='APPLE DR. HOUSE'
           cleaner='Katie M.'
+          navigation={navigation}
         />
         <CleaningCard
           date='Jul 25 2026 2:45pm'
           location='UNION AVE. CONDO'
           cleaner='Katie M.'
+          navigation={navigation}
         />
       </View>
     </ScrollView>
