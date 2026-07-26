@@ -25,7 +25,7 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
   return (
     <Pressable
       onPress={() => {
-        navigation.navigate('CleaningDetailsScreen');
+        navigation.navigate('CleaningDetailsScreen', { cleaning });
       }}
     >
       <Card className='gap-6 rounded-3xl'>
