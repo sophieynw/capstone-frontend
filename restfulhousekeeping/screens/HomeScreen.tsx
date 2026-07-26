@@ -13,15 +13,21 @@ import {
 import { AddIcon, EditIcon } from '@/components/ui/icon';
 import { Cleaning } from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
+import { useProperty } from '@/hooks/useProperties';
 
 // region CardCard
 
 type CleaningCardProps = {
   readonly cleaning: Cleaning;
+  //readonly property: Property;
   navigation: any;
 };
 
 function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
+  const {
+    data: property,
+  } = useProperty(cleaning.propertyId);
+
   return (
     <Pressable
       onPress={() => {
@@ -32,8 +38,7 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
         <View className='flex-row items-center justify-between'>
           {/* Left Side (Text) */}
           <View className='gap-2'>
-            {/* TODO: change this to property name after implementing GET property API */}
-            <Heading size='md'>{cleaning.propertyId}</Heading>
+            <Heading size='md'>{property?.name}</Heading>
             <View className='gap-1'>
               <Text>{toFriendlyDate(cleaning.dateTimeStart)}</Text>
               <Text>

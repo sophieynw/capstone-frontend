@@ -5,9 +5,9 @@ import { AuthContext } from '@/auth/AuthContext';
 import LoginPage from './screens/LoginPage';
 import MainPage from './screens/MainPage';
 import PropertyDetailsScreen from '@/screens/PropertyDetailsScreen';
-import ManageTeamScreen from '@/screens/home/ManageTeamScreen';
-import NewCleaningScreen from '@/screens/home/NewCleaningScreen';
-import CleaningDetailsScreen from '@/screens/CleaningDetailsScreen';
+import ManageTeamScreen from '@/screens/manager/home/ManageTeamScreen';
+import NewCleaningScreen from '@/screens/manager/home/NewCleaningScreen';
+import CleaningDetailsScreen from '@/screens/empty-screens/CleaningDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 
