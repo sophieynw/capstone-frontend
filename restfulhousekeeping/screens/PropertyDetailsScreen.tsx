@@ -1,10 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonText } from '@/components/ui/button';
 
 export default function PropertyDetailsScreen() {
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.screenContent}
+    >
       <Text style={styles.title}>Cleaning Details</Text>
 
       <Text style={styles.propertyName}>Union Condo</Text>
@@ -42,11 +45,19 @@ export default function PropertyDetailsScreen() {
       <Button variant='secondary' className='w-full max-w-96 mt-3'>
         <ButtonText>Check Out & Submit</ButtonText>
       </Button>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  screenContent: {
+    padding: 24,
+    gap: 20,
+  },
   container: {
     flex: 1,
     padding: 24,

@@ -1,14 +1,12 @@
 // screens/MainPage.tsx
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
-import MoreScreen from './MoreScreen';
-import AccountScreen from './AccountScreen';
+import PropertyListScreen from './PropertyListScreen';
 import ManagePropertyChecklistScreen from './ManagePropertyChecklistScreen';
-import CleaningAvailabilityScreen from './CleaningAvailabilityScreen';
+import CleaningAvailabilityScreen from './cleaner/CleaningAvailabilityScreen';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
-import ManagerProfileScreen from './ManagerProfileScreen';
-import PropertyDetailsScreen from './PropertyDetailsScreen';
+import ManagerProfileScreen from './manager/ManagerProfileScreen';
 import { Role } from '@/types/entityTypes';
 
 const Tab = createBottomTabNavigator();
@@ -25,14 +23,10 @@ export default function MainPage() {
       {role === Role.MANAGER && (
         <>
           <Tab.Screen name='Manager Profile' component={ManagerProfileScreen} />
-          <Tab.Screen
-            name='Property Details'
-            component={PropertyDetailsScreen}
-          />
-          <Tab.Screen name='Properties / Cleanings' component={MoreScreen} />
+          <Tab.Screen name='Properties' component={PropertyListScreen} />
         </>
       )}
-      <Tab.Screen name='Profile / Availability' component={AccountScreen} />
+      {/*<Tab.Screen name='Profile / Availability' component={AccountScreen} />*/}
       <Tab.Screen
         name='Manage Property Checklist'
         component={ManagePropertyChecklistScreen}
