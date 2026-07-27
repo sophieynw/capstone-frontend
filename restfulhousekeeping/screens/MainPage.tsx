@@ -1,7 +1,7 @@
 // screens/MainPage.tsx
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
-import MoreScreen from './MoreScreen';
+import PropertyListScreen from './PropertyListScreen';
 import ManagePropertyChecklistScreen from './ManagePropertyChecklistScreen';
 import CleaningAvailabilityScreen from './cleaner/CleaningAvailabilityScreen';
 import { useContext } from 'react';
@@ -23,7 +23,7 @@ export default function MainPage() {
       {role === Role.MANAGER && (
         <>
           <Tab.Screen name='Manager Profile' component={ManagerProfileScreen} />
-          <Tab.Screen name='Properties / Cleanings' component={MoreScreen} />
+          <Tab.Screen name='Properties' component={PropertyListScreen} />
         </>
       )}
       {/*<Tab.Screen name='Profile / Availability' component={AccountScreen} />*/}

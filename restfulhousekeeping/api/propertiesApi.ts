@@ -8,3 +8,10 @@ export function getPropertyById(propertyId: number): Promise<Property> {
     url: `/properties/${propertyId}`,
   });
 }
+
+export function getAllProperties(): Promise<Property[]> {
+  return request<Property[]>({
+    method: 'GET',
+    url: `/properties`,
+  })
+}

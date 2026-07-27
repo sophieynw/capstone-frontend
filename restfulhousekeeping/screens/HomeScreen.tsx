@@ -13,7 +13,7 @@ import {
 import { AddIcon, EditIcon } from '@/components/ui/icon';
 import { Cleaning } from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
-import { useProperty } from '@/hooks/useProperties';
+import { usePropertyById } from '@/hooks/useProperties';
 
 // region CardCard
 
@@ -26,7 +26,7 @@ type CleaningCardProps = {
 function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
   const {
     data: property,
-  } = useProperty(cleaning.propertyId);
+  } = usePropertyById(cleaning.propertyId);
 
   return (
     <Pressable
