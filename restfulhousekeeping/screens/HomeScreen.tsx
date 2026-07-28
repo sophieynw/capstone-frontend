@@ -12,8 +12,9 @@ import {
 } from '@/components/ui/avatar';
 import { AddIcon, EditIcon } from '@/components/ui/icon';
 import { Cleaning } from '@/types/entityTypes';
-import { useUpcomingCleanings } from '@/hooks/useCleanings';
+import { useCleaningById, useUpcomingCleanings } from '@/hooks/useCleanings';
 import { usePropertyById } from '@/hooks/useProperties';
+import { useCleanerById } from '@/hooks/useCleaners';
 
 // region CardCard
 
@@ -24,15 +25,19 @@ type CleaningCardProps = {
 };
 
 function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
-  const {
-    data: property,
-  } = usePropertyById(cleaning.propertyId);
+  const { data: property } = usePropertyById(cleaning.propertyId);
+  const { data: cleaner } = useCleanerById(cleaning.cleanerId);
+  //const { data: cleaning } = useCleaningById(cleaning.cleaningId);
 
   return (
     <Pressable
       onPress={() => {
-        navigation.navigate('CleaningDetailsScreen');
-      }}
+        navigation.navigate('PropertyDetails', {
+          cleaning: cleaning, // or cleaning
+          propertyId: cleaning.propertyId,
+          cleanerId: cleaning.cleanerId,
+      });
+    }}
     >
       <Card className='gap-6 rounded-3xl'>
         <View className='flex-row items-center justify-between'>
@@ -43,9 +48,8 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
               <Text>{toFriendlyDate(cleaning.dateTimeStart)}</Text>
               <Text>
                 Assigned to{' '}
-                {/* TODO: change this to cleaner name after implementing GET cleaners API */}
                 {cleaning.cleanerId
-                  ? `${cleaning.cleanerId} ${cleaning.cleanerId}`
+                  ? `${cleaner?.firstName} ${cleaner?.lastName}`
                   : 'Unassigned'}
               </Text>
             </View>
