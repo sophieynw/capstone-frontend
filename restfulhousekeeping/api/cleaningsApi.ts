@@ -8,9 +8,15 @@ export function getUpcomingCleanings(userId: number): Promise<Cleaning[]> {
     url: `/cleanings/upcoming/${userId}`,
   });
 }
-export function getNextCleaningByProperty(propertyId: number): Promise<Cleaning> {
+export function getNextCleaningByProperty(propertyId: number,): Promise<Cleaning> {
   return request<Cleaning>({
     method: 'GET',
     url: `/cleanings/upcoming/${propertyId}/first`,
+  });
+}
+export function getCleaningById(id: number,): Promise<Cleaning> {
+  return request<Cleaning>({
+    method: 'GET',
+    url: `/cleanings/${id}`,
   });
 }

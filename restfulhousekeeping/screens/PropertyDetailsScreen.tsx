@@ -1,8 +1,20 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonText } from '@/components/ui/button';
+import { Cleaning } from '@/types/entityTypes';
+import { usePropertyById } from '@/hooks/useProperties';
+import { useCleanerById } from '@/hooks/useCleaners';
+import { useCleaningById } from '@/hooks/useCleanings';
+import { toFriendlyDate } from '@/utils/helpers';
 
-export default function PropertyDetailsScreen() {
+// @ts-ignore
+export default function PropertyDetailsScreen({route}) {
+  const { cleaning, propertyId, cleanerId } = route.params;
+
+  const { data: property } = usePropertyById(propertyId);
+  //const { data: cleaner } = useCleanerById(cleanerId);
+  //const { data: cleaning } = useCleaningById(cleaning);
+  console.log('Cleaning Data:', cleaning);
   return (
     <ScrollView
       style={styles.screen}
@@ -10,18 +22,26 @@ export default function PropertyDetailsScreen() {
     >
       <Text style={styles.title}>Cleaning Details</Text>
 
-      <Text style={styles.propertyName}>Union Condo</Text>
-      <Text>Today: 2:00 PM</Text>
+      <Text style={styles.propertyName}>{property?.name}</Text>
+      {/*<Text>Today: 2:00 PM</Text>*/}
+      <Text>
+        Starts At:{' '}
+        {cleaning?.dateTimeStart
+          ? toFriendlyDate(cleaning.dateTimeStart)
+          : 'Loading...'}
+      </Text>
       <Text>Status: Not Started</Text>
 
       <Card className='w-full max-w-96 mt-4 gap-2'>
         <Text style={styles.cardTitle}>Property Info</Text>
 
         <View style={styles.infoGroup}>
-          <Text>Address: 123 Union St, Oakville</Text>
+          <Text>
+            Address: {property?.street} {property?.name}, {property?.city}
+          </Text>
           <Text>Lockbox Code: 1234</Text>
           <Text>Parking: Visitor #12</Text>
-          <Text>Notes: Enter through side entrance</Text>
+          <Text>Notes: {cleaning?.notes}</Text>
         </View>
       </Card>
 

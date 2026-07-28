@@ -78,7 +78,7 @@ export default function ManageTeamScreen() {
       {/* Content / Cleaner Cards */}
       <View className='flex-col p-2 gap-3'>
         <CleanerCard name='Katie McEwan' phoneNumber='226-224-0336' />
-        <CleanerCard name='Robert Fleming' phoneNumber='416-555-0184' />
+        <CleanerCard name='Robert Fleming' phoneNumber='905-608-3833' />
         <CleanerCard name='Maya Patel' phoneNumber='905-555-7821' />
         <CleanerCard name='Daniel Brooks' phoneNumber='289-555-4190' />
         <CleanerCard name='Aisha Thompson' phoneNumber='647-555-2639' />
