@@ -33,7 +33,7 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
     <Pressable
       onPress={() => {
         navigation.navigate('PropertyDetails', {
-          cleaning: cleaning, // or cleaning
+          cleaning: cleaning,
           propertyId: cleaning.propertyId,
           cleanerId: cleaning.cleanerId,
       });

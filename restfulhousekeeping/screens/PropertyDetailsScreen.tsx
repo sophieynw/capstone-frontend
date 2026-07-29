@@ -14,7 +14,6 @@ export default function PropertyDetailsScreen({route}) {
   const { data: property } = usePropertyById(propertyId);
   //const { data: cleaner } = useCleanerById(cleanerId);
   //const { data: cleaning } = useCleaningById(cleaning);
-  console.log('Cleaning Data:', cleaning);
   return (
     <ScrollView
       style={styles.screen}
