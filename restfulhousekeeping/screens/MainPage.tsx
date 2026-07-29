@@ -2,7 +2,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
 import PropertyListScreen from './PropertyListScreen';
-import ManagePropertyChecklistScreen from './ManagePropertyChecklistScreen';
+import ManageChecklistScreen from './ManageChecklistScreen';
 import CleaningAvailabilityScreen from './cleaner/CleaningAvailabilityScreen';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
@@ -29,7 +29,7 @@ export default function MainPage() {
       {/*<Tab.Screen name='Profile / Availability' component={AccountScreen} />*/}
       <Tab.Screen
         name='Manage Property Checklist'
-        component={ManagePropertyChecklistScreen}
+        component={ManageChecklistScreen}
       />
       {role === Role.CLEANER && (
         <Tab.Screen
