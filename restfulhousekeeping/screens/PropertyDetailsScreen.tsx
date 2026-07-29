@@ -1,19 +1,18 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonText } from '@/components/ui/button';
-import { Cleaning } from '@/types/entityTypes';
+import { Cleaning, CleaningChecklistItem } from '@/types/entityTypes';
 import { usePropertyById } from '@/hooks/useProperties';
-import { useCleanerById } from '@/hooks/useCleaners';
-import { useCleaningById } from '@/hooks/useCleanings';
 import { toFriendlyDate } from '@/utils/helpers';
+import { CheckIcon, Icon } from '@/components/ui/icon';
+import React from 'react';
 
 // @ts-ignore
 export default function PropertyDetailsScreen({route}) {
-  const { cleaning, propertyId, cleanerId } = route.params;
+  const { cleaning, propertyId } = route.params;
 
   const { data: property } = usePropertyById(propertyId);
-  //const { data: cleaner } = useCleanerById(cleanerId);
-  //const { data: cleaning } = useCleaningById(cleaning);
+  // @ts-ignore
   return (
     <ScrollView
       style={styles.screen}
@@ -51,10 +50,18 @@ export default function PropertyDetailsScreen({route}) {
       <Text style={styles.sectionTitle}>Cleaning Checklist</Text>
 
       <Card className='w-full max-w-96'>
-        <Text>[ ] Change bed sheets</Text>
-        <Text>[ ] Clean bathroom</Text>
-        <Text>[ ] Take out garbage</Text>
-        <Text>[ ] Sweep floor</Text>
+        {cleaning?.cleaningChecklistItems?.length ? (
+          cleaning?.cleaningChecklistItems.map((item : CleaningChecklistItem) => (
+            <View style={styles.hStack}>
+              {item.isComplete && <Icon as={CheckIcon} />}
+              <Text>{item.description}</Text>
+            </View>
+          ))
+        ) : (
+          <Text className='text-sm text-gray-500 italic text-center py-2'>
+            No items found
+          </Text>
+        )}
       </Card>
 
       <Button variant='secondary' className='w-full max-w-96 mt-4'>
@@ -104,6 +111,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 4,
+  },
+  hStack: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    gap: 12,
   },
 
   infoGroup: {
