@@ -8,18 +8,17 @@ import { CheckIcon, Icon } from '@/components/ui/icon';
 import React from 'react';
 
 // @ts-ignore
-export default function PropertyDetailsScreen({route}) {
+export default function PropertyDetailsScreen({route, navigation}) {
   const { cleaning, propertyId } = route.params;
-
   const { data: property } = usePropertyById(propertyId);
   // @ts-ignore
+
   return (
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.screenContent}
     >
       <Text style={styles.title}>Cleaning Details</Text>
-
       <Text style={styles.propertyName}>{property?.name}</Text>
       {/*<Text>Today: 2:00 PM</Text>*/}
       <Text>
@@ -29,7 +28,6 @@ export default function PropertyDetailsScreen({route}) {
           : 'Loading...'}
       </Text>
       <Text>Status: Not Started</Text>
-
       <Card className='w-full max-w-96 mt-4 gap-2'>
         <Text style={styles.cardTitle}>Property Info</Text>
 
@@ -42,21 +40,20 @@ export default function PropertyDetailsScreen({route}) {
           <Text>Notes: {cleaning?.notes}</Text>
         </View>
       </Card>
-
-      <Button className='w-full max-w-96 mt-4'>
+      <Button className='rounded-full w-48 mt-4 mx-auto'>
         <ButtonText>Check In</ButtonText>
       </Button>
-
       <Text style={styles.sectionTitle}>Cleaning Checklist</Text>
-
       <Card className='w-full max-w-96'>
         {cleaning?.cleaningChecklistItems?.length ? (
-          cleaning?.cleaningChecklistItems.map((item : CleaningChecklistItem) => (
-            <View style={styles.hStack}>
-              {item.isComplete && <Icon as={CheckIcon} />}
-              <Text>{item.description}</Text>
-            </View>
-          ))
+          cleaning?.cleaningChecklistItems.map(
+            (item: CleaningChecklistItem) => (
+              <View key={item.id} style={styles.hStack}>
+                {item.isComplete && <Icon as={CheckIcon} />}
+                <Text>{item.description}</Text>
+              </View>
+            ),
+          )
         ) : (
           <Text className='text-sm text-gray-500 italic text-center py-2'>
             No items found
@@ -64,10 +61,23 @@ export default function PropertyDetailsScreen({route}) {
         )}
       </Card>
 
+      {cleaning?.cleaningChecklistItems &&
+      cleaning.cleaningChecklistItems.length > 0 ? (
+        <Button
+          className='rounded-full w-48 mt-4 mx-auto'
+          onPress={() =>
+            navigation.navigate('ManageChecklistScreen', {
+              cleaning: cleaning,
+              propertyId: cleaning.propertyId,
+            })
+          }
+        >
+          <ButtonText>Manage</ButtonText>
+        </Button>
+      ) : null}
       <Button variant='secondary' className='w-full max-w-96 mt-4'>
         <ButtonText>Report Issue</ButtonText>
       </Button>
-
       <Button variant='secondary' className='w-full max-w-96 mt-3'>
         <ButtonText>Check Out & Submit</ButtonText>
       </Button>
