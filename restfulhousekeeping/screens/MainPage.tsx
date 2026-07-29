@@ -27,10 +27,6 @@ export default function MainPage() {
         </>
       )}
       {/*<Tab.Screen name='Profile / Availability' component={AccountScreen} />*/}
-      <Tab.Screen
-        name='Manage Property Checklist'
-        component={ManageChecklistScreen}
-      />
       {role === Role.CLEANER && (
         <Tab.Screen
           name='Cleaning Availability Screen'
