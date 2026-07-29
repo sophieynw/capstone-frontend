@@ -36,7 +36,7 @@ export interface Cleaning {
   isComplete: boolean;
 }
 
-interface CleaningChecklistItem {
+export interface CleaningChecklistItem {
   id: number;
   description: string;
   frequencyDays: number;
