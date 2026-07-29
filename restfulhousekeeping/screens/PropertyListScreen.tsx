@@ -50,9 +50,15 @@ function PropertyCard({property, navigation} : PropertyCardProps) {
 
       <Button
         className='mt-4'
-        onPress={() => navigation.navigate('PropertyDetails')}
+        onPress={() => {
+          navigation.navigate('PropertyDetails', {
+            cleaning: cleaning,
+            propertyId: cleaning?.propertyId,
+            cleanerId: cleaning?.cleanerId,
+          });
+        }}
       >
-        <ButtonText>View Details</ButtonText>
+      <ButtonText>View Details</ButtonText>
       </Button>
     </Card>
   );
