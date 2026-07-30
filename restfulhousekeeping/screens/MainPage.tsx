@@ -10,6 +10,7 @@ import ManagerProfileScreen from './manager/ManagerProfileScreen';
 import { Role } from '@/types/entityTypes';
 import CleanerHomeScreen from './cleaner/CleanerHomeScreen';
 import CleanerProfileScreen from './cleaner/CleanerProfileScreen';
+import CleaningDetailsScreen from '@/screens/empty-screens/CleaningDetailsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,17 +37,13 @@ export default function MainPage() {
       {/*<Tab.Screen name='Profile / Availability' component={AccountScreen} />*/}
       {role === Role.CLEANER && (
         <>
-        <Tab.Screen
-          name='Cleaner Profile'
-          component={CleanerProfileScreen}
-        />
+          <Tab.Screen name='Cleaner Profile' component={CleanerProfileScreen} />
 
-        <Tab.Screen
-          name='Cleaning Availability Screen'
-          component={CleaningAvailabilityScreen}
-        />
+          <Tab.Screen
+            name='Cleaning Availability Screen'
+            component={CleaningAvailabilityScreen}
+          />
         </>
-        
       )}
     </Tab.Navigator>
   );

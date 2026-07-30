@@ -6,11 +6,13 @@ import { usePropertyById } from '@/hooks/useProperties';
 import { toFriendlyDate } from '@/utils/helpers';
 import { CheckIcon, Icon } from '@/components/ui/icon';
 import React from 'react';
+import { useCleanerById } from '@/hooks/useCleaners';
 
 // @ts-ignore
 export default function PropertyDetailsScreen({route, navigation}) {
-  const { cleaning, propertyId } = route.params;
+  const { cleaning, cleanerId, propertyId } = route.params;
   const { data: property } = usePropertyById(propertyId);
+  const { data: cleaner } = useCleanerById(cleanerId);
   // @ts-ignore
 
   return (
@@ -20,7 +22,7 @@ export default function PropertyDetailsScreen({route, navigation}) {
     >
       <Text style={styles.title}>Cleaning Details</Text>
       <Text style={styles.propertyName}>{property?.name}</Text>
-      {/*<Text>Today: 2:00 PM</Text>*/}
+      <Text>{cleaner ? `${cleaner.firstName} ${cleaner.lastName}` : 'Unassigned'}</Text>
       <Text>
         Starts At:{' '}
         {cleaning?.dateTimeStart
@@ -60,7 +62,6 @@ export default function PropertyDetailsScreen({route, navigation}) {
           </Text>
         )}
       </Card>
-
       {cleaning?.cleaningChecklistItems &&
       cleaning.cleaningChecklistItems.length > 0 ? (
         <Button
