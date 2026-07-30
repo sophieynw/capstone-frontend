@@ -1,24 +1,59 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { toFriendlyDate } from '@/utils/helpers';
 
-export default function CleaningDetailsScreen() {
+export default function CleaningDetailsScreen({ route }: any) {
+  const { cleaning } = route.params;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cleaning Details Screen</Text>
-      <Text>Welcome to the Cleaning Details screen!</Text>
-    </View>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.screenContent}
+    >
+      <Heading size='2xl'>Cleaning Details</Heading>
+
+      <Card className='w-full gap-3 rounded-3xl'>
+        <Heading size='lg'>Property</Heading>
+
+        <Text>Property ID: {cleaning.propertyId}</Text>
+        <Text>Scheduled: {toFriendlyDate(cleaning.dateTimeStart)}</Text>
+        <Text>
+          Cleaner: {cleaning.cleanerId ?? 'Unassigned'}
+        </Text>
+        <Text>Status: {cleaning.status ?? 'Not Started'}</Text>
+      </Card>
+
+      <Card className='w-full gap-3 rounded-3xl'>
+        <Heading size='lg'>Checklist Progress</Heading>
+        <Text>Checklist information will appear here.</Text>
+      </Card>
+
+      <Card className='w-full gap-3 rounded-3xl'>
+        <Heading size='lg'>Reported Issues</Heading>
+        <Text>No reported issues.</Text>
+      </Card>
+
+      <View style={styles.buttonContainer}>
+        <Button className='rounded-full'>
+          <ButtonText>Change Cleaner</ButtonText>
+        </Button>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    backgroundColor: '#f5f5f5',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  screenContent: {
+    padding: 24,
+    gap: 16,
+  },
+  buttonContainer: {
+    marginTop: 4,
   },
 });
