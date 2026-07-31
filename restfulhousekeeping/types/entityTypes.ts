@@ -5,6 +5,16 @@ export enum Role {
   CLEANER = 'CLEANER',
 }
 
+export enum DaysOfTheWeek {
+  MONDAY = 'MONDAY',
+  TUESDAY = 'TUESDAY',
+  WEDNESDAY = 'WEDNESDAY',
+  THURSDAY = 'THURSDAY',
+  FRIDAY = 'FRIDAY',
+  SATURDAY = 'SATURDAY',
+  SUNDAY = 'SUNDAY',
+}
+
 export interface Organization {
   id: number;
   name: string;

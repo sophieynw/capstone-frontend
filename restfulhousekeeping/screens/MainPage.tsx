@@ -5,10 +5,10 @@ import PropertyListScreen from './PropertyListScreen';
 import CleaningAvailabilityScreen from './cleaner/CleaningAvailabilityScreen';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
-import ProfileScreen from './manager/ProfileScreen';
+import ProfileScreen from './ProfileScreen';
 import { Role } from '@/types/entityTypes';
 import { Icon } from '@/components/ui/icon';
-import { Home, ListTodo, User } from 'lucide-react-native';
+import { CalendarCheck, Home, ListTodo, UserRound } from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator();
 
@@ -44,11 +44,19 @@ export default function MainPage() {
       {/*<Tab.Screen name='Profile / Availability' component={AccountScreen} />*/}
       {role === Role.CLEANER && (
         <>
-          <Tab.Screen name='Cleaner Profile' component={ProfileScreen} />
-
           <Tab.Screen
-            name='Cleaning Availability Screen'
+            name='Availability'
             component={CleaningAvailabilityScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Icon
+                  as={CalendarCheck}
+                  color={color}
+                  width={size}
+                  height={size}
+                />
+              ),
+            }}
           />
         </>
       )}
@@ -57,7 +65,7 @@ export default function MainPage() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Icon as={User} color={color} width={size} height={size} />
+            <Icon as={UserRound} color={color} width={size} height={size} />
           ),
         }}
       />

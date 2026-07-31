@@ -13,8 +13,6 @@ import { Role } from '@/types/entityTypes';
 
 // region Manager Summary Card
 
-function ManagerSummary() {}
-
 export default function ProfileScreen() {
   const { user, logout } = useContext(AuthContext);
   const { data: cleanings } = useUpcomingCleanings();
@@ -68,9 +66,11 @@ export default function ProfileScreen() {
       {user?.role == Role.CLEANER && (
         <Card className='w-full gap-3 rounded-3xl'>
           <Heading size='lg'>Cleaner Summary</Heading>
-          <Text>Assigned Cleanings: {cleanings?.length ?? 0}</Text>
-          <Text>Completed Cleanings: Coming soon</Text>
-          <Text>Availability: Coming soon</Text>
+          <View className='gap-2'>
+            <Text>Assigned Cleanings: {cleanings?.length ?? 0}</Text>
+            <Text>Completed Cleanings: Coming soon</Text>
+            <Text>Availability: Coming soon</Text>
+          </View>
         </Card>
       )}
 

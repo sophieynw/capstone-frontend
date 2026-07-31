@@ -101,20 +101,20 @@ function ManagerActions({ navigation }: any) {
 
 // region Cleaner Actions
 
-function CleanerActions({ navigation }: any) {
-  return (
-    <>
-      <Button
-        className='rounded-full w-40'
-        size='lg'
-        onPress={() => navigation.navigate('CleanerAvailabilityScreen')}
-      >
-        <ButtonIcon as={EditIcon} />
-        <ButtonText>My Availability</ButtonText>
-      </Button>
-    </>
-  );
-}
+// function CleanerActions({ navigation }: any) {
+//   return (
+//     <>
+//       <Button
+//         className='rounded-full w-40'
+//         size='lg'
+//         onPress={() => navigation.navigate('CleanerAvailabilityScreen')}
+//       >
+//         <ButtonIcon as={EditIcon} />
+//         <ButtonText>My Availability</ButtonText>
+//       </Button>
+//     </>
+//   );
+// }
 
 // endregion Cleaner Actions
 
@@ -198,14 +198,12 @@ export default function HomeScreen({ navigation }: any) {
       contentContainerStyle={styles.screenContent}
     >
       {/* Buttons */}
-      <View style={styles.hStack}>
-        {user?.role == Role.MANAGER && (
-          <ManagerActions navigation={navigation} />
-        )}
-        {user?.role == Role.CLEANER && (
-          <CleanerActions navigation={navigation} />
-        )}
-      </View>
+      {/*<View style={styles.hStack}>*/}
+      {user?.role == Role.MANAGER && <ManagerActions navigation={navigation} />}
+      {/*{user?.role == Role.CLEANER && (*/}
+      {/*  <CleanerActions navigation={navigation} />*/}
+      {/*)}*/}
+      {/*</View>*/}
 
       {/* Info */}
       {/* Made them buttons for now in case we want them to open something later */}
