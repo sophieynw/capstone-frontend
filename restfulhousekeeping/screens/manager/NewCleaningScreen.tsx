@@ -33,11 +33,7 @@ import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
 import { styles } from '@/styles/styles';
 import { SaveIcon } from 'lucide-react-native';
-
-type Todo = {
-  id: string;
-  description: string;
-};
+import { usePropertyAll } from '@/hooks/useProperties';
 
 // region Details Section
 
@@ -72,7 +68,7 @@ function DetailsSection({
             <SelectInput placeholder='Property' />
             <SelectIcon className='mr-3' as={ChevronDownIcon} />
           </SelectTrigger>
-          <SelectPortal>
+          <SelectPortal useRNModal>
             <SelectBackdrop />
             <SelectContent>
               <SelectDragIndicatorWrapper>
@@ -89,7 +85,7 @@ function DetailsSection({
             <SelectInput placeholder='Cleaner' />
             <SelectIcon className='mr-3' as={ChevronDownIcon} />
           </SelectTrigger>
-          <SelectPortal>
+          <SelectPortal useRNModal>
             <SelectBackdrop />
             <SelectContent>
               <SelectDragIndicatorWrapper>
@@ -109,7 +105,7 @@ function DetailsSection({
       </View>
       <View className='flex-col justify-center gap-4'>
         {/*Starts*/}
-        <View className='flex-row gap-4 justify-center items-center'>
+        <View className='w-full flex-row gap-4 justify-center items-center'>
           <Text>Starts</Text>
           <DateTimePicker
             value={startDate}
@@ -128,7 +124,7 @@ function DetailsSection({
           </DateTimePicker>
         </View>
         {/*Ends*/}
-        <View className='flex-row gap-4 justify-center items-center'>
+        <View className='w-full flex-row gap-4 justify-center items-center'>
           <Text>Ends</Text>
           <DateTimePicker
             value={endDate}
@@ -245,6 +241,13 @@ function NotesSection() {
 
 // endregion Notes Section
 
+// region New Cleaning Card Section
+
+type Todo = {
+  id: string;
+  description: string;
+};
+
 function NewCleaningCard({
   todo,
   onDelete,
@@ -270,11 +273,15 @@ function NewCleaningCard({
   );
 }
 
+// endregion New Cleaning Card Section
+
 export default function NewCleaningScreen() {
   const [property, setProperty] = useState('');
   const [cleaner, setCleaner] = useState('');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+
+  const { data: properties, isLoading, isError, error } = usePropertyAll();
 
   return (
     <ScrollView
