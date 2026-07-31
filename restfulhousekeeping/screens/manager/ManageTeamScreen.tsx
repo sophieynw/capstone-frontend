@@ -16,6 +16,7 @@ import {
   AvatarFallbackText,
   AvatarImage,
 } from '@/components/ui/avatar';
+import { styles } from '@/styles/styles';
 
 type CleanerCardProps = {
   name: string;
@@ -67,7 +68,7 @@ export default function ManageTeamScreen() {
       className='flex-1 bg-gray-100 p-5'
     >
       {/* Header */}
-      <View className='flex-1 flex-row justify-between p-2 items-center'>
+      <View style={styles.modalScreen}>
         <Heading size='2xl'>My Cleaning Team</Heading>
         <Button className='rounded-full' size='lg'>
           <ButtonIcon as={MailIcon} />
@@ -76,7 +77,7 @@ export default function ManageTeamScreen() {
       </View>
 
       {/* Content / Cleaner Cards */}
-      <View className='flex-col p-2 gap-3'>
+      <View style={styles.modalContent}>
         <CleanerCard name='Katie McEwan' phoneNumber='226-224-0336' />
         <CleanerCard name='Robert Fleming' phoneNumber='905-608-3833' />
         <CleanerCard name='Maya Patel' phoneNumber='905-555-7821' />

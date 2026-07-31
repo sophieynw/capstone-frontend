@@ -5,7 +5,6 @@ import { Heading } from '@/components/ui/heading';
 import {
   AddIcon,
   CalendarDaysIcon,
-  CheckIcon,
   ChevronDownIcon,
   TrashIcon,
 } from '@/components/ui/icon';
@@ -32,6 +31,8 @@ import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import { styles } from '@/styles/styles';
+import { SaveIcon } from 'lucide-react-native';
 
 type Todo = {
   id: string;
@@ -281,29 +282,31 @@ export default function NewCleaningScreen() {
       className='flex-1 bg-gray-100 p-5'
     >
       {/* Header */}
-      <View className='flex-1 flex-row justify-between p-2 items-center'>
+      <View style={styles.modalScreen}>
         <Heading size='2xl'>New Cleaning</Heading>
         <Button className='rounded-full' size='lg'>
-          <ButtonIcon as={CheckIcon} />
+          <ButtonIcon as={SaveIcon} />
           <ButtonText>Save</ButtonText>
         </Button>
       </View>
 
       {/* Content */}
-      <Card className='w-full rounded-4xl bg-white p-6 gap-4'>
-        <DetailsSection
-          property={property}
-          setProperty={setProperty}
-          cleaner={cleaner}
-          setCleaner={setCleaner}
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
-        />
-        <ChecklistSection />
-        <NotesSection />
-      </Card>
+      <View style={styles.modalContent}>
+        <Card className='w-full rounded-4xl bg-white p-6 gap-4'>
+          <DetailsSection
+            property={property}
+            setProperty={setProperty}
+            cleaner={cleaner}
+            setCleaner={setCleaner}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+          <ChecklistSection />
+          <NotesSection />
+        </Card>
+      </View>
     </ScrollView>
   );
 }

@@ -5,8 +5,8 @@ import { AuthContext } from '@/auth/AuthContext';
 import LoginPage from './screens/LoginPage';
 import MainPage from './screens/MainPage';
 import PropertyDetailsScreen from '@/screens/PropertyDetailsScreen';
-import ManageTeamScreen from '@/screens/manager/home/ManageTeamScreen';
-import NewCleaningScreen from '@/screens/manager/home/NewCleaningScreen';
+import ManageTeamScreen from '@/screens/manager/ManageTeamScreen';
+import NewCleaningScreen from '@/screens/manager/NewCleaningScreen';
 import CleaningDetailsScreen from '@/screens/CleaningDetailsScreen';
 import ManageChecklistScreen from './screens/ManageChecklistScreen';
 

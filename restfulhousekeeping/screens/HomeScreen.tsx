@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
-import { toFriendlyDate } from '@/utils/helpers';
+import { groupCleaningsByDate, toFriendlyDate } from '@/utils/helpers';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
@@ -47,23 +47,24 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
           <View className='gap-1'>
             <Text>{toFriendlyDate(cleaning.dateTimeStart)}</Text>
             <Text>
-              Assigned to{' '}
-              {cleaning.cleanerId
-                ? `${cleaner?.firstName} ${cleaner?.lastName}`
+              {cleaning.cleanerId !== null
+                ? `Assigned to ${cleaner?.firstName} ${cleaner?.lastName}`
                 : 'Unassigned'}
             </Text>
           </View>
         </View>
 
         {/* Right Side (Image) */}
-        <Avatar className='w-20 h-20'>
-          <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
-          <AvatarImage
-            source={{
-              uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
-            }}
-          />
-        </Avatar>
+        {cleaning.cleanerId !== null && ( // TODO: currently hard-coded to display a pic if cleaner assigned
+          <Avatar className='w-20 h-20'>
+            <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
+            <AvatarImage
+              source={{
+                uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
+              }}
+            />
+          </Avatar>
+        )}
       </Card>
     </Pressable>
   );
@@ -172,7 +173,13 @@ function CleanerInfo({ upcoming, completed }: CleaningInfoProps) {
 
 export default function HomeScreen({ navigation }: any) {
   const { user } = useContext(AuthContext);
-  const { data: cleanings, isLoading, isError, error } = useUpcomingCleanings();
+  const {
+    data: cleanings,
+    isLoading,
+    isError,
+    error,
+    isSuccess,
+  } = useUpcomingCleanings();
 
   // cleanings info
   const upcoming = cleanings?.length ?? 0;
@@ -191,18 +198,23 @@ export default function HomeScreen({ navigation }: any) {
     return <Text>Could not load cleanings.</Text>;
   }
 
+  const { today: cleaningsToday, upcoming: cleaningsUpcoming } =
+    groupCleaningsByDate(cleanings);
+
   return (
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.screenContent}
     >
       {/* Buttons */}
-      {/*<View style={styles.hStack}>*/}
-      {user?.role == Role.MANAGER && <ManagerActions navigation={navigation} />}
-      {/*{user?.role == Role.CLEANER && (*/}
-      {/*  <CleanerActions navigation={navigation} />*/}
-      {/*)}*/}
-      {/*</View>*/}
+      <View style={styles.hStack}>
+        {user?.role == Role.MANAGER && (
+          <ManagerActions navigation={navigation} />
+        )}
+        {/*{user?.role == Role.CLEANER && (*/}
+        {/*  <CleanerActions navigation={navigation} />*/}
+        {/*)}*/}
+      </View>
 
       {/* Info */}
       <ScrollView horizontal contentContainerStyle={styles.hStack}>
@@ -218,10 +230,10 @@ export default function HomeScreen({ navigation }: any) {
         )}
       </ScrollView>
 
-      {/* Upcoming Cleanings */}
+      {/* Today's Cleanings */}
       <View style={styles.vStack}>
-        <Text style={styles.sectionTitle}>Upcoming Cleanings</Text>
-        {cleanings?.map((cleaning) => (
+        <Text style={styles.sectionTitle}>Today</Text>
+        {cleaningsToday.map((cleaning) => (
           <CleaningCard
             key={cleaning.id}
             cleaning={cleaning}
@@ -229,7 +241,21 @@ export default function HomeScreen({ navigation }: any) {
           />
         ))}
 
-        {cleanings?.length === 0 && <Text>No upcoming cleanings.</Text>}
+        {cleaningsToday.length === 0 && <Text>No cleanings today!</Text>}
+      </View>
+
+      {/* Upcoming Cleanings */}
+      <View style={styles.vStack}>
+        <Text style={styles.sectionTitle}>Upcoming</Text>
+        {cleaningsUpcoming.map((cleaning) => (
+          <CleaningCard
+            key={cleaning.id}
+            cleaning={cleaning}
+            navigation={navigation}
+          />
+        ))}
+
+        {cleaningsUpcoming.length === 0 && <Text>No upcoming cleanings.</Text>}
       </View>
     </ScrollView>
   );

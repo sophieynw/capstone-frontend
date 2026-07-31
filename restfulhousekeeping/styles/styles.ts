@@ -32,4 +32,16 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
   },
+  modalScreen: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 8,
+  },
+  modalContent: {
+    flexDirection: 'column',
+    padding: 4,
+    gap: 12,
+  },
 });
