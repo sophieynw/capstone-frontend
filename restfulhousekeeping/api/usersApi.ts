@@ -7,3 +7,10 @@ export function getUserById(userId: number | null): Promise<User> {
     url: `/cleaners/${userId}`,
   });
 }
+
+export function getAllCleaners(organizationId: number): Promise<User[]> {
+  return request<User[]>({
+    method: 'GET',
+    url: `/cleaners/${organizationId}/cleaners`,
+  });
+}

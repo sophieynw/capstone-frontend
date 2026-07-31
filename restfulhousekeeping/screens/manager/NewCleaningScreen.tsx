@@ -34,12 +34,16 @@ import { Textarea, TextareaInput } from '@/components/ui/textarea';
 import { styles } from '@/styles/styles';
 import { SaveIcon } from 'lucide-react-native';
 import { usePropertyAll } from '@/hooks/useProperties';
+import { Property, User } from '@/types/entityTypes';
+import { useCleaners } from '@/hooks/useCleaners';
 
 // region Details Section
 
 type DetailsSectionProps = {
+  properties: Property[] | undefined;
   property: string;
   setProperty: (property: string) => void;
+  cleaners: User[] | undefined;
   cleaner: string;
   setCleaner: (cleaning: string) => void;
   startDate: Date;
@@ -49,8 +53,10 @@ type DetailsSectionProps = {
 };
 
 function DetailsSection({
+  properties,
   property,
   setProperty,
+  cleaners,
   cleaner,
   setCleaner,
   startDate,
@@ -74,8 +80,13 @@ function DetailsSection({
               <SelectDragIndicatorWrapper>
                 <SelectDragIndicator />
               </SelectDragIndicatorWrapper>
-              <SelectItem label='Wayward Pines' value='1' />
-              <SelectItem label='Union St.' value='2' />
+              {properties?.map((propertyItem) => (
+                <SelectItem
+                  key={propertyItem.id}
+                  label={propertyItem.name}
+                  value={propertyItem.id.toString()}
+                />
+              ))}
             </SelectContent>
           </SelectPortal>
         </Select>
@@ -91,14 +102,13 @@ function DetailsSection({
               <SelectDragIndicatorWrapper>
                 <SelectDragIndicator />
               </SelectDragIndicatorWrapper>
-              <SelectItem label='UX Research' value='ux' />
-              <SelectItem label='Web Development' value='web' />
-              <SelectItem
-                label='Cross Platform Development Process'
-                value='Cross Platform Development Process'
-              />
-              <SelectItem label='UI Designing' value='ui' isDisabled={true} />
-              <SelectItem label='Backend Development' value='backend' />
+              {cleaners?.map((cleanerItem) => (
+                <SelectItem
+                  key={cleanerItem.id}
+                  label={`${cleanerItem.firstName} ${cleanerItem.lastName}`}
+                  value={cleanerItem.id.toString()}
+                />
+              ))}
             </SelectContent>
           </SelectPortal>
         </Select>
@@ -281,7 +291,28 @@ export default function NewCleaningScreen() {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
 
-  const { data: properties, isLoading, isError, error } = usePropertyAll();
+  const {
+    data: properties,
+    isLoading: isPropertiesLoading,
+    isError: isPropertiesError,
+    error: propertiesError,
+  } = usePropertyAll();
+  const {
+    data: cleaners,
+    isLoading: isCleanersLoading,
+    isError: isCleanersError,
+    error: cleanersError,
+  } = useCleaners();
+
+  if (isPropertiesLoading || isCleanersLoading) {
+    return <Text>Loading properties...</Text>;
+  }
+
+  if (isPropertiesError || isCleanersError) {
+    console.error('Properties error:', propertiesError);
+    console.error('Cleaners error:', cleanersError);
+    return <Text>Could not load properties.</Text>;
+  }
 
   return (
     <ScrollView
@@ -301,8 +332,10 @@ export default function NewCleaningScreen() {
       <View style={styles.modalContent}>
         <Card className='w-full rounded-4xl bg-white p-6 gap-4'>
           <DetailsSection
+            properties={properties}
             property={property}
             setProperty={setProperty}
+            cleaners={cleaners}
             cleaner={cleaner}
             setCleaner={setCleaner}
             startDate={startDate}
