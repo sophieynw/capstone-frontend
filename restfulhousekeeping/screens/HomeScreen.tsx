@@ -10,12 +10,13 @@ import {
   AvatarFallbackText,
   AvatarImage,
 } from '@/components/ui/avatar';
-import { AddIcon, EditIcon } from '@/components/ui/icon';
+import { EditIcon } from '@/components/ui/icon';
 import { Cleaning, Role } from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
 import { usePropertyById } from '@/hooks/useProperties';
 import { useCleanerById } from '@/hooks/useCleaners';
 import { styles } from '@/styles/styles';
+import { Plus, UsersRound } from 'lucide-react-native';
 
 // region Cleaning Card
 
@@ -81,7 +82,7 @@ function ManagerActions({ navigation }: any) {
         size='lg'
         onPress={() => navigation.navigate('ManageTeamScreen')}
       >
-        <ButtonIcon as={EditIcon} />
+        <ButtonIcon as={UsersRound} />
         <ButtonText>My Team</ButtonText>
       </Button>
       <Button
@@ -89,7 +90,7 @@ function ManagerActions({ navigation }: any) {
         size='lg'
         onPress={() => navigation.navigate('NewCleaningScreen')}
       >
-        <ButtonIcon as={AddIcon} />
+        <ButtonIcon as={Plus} />
         <ButtonText>New Cleaning</ButtonText>
       </Button>
     </>
