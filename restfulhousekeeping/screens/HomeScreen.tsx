@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { groupCleaningsByDate, toFriendlyDate } from '@/utils/helpers';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { usePropertyById } from '@/hooks/useProperties';
 import { useCleanerById } from '@/hooks/useCleaners';
 import { styles } from '@/styles/styles';
 import { Plus, UsersRound } from 'lucide-react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 // region Cleaning Card
 
@@ -178,8 +179,14 @@ export default function HomeScreen({ navigation }: any) {
     isLoading,
     isError,
     error,
-    isSuccess,
+    refetch,
   } = useUpcomingCleanings();
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   // cleanings info
   const upcoming = cleanings?.length ?? 0;

@@ -1,13 +1,7 @@
 // screens/home/NewCleaningScreen.tsx
-import { Pressable, ScrollView, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
-import {
-  AddIcon,
-  CalendarDaysIcon,
-  ChevronDownIcon,
-  TrashIcon,
-} from '@/components/ui/icon';
 import {
   Select,
   SelectBackdrop,
@@ -26,53 +20,59 @@ import {
   DateTimePickerInput,
   DateTimePickerTrigger,
 } from '@/components/ui/date-time-picker';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
-import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
 import { styles } from '@/styles/styles';
-import { SaveIcon } from 'lucide-react-native';
+import { Calendar, ChevronDown, SaveIcon } from 'lucide-react-native';
 import { usePropertyAll } from '@/hooks/useProperties';
-import { Property, User } from '@/types/entityTypes';
+import { ChecklistItem, Property, Role, User } from '@/types/entityTypes';
 import { useCleaners } from '@/hooks/useCleaners';
+import { ChecklistSection } from '@/screens/components/ChecklistSection';
+import { AuthContext } from '@/auth/AuthContext';
+import { useCreateCleaning } from '@/hooks/useCleanings';
+import { useNavigation } from '@react-navigation/native';
 
 // region Details Section
 
 type DetailsSectionProps = {
   properties: Property[] | undefined;
-  property: string;
-  setProperty: (property: string) => void;
+  propertySelected: string;
+  setPropertySelected: (property: string) => void;
   cleaners: User[] | undefined;
-  cleaner: string;
-  setCleaner: (cleaning: string) => void;
-  startDate: Date;
-  setStartDate: (startDate: Date) => void;
-  endDate: Date;
-  setEndDate: (endDate: Date) => void;
+  cleanerSelected: string;
+  setCleanerSelected: (cleaning: string) => void;
+  startDateSelected: Date;
+  setStartDateSelected: (startDate: Date) => void;
+  endDateSelected: Date;
+  setEndDateSelected: (endDate: Date) => void;
 };
 
 function DetailsSection({
   properties,
-  property,
-  setProperty,
+  propertySelected,
+  setPropertySelected,
   cleaners,
-  cleaner,
-  setCleaner,
-  startDate,
-  setStartDate,
-  endDate,
-  setEndDate,
+  cleanerSelected,
+  setCleanerSelected,
+  startDateSelected,
+  setStartDateSelected,
+  endDateSelected,
+  setEndDateSelected,
 }: DetailsSectionProps) {
   return (
     <>
       <Heading size='xl'>Details</Heading>
       <View className='flex-row gap-4 justify-center'>
         {/* Properties */}
-        <Select selectedValue={property} onValueChange={setProperty}>
+        <Select
+          selectedValue={propertySelected}
+          onValueChange={setPropertySelected}
+        >
           <SelectTrigger size='md' variant='rounded'>
             <SelectInput placeholder='Property' />
-            <SelectIcon className='mr-3' as={ChevronDownIcon} />
+            <SelectIcon className='mr-3' as={ChevronDown} />
           </SelectTrigger>
           <SelectPortal useRNModal>
             <SelectBackdrop />
@@ -91,10 +91,13 @@ function DetailsSection({
           </SelectPortal>
         </Select>
         {/* Cleaner */}
-        <Select selectedValue={cleaner} onValueChange={setCleaner}>
+        <Select
+          selectedValue={cleanerSelected}
+          onValueChange={setCleanerSelected}
+        >
           <SelectTrigger size='md' variant='rounded'>
             <SelectInput placeholder='Cleaner' />
-            <SelectIcon className='mr-3' as={ChevronDownIcon} />
+            <SelectIcon className='mr-3' as={ChevronDown} />
           </SelectTrigger>
           <SelectPortal useRNModal>
             <SelectBackdrop />
@@ -105,7 +108,7 @@ function DetailsSection({
               {cleaners?.map((cleanerItem) => (
                 <SelectItem
                   key={cleanerItem.id}
-                  label={`${cleanerItem.firstName} ${cleanerItem.lastName}`}
+                  label={`${cleanerItem.firstName} ${cleanerItem.lastName.charAt(0)}.`}
                   value={cleanerItem.id.toString()}
                 />
               ))}
@@ -118,10 +121,10 @@ function DetailsSection({
         <View className='w-full flex-row gap-4 justify-center items-center'>
           <Text>Starts</Text>
           <DateTimePicker
-            value={startDate}
+            value={startDateSelected}
             onChange={(date) => {
               if (date) {
-                setStartDate(date);
+                setStartDateSelected(date);
               }
             }}
             mode='datetime'
@@ -129,7 +132,7 @@ function DetailsSection({
           >
             <DateTimePickerTrigger variant='rounded'>
               <DateTimePickerInput />
-              <DateTimePickerIcon as={CalendarDaysIcon} className='mr-3' />
+              <DateTimePickerIcon as={Calendar} className='mr-3' />
             </DateTimePickerTrigger>
           </DateTimePicker>
         </View>
@@ -137,10 +140,10 @@ function DetailsSection({
         <View className='w-full flex-row gap-4 justify-center items-center'>
           <Text>Ends</Text>
           <DateTimePicker
-            value={endDate}
+            value={endDateSelected}
             onChange={(date) => {
               if (date) {
-                setEndDate(date);
+                setEndDateSelected(date);
               }
             }}
             mode='datetime'
@@ -148,7 +151,7 @@ function DetailsSection({
           >
             <DateTimePickerTrigger variant='rounded'>
               <DateTimePickerInput />
-              <DateTimePickerIcon as={CalendarDaysIcon} className='mr-3' />
+              <DateTimePickerIcon as={Calendar} className='mr-3' />
             </DateTimePickerTrigger>
           </DateTimePicker>
         </View>
@@ -161,82 +164,16 @@ function DetailsSection({
 
 // region Checklist Section
 
-function ChecklistSection() {
-  const [newTodoDescription, setNewTodoDescription] = useState('');
-
-  // sample data for testing only
-  const [todos, setTodos] = useState<Todo[]>([
-    { id: '1', description: 'Clean kitchen counters and sink' },
-    { id: '2', description: 'Clean and disinfect bathroom' },
-    { id: '3', description: 'Change bed linens' },
-  ]);
-
-  function addTodo() {
-    const description = newTodoDescription.trim();
-
-    if (!description) return;
-
-    setTodos((currentTodos) => [
-      ...currentTodos,
-      {
-        id: Date.now().toString(),
-        description,
-      },
-    ]);
-
-    setNewTodoDescription('');
-  }
-
-  function deleteTodo(id: string) {
-    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
-  }
-
-  function updateTodoDescription(id: string, description: string) {
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) =>
-        todo.id === id ? { ...todo, description } : todo,
-      ),
-    );
-  }
-
-  return (
-    <View className='flex-col justify-center gap-2'>
-      <Heading size='xl'>Checklist</Heading>
-      <View className='py-2 gap-3'>
-        {todos.map((todo) => (
-          <NewCleaningCard
-            key={todo.id}
-            todo={todo}
-            onDelete={() => deleteTodo(todo.id)}
-            onChangeDescription={(text) => updateTodoDescription(todo.id, text)}
-          />
-        ))}
-
-        <Input className='w-full rounded-full'>
-          <InputField
-            value={newTodoDescription}
-            onChangeText={setNewTodoDescription}
-            onSubmitEditing={addTodo}
-            placeholder='Add checklist item'
-            returnKeyType='done'
-          />
-
-          <InputSlot>
-            <Pressable onPress={addTodo} className='ml-3'>
-              <InputIcon as={AddIcon} />
-            </Pressable>
-          </InputSlot>
-        </Input>
-      </View>
-    </View>
-  );
-}
-
 // endregion Checklist Section
 
 // region Notes Section
 
-function NotesSection() {
+type NotesSectionProps = {
+  notes: string;
+  setNotes: (notes: string) => void;
+};
+
+function NotesSection({ notes, setNotes }: NotesSectionProps) {
   return (
     <View className='flex-col justify-center gap-2'>
       <Heading size='xl'>Notes</Heading>
@@ -251,45 +188,29 @@ function NotesSection() {
 
 // endregion Notes Section
 
-// region New Cleaning Card Section
+function formatLocalDateTime(date: Date): string {
+  const pad = (value: number) => value.toString().padStart(2, '0');
 
-type Todo = {
-  id: string;
-  description: string;
-};
-
-function NewCleaningCard({
-  todo,
-  onDelete,
-  onChangeDescription,
-}: {
-  todo: Todo;
-  onDelete: () => void;
-  onChangeDescription: (text: string) => void;
-}) {
   return (
-    <Input className='rounded-full'>
-      <InputField
-        value={todo.description}
-        onChangeText={onChangeDescription}
-        placeholder='Checklist item'
-      />
-      <InputSlot className='pl-3'>
-        <Pressable onPress={onDelete} className='ml-3'>
-          <InputIcon as={TrashIcon} />
-        </Pressable>
-      </InputSlot>
-    </Input>
+    `${date.getFullYear()}-` +
+    `${pad(date.getMonth() + 1)}-` +
+    `${pad(date.getDate())}T` +
+    `${pad(date.getHours())}:` +
+    `${pad(date.getMinutes())}:00`
   );
 }
 
-// endregion New Cleaning Card Section
-
 export default function NewCleaningScreen() {
-  const [property, setProperty] = useState('');
-  const [cleaner, setCleaner] = useState('');
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const { user } = useContext(AuthContext);
+  const createCleaningMutation = useCreateCleaning();
+  const navigation = useNavigation();
+
+  const [propertySelected, setPropertySelected] = useState('');
+  const [cleanerSelected, setCleanerSelected] = useState('');
+  const [startDateSelected, setStartDateSelected] = useState(new Date());
+  const [endDateSelected, setEndDateSelected] = useState(new Date());
+  const [notes, setNotes] = useState('');
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
 
   const {
     data: properties,
@@ -303,6 +224,43 @@ export default function NewCleaningScreen() {
     isError: isCleanersError,
     error: cleanersError,
   } = useCleaners();
+
+  function handleSubmit() {
+    if (!user) {
+      Alert.alert('Error', 'You must be signed in.');
+      return;
+    }
+
+    if (!propertySelected) {
+      Alert.alert('Missing property', 'Please select a property.');
+      return;
+    }
+
+    if (endDateSelected <= startDateSelected) {
+      Alert.alert('Invalid time', 'The end time must be after the start time.');
+      return;
+    }
+
+    const cleaningChecklistItems = checklistItems
+      .filter((item) => item.description.trim())
+      .map((item) =>
+        item.id > 0
+          ? { checklistItem: { id: item.id } }
+          : { customDescription: item.description.trim() },
+      );
+
+    createCleaningMutation.mutate({
+      manager: { id: user.id, role: Role.MANAGER },
+      cleaner: cleanerSelected
+        ? { id: Number(cleanerSelected), role: Role.CLEANER }
+        : null,
+      property: { id: Number(propertySelected) },
+      dateTimeStart: formatLocalDateTime(startDateSelected),
+      dateTimeEnd: formatLocalDateTime(endDateSelected),
+      notes: notes.trim() || null,
+      cleaningChecklistItems,
+    });
+  }
 
   if (isPropertiesLoading || isCleanersLoading) {
     return <Text>Loading properties...</Text>;
@@ -322,9 +280,16 @@ export default function NewCleaningScreen() {
       {/* Header */}
       <View style={styles.modalScreen}>
         <Heading size='2xl'>New Cleaning</Heading>
-        <Button className='rounded-full' size='lg'>
+        <Button
+          className='rounded-full'
+          size='lg'
+          onPress={handleSubmit}
+          isDisabled={createCleaningMutation.isPending}
+        >
           <ButtonIcon as={SaveIcon} />
-          <ButtonText>Save</ButtonText>
+          <ButtonText>
+            {createCleaningMutation.isPending ? 'Saving...' : 'Save'}
+          </ButtonText>
         </Button>
       </View>
 
@@ -333,18 +298,22 @@ export default function NewCleaningScreen() {
         <Card className='w-full rounded-4xl bg-white p-6 gap-4'>
           <DetailsSection
             properties={properties}
-            property={property}
-            setProperty={setProperty}
+            propertySelected={propertySelected}
+            setPropertySelected={setPropertySelected}
             cleaners={cleaners}
-            cleaner={cleaner}
-            setCleaner={setCleaner}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
+            cleanerSelected={cleanerSelected}
+            setCleanerSelected={setCleanerSelected}
+            startDateSelected={startDateSelected}
+            setStartDateSelected={setStartDateSelected}
+            endDateSelected={endDateSelected}
+            setEndDateSelected={setEndDateSelected}
           />
-          <ChecklistSection />
-          <NotesSection />
+          <ChecklistSection
+            propertyId={propertySelected ? Number(propertySelected) : undefined}
+            onItemsChange={setChecklistItems}
+          />
+
+          <NotesSection notes={notes} setNotes={setNotes} />
         </Card>
       </View>
     </ScrollView>

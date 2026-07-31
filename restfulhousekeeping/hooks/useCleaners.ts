@@ -18,6 +18,6 @@ export function useCleaners() {
   return useQuery({
     queryKey: ['cleaners', organizationId],
     queryFn: () => getAllCleaners(organizationId!),
-    enabled: organizationId !== undefined,
+    enabled: !!organizationId,
   });
 }
