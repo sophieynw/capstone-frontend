@@ -48,7 +48,6 @@ export function AuthProvider({ children }: Props) {
     setUser(null);
 
     await SecureStore.deleteItemAsync('token');
-
     await SecureStore.deleteItemAsync('user');
   };
 
