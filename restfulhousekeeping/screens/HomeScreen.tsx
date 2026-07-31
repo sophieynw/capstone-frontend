@@ -10,7 +10,6 @@ import {
   AvatarFallbackText,
   AvatarImage,
 } from '@/components/ui/avatar';
-import { EditIcon } from '@/components/ui/icon';
 import { Cleaning, Role } from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
 import { usePropertyById } from '@/hooks/useProperties';
@@ -206,7 +205,6 @@ export default function HomeScreen({ navigation }: any) {
       {/*</View>*/}
 
       {/* Info */}
-      {/* Made them buttons for now in case we want them to open something later */}
       <ScrollView horizontal contentContainerStyle={styles.hStack}>
         {user?.role == Role.MANAGER && (
           <ManagerInfo

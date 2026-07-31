@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
-
 import { AuthContext } from '@/auth/AuthContext';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
