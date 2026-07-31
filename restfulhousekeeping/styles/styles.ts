@@ -34,14 +34,29 @@ export const styles = StyleSheet.create({
   },
   modalScreen: {
     flex: 1,
+    backgroundColor: '#f5f5f5',
+    padding: 18,
+  },
+  modalScreenContent: {
+    gap: 12,
+  },
+  modalHeader: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 8,
   },
-  modalContent: {
+  modalMain: {
     flexDirection: 'column',
     padding: 4,
     gap: 12,
+  },
+  bigCard: {
+    width: '100%',
+    borderRadius: 32,
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+    gap: 16,
   },
 });

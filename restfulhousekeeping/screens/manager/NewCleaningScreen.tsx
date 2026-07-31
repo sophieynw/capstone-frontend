@@ -32,7 +32,6 @@ import { useCleaners } from '@/hooks/useCleaners';
 import { ChecklistSection } from '@/screens/components/ChecklistSection';
 import { AuthContext } from '@/auth/AuthContext';
 import { useCreateCleaning } from '@/hooks/useCleanings';
-import { useNavigation } from '@react-navigation/native';
 
 // region Details Section
 
@@ -162,10 +161,6 @@ function DetailsSection({
 
 // endregion Details Section
 
-// region Checklist Section
-
-// endregion Checklist Section
-
 // region Notes Section
 
 type NotesSectionProps = {
@@ -203,7 +198,6 @@ function formatLocalDateTime(date: Date): string {
 export default function NewCleaningScreen() {
   const { user } = useContext(AuthContext);
   const createCleaningMutation = useCreateCleaning();
-  const navigation = useNavigation();
 
   const [propertySelected, setPropertySelected] = useState('');
   const [cleanerSelected, setCleanerSelected] = useState('');
@@ -274,11 +268,11 @@ export default function NewCleaningScreen() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ gap: 12 }}
-      className='flex-1 bg-gray-100 p-5'
+      style={styles.modalScreen}
+      contentContainerStyle={styles.modalScreenContent}
     >
       {/* Header */}
-      <View style={styles.modalScreen}>
+      <View style={styles.modalHeader}>
         <Heading size='2xl'>New Cleaning</Heading>
         <Button
           className='rounded-full'
@@ -294,8 +288,8 @@ export default function NewCleaningScreen() {
       </View>
 
       {/* Content */}
-      <View style={styles.modalContent}>
-        <Card className='w-full rounded-4xl bg-white p-6 gap-4'>
+      <View style={styles.modalMain}>
+        <Card style={styles.bigCard}>
           <DetailsSection
             properties={properties}
             propertySelected={propertySelected}

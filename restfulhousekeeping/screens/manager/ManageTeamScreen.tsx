@@ -64,11 +64,11 @@ function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
 export default function ManageTeamScreen() {
   return (
     <ScrollView
-      contentContainerStyle={{ gap: 12 }}
-      className='flex-1 bg-gray-100 p-5'
+      style={styles.modalScreen}
+      contentContainerStyle={styles.modalScreenContent}
     >
       {/* Header */}
-      <View style={styles.modalScreen}>
+      <View style={styles.modalHeader}>
         <Heading size='2xl'>My Cleaning Team</Heading>
         <Button className='rounded-full' size='lg'>
           <ButtonIcon as={MailIcon} />
@@ -77,7 +77,7 @@ export default function ManageTeamScreen() {
       </View>
 
       {/* Content / Cleaner Cards */}
-      <View style={styles.modalContent}>
+      <View style={styles.modalMain}>
         <CleanerCard name='Katie McEwan' phoneNumber='226-224-0336' />
         <CleanerCard name='Robert Fleming' phoneNumber='905-608-3833' />
         <CleanerCard name='Maya Patel' phoneNumber='905-555-7821' />
