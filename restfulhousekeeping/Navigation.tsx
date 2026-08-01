@@ -4,11 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthContext } from '@/auth/AuthContext';
 import LoginPage from './screens/LoginPage';
 import MainPage from './screens/MainPage';
-import PropertyDetailsScreen from '@/screens/PropertyDetailsScreen';
-import ManageTeamScreen from '@/screens/manager/ManageTeamScreen';
-import NewCleaningScreen from '@/screens/manager/NewCleaningScreen';
 import CleaningDetailsScreen from '@/screens/CleaningDetailsScreen';
-import ManageChecklistScreen from './screens/ManageChecklistScreen';
+import ManageTeamScreen from '@/screens/manager/ManageTeamScreen';
+import NewCleaningScreen from '@/screens/modals/NewCleaningScreen';
+import PropertyDetailsScreen from '@/screens/PropertyDetailsScreen';
+// import ManageChecklistScreen from './screens/modals/ManageChecklistScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +27,7 @@ export default function Navigation() {
         )}
         <Stack.Screen
           name='PropertyDetails'
-          component={PropertyDetailsScreen}
+          component={CleaningDetailsScreen}
           options={{ presentation: 'modal' }}
         />
         <Stack.Screen
@@ -42,14 +42,14 @@ export default function Navigation() {
         />
         <Stack.Screen
           name='CleaningDetailsScreen'
-          component={CleaningDetailsScreen}
+          component={PropertyDetailsScreen}
           options={{ presentation: 'modal' }}
         />
-        <Stack.Screen
-          name='ManageChecklistScreen'
-          component={ManageChecklistScreen}
-          options={{ presentation: 'modal' }}
-        />
+        {/*<Stack.Screen*/}
+        {/*  name='ManageChecklistScreen'*/}
+        {/*  component={ManageChecklistScreen}*/}
+        {/*  options={{ presentation: 'modal' }}*/}
+        {/*/>*/}
       </Stack.Navigator>
     </NavigationContainer>
   );

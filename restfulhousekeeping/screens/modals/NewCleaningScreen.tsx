@@ -29,7 +29,7 @@ import { Calendar, ChevronDown, SaveIcon } from 'lucide-react-native';
 import { usePropertyAll } from '@/hooks/useProperties';
 import { ChecklistItem, Property, Role, User } from '@/types/entityTypes';
 import { useCleaners } from '@/hooks/useCleaners';
-import { ChecklistSection } from '@/screens/components/ChecklistSection';
+import { ChecklistSection } from '@/screens/manager/ChecklistSection';
 import { AuthContext } from '@/auth/AuthContext';
 import { useCreateCleaning } from '@/hooks/useCleanings';
 
@@ -174,7 +174,11 @@ function NotesSection({ notes, setNotes }: NotesSectionProps) {
       <Heading size='xl'>Notes</Heading>
       <View className='py-2'>
         <Textarea className='w-full rounded-3xl px-2'>
-          <TextareaInput placeholder='Add a note here...' />
+          <TextareaInput
+            placeholder='Add a note here...'
+            value={notes}
+            onChangeText={setNotes}
+          />
         </Textarea>
       </View>
     </View>

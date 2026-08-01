@@ -41,9 +41,9 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
         });
       }}
     >
-      <Card className='rounded-3xl flex-row items-center justify-between'>
+      <Card style={styles.mediumCardWithAvatar}>
         {/* Left Side (Text) */}
-        <View className='gap-2'>
+        <View style={styles.mediumCardWithAvatarLeft}>
           <Heading size='md'>{property?.name}</Heading>
           <View className='gap-1'>
             <Text>{toFriendlyDate(cleaning.dateTimeStart)}</Text>
@@ -56,16 +56,18 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
         </View>
 
         {/* Right Side (Image) */}
-        {cleaning.cleanerId !== null && ( // TODO: currently hard-coded to display a pic if cleaner assigned
-          <Avatar className='w-20 h-20'>
-            <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
+        <Avatar style={styles.mediumCardWithAvatarRight}>
+          <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
+          {cleaning.cleanerId !== null ? (
             <AvatarImage
               source={{
                 uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
               }}
             />
-          </Avatar>
-        )}
+          ) : (
+            <AvatarImage source={require('../assets/unassigned.png')} />
+          )}
+        </Avatar>
       </Card>
     </Pressable>
   );
@@ -214,14 +216,15 @@ export default function HomeScreen({ navigation }: any) {
       contentContainerStyle={styles.screenContent}
     >
       {/* Buttons */}
-      <View style={styles.hStack}>
-        {user?.role == Role.MANAGER && (
+      {user?.role == Role.MANAGER && (
+        <View style={styles.hStack}>
           <ManagerActions navigation={navigation} />
-        )}
-        {/*{user?.role == Role.CLEANER && (*/}
-        {/*  <CleanerActions navigation={navigation} />*/}
-        {/*)}*/}
-      </View>
+        </View>
+      )}
+
+      {/*{user?.role == Role.CLEANER && (*/}
+      {/*  <CleanerActions navigation={navigation} />*/}
+      {/*)}*/}
 
       {/* Info */}
       <ScrollView horizontal contentContainerStyle={styles.hStack}>

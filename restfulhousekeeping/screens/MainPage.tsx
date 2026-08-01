@@ -1,7 +1,7 @@
 // screens/MainPage.tsx
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
-import PropertyListScreen from './PropertyListScreen';
+import PropertyListScreen from './manager/PropertyListScreen';
 import CleaningAvailabilityScreen from './cleaner/CleaningAvailabilityScreen';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';

@@ -55,8 +55,26 @@ export const styles = StyleSheet.create({
   bigCard: {
     width: '100%',
     borderRadius: 32,
-    backgroundColor: '#FFFFFF',
     padding: 24,
     gap: 16,
+  },
+  mediumCard: {
+    width: '100%',
+    borderRadius: 28,
+    padding: 18,
+    gap: 4,
+  },
+  mediumCardWithAvatar: {
+    borderRadius: 28,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  mediumCardWithAvatarLeft: {
+    gap: 6,
+  },
+  mediumCardWithAvatarRight: {
+    width: 70,
+    height: 70,
   },
 });

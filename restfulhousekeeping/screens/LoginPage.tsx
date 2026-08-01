@@ -32,16 +32,15 @@ export default function LoginPage() {
       </Text>
 
       <Image
-        source={require('../assets/clean.png')}
+        source={require('../assets/logo.jpg')}
         style={globalStyles.logoImage}
       />
 
       <View style={globalStyles.card}>
-        <Text>Email</Text>
+        <Text>Username</Text>
         <TextInput
           style={globalStyles.input}
-          placeholder='Enter your email'
-          keyboardType='email-address'
+          placeholder='Enter your username'
           value={username}
           onChangeText={setUsername}
         />
@@ -55,15 +54,11 @@ export default function LoginPage() {
           onChangeText={setPassword}
         />
 
-        <Pressable
-          style={globalStyles.button}
-          onPress={handleLogin}
-          // onPress={navigation.navigate('MainPage')}
-        >
+        <Pressable style={globalStyles.button} onPress={handleLogin}>
           <Text style={globalStyles.buttonText}>Log In</Text>
         </Pressable>
 
-        <Text style={globalStyles.link}>Find Password</Text>
+        <Text style={globalStyles.link}>Forgot My Password</Text>
       </View>
 
       <StatusBar style='auto' />
