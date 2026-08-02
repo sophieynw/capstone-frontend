@@ -6,7 +6,7 @@ import { usePropertyById } from '@/hooks/useProperties';
 import { CleaningChecklistItem } from '@/types/entityTypes';
 
 // @ts-ignore
-export default function ManageChecklistScreen({route}) {
+export default function ManageChecklistScreen({ route }) {
   const { cleaning } = route.params;
   const { data: property } = usePropertyById(cleaning.propertyId);
   return (
@@ -76,12 +76,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 4,
- },
-    
+  },
+
   infoGroup: {
     gap: 6,
- },
- rowContainer: {
+  },
+  rowContainer: {
     flexDirection: 'row', // Aligns children from left to right
     justifyContent: 'space-around', // Distributes space evenly between items
     alignItems: 'center', // Centers children vertically within the row

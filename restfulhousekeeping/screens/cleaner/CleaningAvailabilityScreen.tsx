@@ -1,68 +1,107 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Pressable, ScrollView, Text } from 'react-native';
 import { Card } from '@/components/ui/card';
+import { styles } from '@/styles/styles';
+import { Heading } from '@/components/ui/heading';
+import { DaysOfTheWeek } from '@/types/entityTypes';
+import { toTitleCase } from '@/utils/helpers';
+import { useState } from 'react';
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import {
+  DateTimePicker,
+  DateTimePickerIcon,
+  DateTimePickerInput,
+  DateTimePickerTrigger,
+} from '@/components/ui/date-time-picker';
+import {
+  Modal,
+  ModalBackdrop,
+  ModalContent,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalCloseButton,
+} from '@/components/ui/modal';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Clock } from 'lucide-react-native';
+import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
-export default function MoreScreen({ navigation }: any) {
-    return (
-        <View style={styles.container}>
-              <Text style={styles.title}>Cleaning Availability</Text>
-        
-              <Text style={styles.propertyName}>Property Name Goes Here</Text>
-              <Text>Cleaner Name</Text>
-              <Text>Monday</Text>
-        
-              <Card className="w-full max-w-96 mt-4 gap-2">
-                      <View style={styles.infoGroup}>
-                        <Text>From: 9:00 AM</Text>
-                        <Text>To: 5:00 PM</Text>
-                      </View>
-                  </Card>
-                  <Button
-                      variant="secondary"
-                      className="w-full max-w-96 mt-4">
-                      <ButtonText>Edit Availability</ButtonText>
-                  </Button>
-            </View>
-    );
+export default function MoreScreen() {
+  const [showModal, setShowModal] = useState(false);
+  const [startTime, setStartTime] = useState<Date | undefined>(new Date());
+  const [endTime, setEndTime] = useState<Date | undefined>(new Date());
+
+  // TODO: implement functionality for getting and updating cleaner availability
+
+  return (
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.screenContent}
+    >
+      {Object.values(DaysOfTheWeek).map((day) => (
+        <Pressable key={day} onPress={() => setShowModal(true)}>
+          <Card className='rounded-3xl gap-1'>
+            <Heading size='md'>{`${toTitleCase(day.toString())}s`}</Heading>
+            <Text>9:00 am to 10:00 pm</Text>
+          </Card>
+        </Pressable>
+      ))}
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} size='md'>
+        <ModalBackdrop />
+
+        <ModalContent className='rounded-4xl'>
+          <ModalHeader>
+            <Heading size='lg'>Select a time</Heading>
+
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+
+          <ModalBody>
+            <Text className='m-2'>Start Time</Text>
+            <DateTimePicker
+              value={startTime}
+              onChange={setStartTime}
+              mode='time'
+              is24Hour={true}
+              format='HH:mm'
+              placeholder='Select time'
+            >
+              <DateTimePickerTrigger className='m-2 rounded-full'>
+                <DateTimePickerInput />
+                <DateTimePickerIcon as={Clock} className='mr-3' />
+              </DateTimePickerTrigger>
+            </DateTimePicker>
+
+            <Text className='m-2'>End Time</Text>
+            <DateTimePicker
+              value={endTime}
+              onChange={setEndTime}
+              mode='time'
+              is24Hour={false}
+              format='HH:mm'
+              placeholder='Select time'
+            >
+              <DateTimePickerTrigger className='m-2 rounded-full'>
+                <DateTimePickerInput />
+                <DateTimePickerIcon as={Clock} />
+              </DateTimePickerTrigger>
+            </DateTimePicker>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              className='rounded-full'
+              onPress={() => {
+                showComingSoonAlert();
+                setShowModal(false);
+              }}
+            >
+              <ButtonText>Done</ButtonText>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </ScrollView>
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: '#f5f5f5',
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-
-  propertyName: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
- },
-    
-  infoGroup: {
-    gap: 6,
- },
- rowContainer: {
-    flexDirection: 'row', // Aligns children from left to right
-    justifyContent: 'space-around', // Distributes space evenly between items
-    alignItems: 'center', // Centers children vertically within the row
-    padding: 10,
-  },
-});

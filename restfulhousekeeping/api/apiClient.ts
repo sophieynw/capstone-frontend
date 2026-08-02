@@ -18,7 +18,7 @@ apiClient.interceptors.request.use(
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log('API request:', {
+    console.log('🛜 API request:', {
       method: config.method,
       url: `${config.baseURL}${config.url}`,
       hasToken: !!token,
@@ -33,7 +33,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API error:', {
+    console.error('❌ API error:', {
       status: error.response?.status,
       data: error.response?.data,
       url: error.config?.url,
@@ -45,5 +45,6 @@ apiClient.interceptors.response.use(
 
 export async function request<T>(config: AxiosRequestConfig): Promise<T> {
   const response = await apiClient.request<T>(config);
+  console.log('✅ API response:', response.data);
   return response.data;
 }

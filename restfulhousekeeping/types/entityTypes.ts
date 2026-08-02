@@ -5,6 +5,16 @@ export enum Role {
   CLEANER = 'CLEANER',
 }
 
+export enum DaysOfTheWeek {
+  MONDAY = 'MONDAY',
+  TUESDAY = 'TUESDAY',
+  WEDNESDAY = 'WEDNESDAY',
+  THURSDAY = 'THURSDAY',
+  FRIDAY = 'FRIDAY',
+  SATURDAY = 'SATURDAY',
+  SUNDAY = 'SUNDAY',
+}
+
 export interface Organization {
   id: number;
   name: string;
@@ -36,6 +46,16 @@ export interface Cleaning {
   isComplete: boolean;
 }
 
+// the default items associated with each property
+// or before they are attached to a cleaning
+export interface ChecklistItem {
+  id: number;
+  description: string;
+  frequencyDays: number | null;
+  lastCompleted: Date | null;
+}
+
+// the items that are associated with a specific cleaning
 export interface CleaningChecklistItem {
   id: number;
   description: string;
@@ -55,4 +75,32 @@ export interface Property {
   postalCode: string | null;
   country: string | null;
   accessInstructions: string | null;
+}
+
+export type CreateCleaningChecklistItem =
+  | {
+      checklistItem: {
+        id: number;
+      };
+    }
+  | {
+      customDescription: string;
+    };
+
+export interface CreateCleaningPayload {
+  manager: {
+    id: number;
+    role: Role.MANAGER;
+  };
+  cleaner: {
+    id: number;
+    role: Role.CLEANER;
+  } | null;
+  property: {
+    id: number;
+  };
+  dateTimeStart: string;
+  dateTimeEnd: string;
+  notes: string | null;
+  cleaningChecklistItems: CreateCleaningChecklistItem[];
 }

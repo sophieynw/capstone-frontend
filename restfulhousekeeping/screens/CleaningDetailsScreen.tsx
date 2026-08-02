@@ -1,59 +1,176 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
-import { Heading } from '@/components/ui/heading';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { CleaningChecklistItem, Role } from '@/types/entityTypes';
+import { usePropertyById } from '@/hooks/useProperties';
 import { toFriendlyDate } from '@/utils/helpers';
+import { Icon } from '@/components/ui/icon';
+import { useContext, useState } from 'react';
+import { useCleanerById } from '@/hooks/useCleaners';
+import { styles } from '@/styles/styles';
+import { Heading } from '@/components/ui/heading';
+import {
+  Circle,
+  CircleCheck,
+  EditIcon,
+  SquareCheckBig,
+} from 'lucide-react-native';
+import {
+  Avatar,
+  AvatarFallbackText,
+  AvatarImage,
+} from '@/components/ui/avatar';
+import { AuthContext } from '@/auth/AuthContext';
+import { NotesSection } from '@/components/NotesSection';
+import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
 export default function CleaningDetailsScreen({ route }: any) {
-  const { cleaning } = route.params;
+  const { user } = useContext(AuthContext);
+  const { cleaning, cleanerId, propertyId } = route.params;
+  const { data: property } = usePropertyById(propertyId);
+  const { data: cleaner } = useCleanerById(cleanerId);
+  const [notes, setNotes] = useState('');
+
+  function handleCompleteCleaning() {
+    Alert.alert(
+      'Complete Cleaning',
+      'Are you sure you want to mark this cleaning as complete?',
+      [
+        // TODO: implement PATCH request to update Cleaning record
+        { text: 'Yes', onPress: () => console.log('Cleaning completed.') },
+        { text: 'No', onPress: () => console.log('Cancelled.') },
+      ],
+    );
+  }
 
   return (
     <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.screenContent}
+      style={styles.modalScreen}
+      contentContainerStyle={styles.modalScreenContent}
     >
-      <Heading size='2xl'>Cleaning Details</Heading>
+      {/* Header */}
+      <View style={styles.modalHeader}>
+        <Heading size='2xl'>Cleaning Details</Heading>
 
-      <Card className='w-full gap-3 rounded-3xl'>
-        <Heading size='lg'>Property</Heading>
-
-        <Text>Property ID: {cleaning.propertyId}</Text>
-        <Text>Scheduled: {toFriendlyDate(cleaning.dateTimeStart)}</Text>
-        <Text>
-          Cleaner: {cleaning.cleanerId ?? 'Unassigned'}
-        </Text>
-        <Text>Status: {cleaning.status ?? 'Not Started'}</Text>
-      </Card>
-
-      <Card className='w-full gap-3 rounded-3xl'>
-        <Heading size='lg'>Checklist Progress</Heading>
-        <Text>Checklist information will appear here.</Text>
-      </Card>
-
-      <Card className='w-full gap-3 rounded-3xl'>
-        <Heading size='lg'>Reported Issues</Heading>
-        <Text>No reported issues.</Text>
-      </Card>
-
-      <View style={styles.buttonContainer}>
-        <Button className='rounded-full'>
-          <ButtonText>Change Cleaner</ButtonText>
-        </Button>
+        {user?.role === Role.MANAGER ? (
+          <Button
+            className='rounded-full'
+            size='lg'
+            onPress={showComingSoonAlert}
+          >
+            <ButtonIcon as={EditIcon} />
+            <ButtonText>Edit</ButtonText>
+          </Button>
+        ) : (
+          <Button
+            className='rounded-full'
+            size='lg'
+            onPress={handleCompleteCleaning}
+          >
+            <ButtonIcon as={SquareCheckBig} />
+            <ButtonText>Complete</ButtonText>
+          </Button>
+        )}
       </View>
+
+      {/* Content */}
+      <View style={styles.modalMain}>
+        {/* Cleaning Info & Status Card */}
+        <Card style={styles.mediumCardWithAvatar}>
+          <View style={styles.mediumCardWithAvatarLeft}>
+            <Heading size='md'>Cleaning Info</Heading>
+            <View className='gap-1'>
+              <Text>
+                Starts:{' '}
+                {cleaning?.dateTimeStart
+                  ? toFriendlyDate(cleaning.dateTimeStart)
+                  : 'Loading...'}
+              </Text>
+              <Text>
+                Ends:{' '}
+                {cleaning?.dateTimeEnd
+                  ? toFriendlyDate(cleaning.dateTimeEnd)
+                  : 'Loading...'}
+              </Text>
+              <Text>
+                Cleaner:{' '}
+                {cleaning?.cleanerId
+                  ? `${cleaner?.firstName} ${cleaner?.lastName}`
+                  : 'Unassigned'}
+              </Text>
+              <Text>
+                Status: {cleaning?.isComplete ? 'Complete' : 'Not Started'}
+              </Text>
+            </View>
+          </View>
+
+          <Avatar style={styles.mediumCardWithAvatarRight}>
+            <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
+            {cleaning?.cleanerId !== null ? (
+              <AvatarImage
+                source={{
+                  uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
+                }}
+              />
+            ) : (
+              <AvatarImage source={require('../assets/unassigned.png')} />
+            )}
+          </Avatar>
+        </Card>
+
+        {/* Property Info Card */}
+        <Card style={styles.mediumCard}>
+          <Heading size='md'>Property Info</Heading>
+          <View className='gap-1'>
+            <Text>{property?.name}</Text>
+            <Text>
+              {property?.unit ? `${property?.unit}-` : ''}
+              {property?.street}, {property?.city}
+            </Text>
+            <Text>{property?.accessInstructions}</Text>
+          </View>
+        </Card>
+
+        {/* Cleaning Checklist Card */}
+        <Card style={styles.mediumCard}>
+          <Heading size='md'>Checklist Items</Heading>
+          <View className='gap-2'>
+            {cleaning?.cleaningChecklistItems?.length ? (
+              cleaning?.cleaningChecklistItems.map(
+                (item: CleaningChecklistItem) => (
+                  <Pressable onPress={showComingSoonAlert}>
+                    <View key={item.id} className='flex-row items-center gap-2'>
+                      {item.isComplete ? (
+                        <Icon as={CircleCheck} />
+                      ) : (
+                        <Icon as={Circle} />
+                      )}
+                      <Text>{item.description}</Text>
+                    </View>
+                  </Pressable>
+                ),
+              )
+            ) : (
+              <Text className='text-sm text-gray-500 italic text-center py-2'>
+                No items found
+              </Text>
+            )}
+          </View>
+        </Card>
+
+        {/* Notes Section Card */}
+        <Card style={styles.mediumCard}>
+          <NotesSection notes={notes} setNotes={setNotes} />
+        </Card>
+      </View>
+
+      {/*<Pressable style={globalStyles.button} onPress={console.debug()}>*/}
+      {/*  <Text style={globalStyles.buttonText}>Checkout & Submit</Text>*/}
+      {/*</Pressable>*/}
+
+      {/*<Button variant='secondary' style={globalStyles.link}>*/}
+      {/*  <ButtonText>Check Out & Submit</ButtonText>*/}
+      {/*</Button>*/}
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  screenContent: {
-    padding: 24,
-    gap: 16,
-  },
-  buttonContainer: {
-    marginTop: 4,
-  },
-});

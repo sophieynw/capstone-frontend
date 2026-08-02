@@ -1,6 +1,6 @@
 // api/cleaningsApi.ts
 import { request } from '@/api/apiClient';
-import { Cleaning } from '@/types/entityTypes';
+import { Cleaning, CreateCleaningPayload } from '@/types/entityTypes';
 
 export function getUpcomingCleanings(userId: number): Promise<Cleaning[]> {
   return request<Cleaning[]>({
@@ -8,15 +8,29 @@ export function getUpcomingCleanings(userId: number): Promise<Cleaning[]> {
     url: `/cleanings/upcoming/${userId}`,
   });
 }
-export function getNextCleaningByProperty(propertyId: number,): Promise<Cleaning> {
+
+export function getNextCleaningByProperty(
+  propertyId: number,
+): Promise<Cleaning> {
   return request<Cleaning>({
     method: 'GET',
     url: `/cleanings/upcoming/${propertyId}/first`,
   });
 }
-export function getCleaningById(id: number,): Promise<Cleaning> {
+
+export function getCleaningById(id: number): Promise<Cleaning> {
   return request<Cleaning>({
     method: 'GET',
     url: `/cleanings/${id}`,
+  });
+}
+
+export function createCleaning(
+  cleaning: CreateCleaningPayload,
+): Promise<Cleaning> {
+  return request<Cleaning>({
+    method: 'POST',
+    url: '/cleanings',
+    data: cleaning,
   });
 }

@@ -5,22 +5,16 @@ npm ci
 npx expo start -c
 */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import './global.css';
 import { AuthProvider } from '@/auth/AuthProvider';
 import Navigation from '@/Navigation';
-import * as SecureStore from 'expo-secure-store';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export default function App() {
   const queryClient = new QueryClient();
-
-  // TODO: Uncomment in production
-  // useEffect(() => {
-  //   SecureStore.deleteItemAsync('token');
-  // }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
