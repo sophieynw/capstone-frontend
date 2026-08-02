@@ -12,7 +12,7 @@ import { Heading } from '@/components/ui/heading';
 import {
   Circle,
   CircleCheck,
-  EditIcon,
+  EditIcon, Plus,
   SquareCheckBig,
 } from 'lucide-react-native';
 import {
@@ -23,6 +23,7 @@ import {
 import { AuthContext } from '@/auth/AuthContext';
 import { NotesSection } from '@/components/NotesSection';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
+import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 
 export default function CleaningDetailsScreen({ route }: any) {
   const { user } = useContext(AuthContext);
@@ -131,31 +132,38 @@ export default function CleaningDetailsScreen({ route }: any) {
           </View>
         </Card>
 
-        {/* Cleaning Checklist Card */}
+        {/* Checklist Card */}
         <Card style={styles.mediumCard}>
-          <Heading size='md'>Checklist Items</Heading>
-          <View className='gap-2'>
-            {cleaning?.cleaningChecklistItems?.length ? (
-              cleaning?.cleaningChecklistItems.map(
-                (item: CleaningChecklistItem) => (
-                  <Pressable onPress={showComingSoonAlert}>
-                    <View key={item.id} className='flex-row items-center gap-2'>
-                      {item.isComplete ? (
-                        <Icon as={CircleCheck} />
-                      ) : (
-                        <Icon as={Circle} />
-                      )}
-                      <Text>{item.description}</Text>
-                    </View>
-                  </Pressable>
-                ),
-              )
-            ) : (
-              <Text className='text-sm text-gray-500 italic text-center py-2'>
-                No items found
-              </Text>
-            )}
-          </View>
+          {/* Manager View */}
+          {user?.role == Role.MANAGER && (
+            <>
+              <Heading size='md'>Checklist Items</Heading>
+
+              <View className='gap-2'>
+                {cleaning?.cleaningChecklistItems?.length ? (
+                  cleaning?.cleaningChecklistItems.map(
+                    (item: CleaningChecklistItem) => (
+                      <Pressable onPress={showComingSoonAlert} key={item.id}>
+                        <View className='flex-row items-center gap-2'>
+                          {item.isComplete ? (
+                            <Icon as={CircleCheck} />
+                          ) : (
+                            <Icon as={Circle} />
+                          )}
+                          <Text>{item.description}</Text>
+                        </View>
+                      </Pressable>
+                    ),
+                  )
+                ) : (
+                  <Text className='text-sm text-gray-500 italic text-center py-2'>
+                    No items found
+                  </Text>
+                )}
+              </View>
+            </>
+          )}
+          {/* Cleaner View */}
         </Card>
 
         {/* Notes Section Card */}

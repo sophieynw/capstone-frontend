@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Heading } from '@/components/ui/heading';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
-import { Plus, Trash } from 'lucide-react-native';
+import { Circle, Plus, Trash } from 'lucide-react-native';
 import { ChecklistItem } from '@/types/entityTypes';
 
 type ChecklistItemInputProps = {
@@ -20,6 +20,9 @@ function ChecklistItemInput({
 
   return (
     <Input className='rounded-full'>
+      <Pressable className=''>
+        <InputIcon as={Circle} />
+      </Pressable>
       <InputField
         value={item.description}
         editable={!isPreloadedItem}
@@ -104,6 +107,9 @@ export function ChecklistSection({
         ))}
 
         <Input className='w-full rounded-full'>
+          <Pressable className=''>
+            <InputIcon as={Circle} />
+          </Pressable>
           <InputField
             value={newItemDescription}
             onChangeText={setNewItemDescription}

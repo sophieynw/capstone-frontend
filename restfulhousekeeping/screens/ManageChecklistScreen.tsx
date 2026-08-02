@@ -5,6 +5,7 @@ import React from 'react';
 import { usePropertyById } from '@/hooks/useProperties';
 import { CleaningChecklistItem } from '@/types/entityTypes';
 
+// TODO: i think this screen can be deleted?
 // @ts-ignore
 export default function ManageChecklistScreen({ route }) {
   const { cleaning } = route.params;

@@ -17,19 +17,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
     padding: 2,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  summaryNumber: {
-    fontSize: 24,
     fontWeight: '700',
   },
   modalScreen: {

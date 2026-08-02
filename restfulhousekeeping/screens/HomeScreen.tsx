@@ -133,15 +133,15 @@ function ManagerInfo({ upcoming, issues, unassigned }: ManagerInfoProps) {
   return (
     <>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{upcoming}</Text>
+        <Heading size='2xl'>{upcoming}</Heading>
         <Text>Upcoming</Text>
       </Card>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{issues}</Text>
+        <Heading size='2xl'>{issues}</Heading>
         <Text>Issues</Text>
       </Card>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{unassigned}</Text>
+        <Heading size='2xl'>{unassigned}</Heading>
         <Text>Unassigned</Text>
       </Card>
     </>
@@ -161,11 +161,11 @@ function CleanerInfo({ upcoming, completed }: CleaningInfoProps) {
   return (
     <>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{upcoming}</Text>
+        <Heading size='2xl'>{upcoming}</Heading>
         <Text>Assigned</Text>
       </Card>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{completed}</Text>
+        <Heading size='2xl'>{completed}</Heading>
         <Text>Completed</Text>
       </Card>
     </>
@@ -242,7 +242,7 @@ export default function HomeScreen({ navigation }: any) {
 
       {/* Today's Cleanings */}
       <View style={styles.vStack}>
-        <Text style={styles.sectionTitle}>Today</Text>
+        <Heading size='xl'>Today</Heading>
         {cleaningsToday.map((cleaning) => (
           <CleaningCard
             key={cleaning.id}
@@ -256,7 +256,7 @@ export default function HomeScreen({ navigation }: any) {
 
       {/* Upcoming Cleanings */}
       <View style={styles.vStack}>
-        <Text style={styles.sectionTitle}>Upcoming</Text>
+        <Heading size='xl'>Upcoming</Heading>
         {cleaningsUpcoming.map((cleaning) => (
           <CleaningCard
             key={cleaning.id}
