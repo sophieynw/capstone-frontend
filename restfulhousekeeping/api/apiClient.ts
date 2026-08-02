@@ -4,9 +4,9 @@ import { Platform } from 'react-native';
 
 const apiClient = axios.create({
   baseURL: Platform.select({
-    default: 'https://restfulhousekeeping-v1.onrender.com',
-    // android: 'http://10.0.2.2:50000',
-    // ios: 'http://127.0.0.1:50000',
+    default: 'http://192.168.68.104:50000',
+    android: 'http://10.0.2.2:50000',
+    ios: 'http://127.0.0.1:50000',
   }),
   timeout: 10_000,
   headers: { 'Content-Type': 'application/json' },

@@ -11,19 +11,25 @@ import './global.css';
 import { AuthProvider } from '@/auth/AuthProvider';
 import Navigation from '@/Navigation';
 import * as SecureStore from 'expo-secure-store';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export default function App() {
-  useEffect(() => {
-    SecureStore.deleteItemAsync('token');
-  }, []);
+  const queryClient = new QueryClient();
+
+  // TODO: Uncomment in production
+  // useEffect(() => {
+  //   SecureStore.deleteItemAsync('token');
+  // }, []);
 
   return (
-    <SafeAreaProvider>
-      <GluestackUIProvider mode='light'>
-        <AuthProvider>
-          <Navigation />
-        </AuthProvider>
-      </GluestackUIProvider>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <GluestackUIProvider mode='light'>
+          <AuthProvider>
+            <Navigation />
+          </AuthProvider>
+        </GluestackUIProvider>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }
