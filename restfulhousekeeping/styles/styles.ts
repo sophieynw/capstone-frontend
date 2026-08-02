@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
   bigCard: {
     width: '100%',
     borderRadius: 32,
-    padding: 24,
+    padding: 20,
     gap: 16,
   },
   mediumCard: {

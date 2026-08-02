@@ -58,7 +58,8 @@ export default function LoginPage() {
           <Text style={globalStyles.buttonText}>Log In</Text>
         </Pressable>
 
-        <Text style={globalStyles.link}>Forgot My Password</Text>
+        <Text style={globalStyles.link}>Create Account</Text>
+        <Text style={globalStyles.link}>Forgot Password</Text>
       </View>
 
       <StatusBar style='auto' />

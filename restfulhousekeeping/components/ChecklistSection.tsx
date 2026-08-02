@@ -121,7 +121,7 @@ export function ChecklistSection({
   if (!propertyId) {
     return (
       <View className='gap-2'>
-        <Heading size='xl'>Checklist</Heading>
+        <Heading size='md'>Checklist</Heading>
         <Text>Select a property to load its checklist.</Text>
       </View>
     );
@@ -138,7 +138,7 @@ export function ChecklistSection({
 
   return (
     <View className='flex-col justify-center gap-2'>
-      <Heading size='xl'>Checklist</Heading>
+      <Heading size='md'>Checklist</Heading>
 
       <View className='py-2 gap-3'>
         {editableItems.map((item) => (

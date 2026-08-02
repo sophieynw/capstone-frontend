@@ -1,25 +1,47 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { CleaningChecklistItem } from '@/types/entityTypes';
+import { CleaningChecklistItem, Role } from '@/types/entityTypes';
 import { usePropertyById } from '@/hooks/useProperties';
 import { toFriendlyDate } from '@/utils/helpers';
 import { Icon } from '@/components/ui/icon';
-import React from 'react';
+import { useContext, useState } from 'react';
 import { useCleanerById } from '@/hooks/useCleaners';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
-import { Circle, CircleCheck, EditIcon } from 'lucide-react-native';
+import {
+  Circle,
+  CircleCheck,
+  EditIcon,
+  SquareCheckBig,
+} from 'lucide-react-native';
 import {
   Avatar,
   AvatarFallbackText,
   AvatarImage,
 } from '@/components/ui/avatar';
+import { AuthContext } from '@/auth/AuthContext';
+import { NotesSection } from '@/components/NotesSection';
+import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
 export default function CleaningDetailsScreen({ route }: any) {
+  const { user } = useContext(AuthContext);
   const { cleaning, cleanerId, propertyId } = route.params;
   const { data: property } = usePropertyById(propertyId);
   const { data: cleaner } = useCleanerById(cleanerId);
+  const [notes, setNotes] = useState('');
+
+  function handleCompleteCleaning() {
+    Alert.alert(
+      'Complete Cleaning',
+      'Are you sure you want to mark this cleaning as complete?',
+      [
+        // TODO: implement PATCH request to update Cleaning record
+        { text: 'Yes', onPress: () => console.log('Cleaning completed.') },
+        { text: 'No', onPress: () => console.log('Cancelled.') },
+      ],
+    );
+  }
 
   return (
     <ScrollView
@@ -29,10 +51,26 @@ export default function CleaningDetailsScreen({ route }: any) {
       {/* Header */}
       <View style={styles.modalHeader}>
         <Heading size='2xl'>Cleaning Details</Heading>
-        <Button className='rounded-full' size='lg'>
-          <ButtonIcon as={EditIcon} />
-          <ButtonText>Edit</ButtonText>
-        </Button>
+
+        {user?.role === Role.MANAGER ? (
+          <Button
+            className='rounded-full'
+            size='lg'
+            onPress={showComingSoonAlert}
+          >
+            <ButtonIcon as={EditIcon} />
+            <ButtonText>Edit</ButtonText>
+          </Button>
+        ) : (
+          <Button
+            className='rounded-full'
+            size='lg'
+            onPress={handleCompleteCleaning}
+          >
+            <ButtonIcon as={SquareCheckBig} />
+            <ButtonText>Complete</ButtonText>
+          </Button>
+        )}
       </View>
 
       {/* Content */}
@@ -68,7 +106,7 @@ export default function CleaningDetailsScreen({ route }: any) {
 
           <Avatar style={styles.mediumCardWithAvatarRight}>
             <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
-            {cleaning.cleanerId !== null ? (
+            {cleaning?.cleanerId !== null ? (
               <AvatarImage
                 source={{
                   uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
@@ -116,6 +154,11 @@ export default function CleaningDetailsScreen({ route }: any) {
               </Text>
             )}
           </View>
+        </Card>
+
+        {/* Notes Section Card */}
+        <Card style={styles.mediumCard}>
+          <NotesSection notes={notes} setNotes={setNotes} />
         </Card>
       </View>
 
