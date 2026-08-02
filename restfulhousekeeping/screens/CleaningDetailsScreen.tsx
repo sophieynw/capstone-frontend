@@ -1,4 +1,4 @@
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { CleaningChecklistItem, Role } from '@/types/entityTypes';
@@ -138,14 +138,16 @@ export default function CleaningDetailsScreen({ route }: any) {
             {cleaning?.cleaningChecklistItems?.length ? (
               cleaning?.cleaningChecklistItems.map(
                 (item: CleaningChecklistItem) => (
-                  <View key={item.id} className='flex-row items-center gap-2'>
-                    {item.isComplete ? (
-                      <Icon as={CircleCheck} />
-                    ) : (
-                      <Icon as={Circle} />
-                    )}
-                    <Text>{item.description}</Text>
-                  </View>
+                  <Pressable onPress={showComingSoonAlert}>
+                    <View key={item.id} className='flex-row items-center gap-2'>
+                      {item.isComplete ? (
+                        <Icon as={CircleCheck} />
+                      ) : (
+                        <Icon as={Circle} />
+                      )}
+                      <Text>{item.description}</Text>
+                    </View>
+                  </Pressable>
                 ),
               )
             ) : (
