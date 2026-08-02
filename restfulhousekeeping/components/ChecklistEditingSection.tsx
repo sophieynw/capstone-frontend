@@ -41,7 +41,7 @@ type ChecklistSectionProps = {
   onItemsChange: (items: ChecklistItem[]) => void;
 };
 
-export function ChecklistSection({
+export function ChecklistEditingSection({
   items,
   onItemsChange,
 }: ChecklistSectionProps) {

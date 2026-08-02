@@ -1,8 +1,8 @@
-// screens/home/NewCleaningScreen.tsx
+// screens/manager/NewCleaningScreen.tsx
 import { Alert, ScrollView, View } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { styles } from '@/styles/styles';
@@ -15,6 +15,7 @@ import { AuthContext } from '@/auth/AuthContext';
 import { useCreateCleaning } from '@/hooks/useCleanings';
 import { NotesSection } from '@/components/NotesSection';
 import { DetailsSection } from '@/components/DetailsSection';
+import { useChecklistItems } from '@/hooks/useChecklistItems';
 
 function formatLocalDateTime(date: Date): string {
   const pad = (value: number) => value.toString().padStart(2, '0');
@@ -26,6 +27,27 @@ function formatLocalDateTime(date: Date): string {
     `${pad(date.getHours())}:` +
     `${pad(date.getMinutes())}:00`
   );
+}
+
+function startOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function filterDueChecklistItems(items: ChecklistItem[]): ChecklistItem[] {
+  const today = startOfDay(new Date());
+
+  return items.filter((item) => {
+    if (!item.lastCompleted) {
+      return true;
+    }
+
+    const lastCompleted = startOfDay(new Date(item.lastCompleted));
+    const nextDueDate = new Date(lastCompleted);
+
+    nextDueDate.setDate(nextDueDate.getDate() + (item.frequencyDays ?? 0));
+
+    return nextDueDate <= today;
+  });
 }
 
 export default function NewCleaningScreen() {
@@ -51,6 +73,18 @@ export default function NewCleaningScreen() {
     isError: isCleanersError,
     error: cleanersError,
   } = useCleaners();
+  const propertyId = propertySelected ? Number(propertySelected) : undefined;
+  const {
+    data: propertyChecklistItems,
+    isLoading: isChecklistItemsLoading,
+    isError: isChecklistItemsError,
+    error: checklistItemsError,
+  } = useChecklistItems(propertyId);
+
+  const dueChecklistItems = useMemo(
+    () => filterDueChecklistItems(propertyChecklistItems ?? []),
+    [propertyChecklistItems],
+  );
 
   function handleSubmit() {
     if (!user) {
@@ -99,6 +133,10 @@ export default function NewCleaningScreen() {
     return <Text>Could not load properties.</Text>;
   }
 
+  if (isChecklistItemsError) {
+    console.error('Checklist error:', checklistItemsError);
+  }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -135,10 +173,21 @@ export default function NewCleaningScreen() {
             endDateSelected={endDateSelected}
             setEndDateSelected={setEndDateSelected}
           />
-          <ChecklistSection
-            propertyId={propertySelected ? Number(propertySelected) : undefined}
-            onItemsChange={setChecklistItems}
-          />
+          {!propertyId ? (
+            <View className='gap-2'>
+              <Heading size='md'>Checklist</Heading>
+              <Text>Select a property to load its checklist.</Text>
+            </View>
+          ) : isChecklistItemsLoading ? (
+            <Text>Loading checklist...</Text>
+          ) : isChecklistItemsError ? (
+            <Text>Could not load checklist.</Text>
+          ) : (
+            <ChecklistSection
+              items={dueChecklistItems}
+              onItemsChange={setChecklistItems}
+            />
+          )}
 
           <NotesSection notes={notes} setNotes={setNotes} />
         </Card>

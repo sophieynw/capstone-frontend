@@ -3,7 +3,6 @@ import { useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AuthContext } from '@/auth/AuthContext';
 import { getAllProperties, getPropertyById } from '@/api/propertiesApi';
-import { getChecklistItems } from '@/api/checklistItemsApi';
 
 export function usePropertyById(propertyId: number) {
   //const { user } = useContext(AuthContext);

@@ -6,12 +6,14 @@ export function toTitleCase(value: string): string {
 }
 
 // Example output: Fri Jul 24 8:30 am
-export function toFriendlyDate(value: Date | string): string {
+export function toFriendlyDate(
+  value: Date | string | null | undefined,
+): string {
+  if (value == null) return 'Date unavailable';
+
   const date = value instanceof Date ? value : new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    return 'Invalid date';
-  }
+  if (Number.isNaN(date.getTime())) return 'Invalid date';
 
   return date
     .toLocaleString('en-CA', {

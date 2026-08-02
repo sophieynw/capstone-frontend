@@ -115,6 +115,7 @@ export function DetailsSection({
             }}
             mode='datetime'
             placeholder='Select date and time'
+            format='YYYY-MM-DD HH:mm'
           >
             <DateTimePickerTrigger variant='rounded'>
               <DateTimePickerInput />
@@ -134,6 +135,7 @@ export function DetailsSection({
             }}
             mode='datetime'
             placeholder='Select date and time'
+            format='YYYY-MM-DD HH:mm'
           >
             <DateTimePickerTrigger variant='rounded'>
               <DateTimePickerInput />

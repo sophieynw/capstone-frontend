@@ -20,8 +20,8 @@ function PropertyCard({ property, navigation }: PropertyCardProps) {
   return (
     <Pressable
       onPress={() => {
-        navigation.navigate('PropertyDetails', {
-          property: property.id,
+        navigation.navigate('PropertyDetailsScreen', {
+          propertyId: property.id,
         });
       }}
     >

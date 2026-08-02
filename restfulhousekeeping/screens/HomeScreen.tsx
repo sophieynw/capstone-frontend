@@ -34,7 +34,7 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
   return (
     <Pressable
       onPress={() => {
-        navigation.navigate('PropertyDetails', {
+        navigation.navigate('CleaningDetailsScreen', {
           cleaning: cleaning,
           propertyId: cleaning.propertyId,
           cleanerId: cleaning.cleanerId,

@@ -1,6 +1,6 @@
 // screens/home/ManageTeamScreen.tsx
 import { Text } from '@/components/ui/text';
-import { Linking, ScrollView, View } from 'react-native';
+import { Linking, Pressable, ScrollView, View } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import {
   Icon,
@@ -17,6 +17,7 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 import { styles } from '@/styles/styles';
+import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
 type CleanerCardProps = {
   name: string;
@@ -53,8 +54,12 @@ function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
         </View>
         {/* Right (Icons) */}
         <View className='flex-row gap-3'>
-          <Icon as={MessageCircleIcon} />
-          <Icon as={TrashIcon} />
+          <Pressable onPress={showComingSoonAlert}>
+            <Icon as={MessageCircleIcon} />
+          </Pressable>
+          <Pressable onPress={showComingSoonAlert}>
+            <Icon as={TrashIcon} />
+          </Pressable>
         </View>
       </View>
     </Card>
@@ -70,7 +75,11 @@ export default function ManageTeamScreen() {
       {/* Header */}
       <View style={styles.modalHeader}>
         <Heading size='2xl'>My Cleaning Team</Heading>
-        <Button className='rounded-full' size='lg'>
+        <Button
+          className='rounded-full'
+          size='lg'
+          onPress={showComingSoonAlert}
+        >
           <ButtonIcon as={MailIcon} />
           <ButtonText>Invite</ButtonText>
         </Button>
