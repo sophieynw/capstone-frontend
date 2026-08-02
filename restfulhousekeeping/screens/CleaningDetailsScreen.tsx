@@ -1,20 +1,14 @@
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { CleaningChecklistItem, Role } from '@/types/entityTypes';
+import { ChecklistItem, Role } from '@/types/entityTypes';
 import { usePropertyById } from '@/hooks/useProperties';
 import { toFriendlyDate } from '@/utils/helpers';
-import { Icon } from '@/components/ui/icon';
 import { useContext, useState } from 'react';
 import { useCleanerById } from '@/hooks/useCleaners';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
-import {
-  Circle,
-  CircleCheck,
-  EditIcon, Plus,
-  SquareCheckBig,
-} from 'lucide-react-native';
+import { Save, SquareCheckBig } from 'lucide-react-native';
 import {
   Avatar,
   AvatarFallbackText,
@@ -23,7 +17,7 @@ import {
 import { AuthContext } from '@/auth/AuthContext';
 import { NotesSection } from '@/components/NotesSection';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
-import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
+import { ChecklistSection } from '@/components/ChecklistSection';
 
 export default function CleaningDetailsScreen({ route }: any) {
   const { user } = useContext(AuthContext);
@@ -31,6 +25,9 @@ export default function CleaningDetailsScreen({ route }: any) {
   const { data: property } = usePropertyById(propertyId);
   const { data: cleaner } = useCleanerById(cleanerId);
   const [notes, setNotes] = useState('');
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(
+    cleaning?.cleaningChecklistItems ?? [],
+  );
 
   function handleCompleteCleaning() {
     Alert.alert(
@@ -59,8 +56,8 @@ export default function CleaningDetailsScreen({ route }: any) {
             size='lg'
             onPress={showComingSoonAlert}
           >
-            <ButtonIcon as={EditIcon} />
-            <ButtonText>Edit</ButtonText>
+            <ButtonIcon as={Save} />
+            <ButtonText>Save</ButtonText>
           </Button>
         ) : (
           <Button
@@ -136,32 +133,10 @@ export default function CleaningDetailsScreen({ route }: any) {
         <Card style={styles.mediumCard}>
           {/* Manager View */}
           {user?.role == Role.MANAGER && (
-            <>
-              <Heading size='md'>Checklist Items</Heading>
-
-              <View className='gap-2'>
-                {cleaning?.cleaningChecklistItems?.length ? (
-                  cleaning?.cleaningChecklistItems.map(
-                    (item: CleaningChecklistItem) => (
-                      <Pressable onPress={showComingSoonAlert} key={item.id}>
-                        <View className='flex-row items-center gap-2'>
-                          {item.isComplete ? (
-                            <Icon as={CircleCheck} />
-                          ) : (
-                            <Icon as={Circle} />
-                          )}
-                          <Text>{item.description}</Text>
-                        </View>
-                      </Pressable>
-                    ),
-                  )
-                ) : (
-                  <Text className='text-sm text-gray-500 italic text-center py-2'>
-                    No items found
-                  </Text>
-                )}
-              </View>
-            </>
+            <ChecklistSection
+              items={checklistItems}
+              onItemsChange={setChecklistItems}
+            />
           )}
           {/* Cleaner View */}
         </Card>
