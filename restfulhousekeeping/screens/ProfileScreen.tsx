@@ -9,6 +9,7 @@ import { toTitleCase } from '@/utils/helpers';
 import { styles } from '@/styles/styles';
 import { LogOut, UserPen } from 'lucide-react-native';
 import { Role } from '@/types/entityTypes';
+import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
 // region Manager Summary Card
 
@@ -74,7 +75,12 @@ export default function ProfileScreen() {
       )}
 
       <View style={styles.hStack}>
-        <Button size='lg' variant='outline' className='rounded-full'>
+        <Button
+          size='lg'
+          variant='outline'
+          className='rounded-full'
+          onPress={showComingSoonAlert}
+        >
           <ButtonIcon as={UserPen} />
           <ButtonText>Edit Profile</ButtonText>
         </Button>

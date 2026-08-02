@@ -1,19 +1,35 @@
 import { ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
-import { toFriendlyDate } from '@/utils/helpers';
 import { useNextCleaningByProperty } from '@/hooks/useCleanings';
 import { styles } from '@/styles/styles';
-import { Circle, EditIcon } from 'lucide-react-native';
+import { Save } from 'lucide-react-native';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 import { usePropertyById } from '@/hooks/useProperties';
-import { Icon } from '@/components/ui/icon';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
 import { ChecklistEditingSection } from '@/components/ChecklistEditingSection';
+import {
+  createEditableProperty,
+  EditableProperty,
+  PropertyEditingSection,
+} from '@/components/PropertyEditingSection';
+import {
+  ReportedIssue,
+  ReportedIssuesSection,
+} from '@/components/ReportedIssuesSection';
+
+const reportedIssues: ReportedIssue[] = [
+  { id: 1, description: 'One of the dining chairs has a loose leg' },
+  { id: 2, description: 'Garbage area needs to be cleaned' },
+  { id: 3, description: 'Need more replacement towels' },
+];
 
 export default function PropertyDetailsScreen({ route }: any) {
   const { propertyId } = route.params;
+  const [propertyForm, setPropertyForm] = useState<EditableProperty>(() =>
+    createEditableProperty(),
+  );
   const {
     data: property,
     isPending: isPropertyPending,
@@ -32,6 +48,12 @@ export default function PropertyDetailsScreen({ route }: any) {
     isError: isChecklistItemsError,
     error: checklistItemsError,
   } = useChecklistItems(propertyId);
+
+  useEffect(() => {
+    if (!property) return;
+
+    setPropertyForm(createEditableProperty(property));
+  }, [property]);
 
   if (isPropertyPending || isCleaningPending || isChecklistItemsPending) {
     return <Text>Loading...</Text>;
@@ -57,60 +79,27 @@ export default function PropertyDetailsScreen({ route }: any) {
           size='lg'
           onPress={showComingSoonAlert}
         >
-          <ButtonIcon as={EditIcon} />
-          <ButtonText>Edit</ButtonText>
+          <ButtonIcon as={Save} />
+          <ButtonText>Save</ButtonText>
         </Button>
       </View>
 
       {/* Content */}
       <View style={styles.modalMain}>
         {/* Property Details */}
-        <Card style={styles.mediumCard}>
-          <Heading size='md'>{property?.name}</Heading>
-          <View>
-            <Text>
-              {property?.unit ? `${property.unit}-` : ''}
-              {property?.street}
-            </Text>
-            <Text>
-              {property?.city}, {property?.province} {property?.postalCode}{' '}
-              {property?.country}
-            </Text>
-          </View>
-          <View>
-            <Text>{property?.accessInstructions}</Text>
-          </View>
-          <View>
-            <Text>
-              Next Cleaning: {toFriendlyDate(cleaning?.dateTimeStart)}
-            </Text>
-          </View>
-        </Card>
+        <PropertyEditingSection
+          property={propertyForm}
+          onPropertyChange={setPropertyForm}
+        />
 
-        {/* Default Checklist Items */}
-        <Card style={styles.mediumCard}>
-          <ChecklistEditingSection
-            items={checklistItems}
-            onItemsChange={() => console.log('Items changed.')}
-          />
-        </Card>
+        {/* Checklist Items */}
+        <ChecklistEditingSection
+          items={checklistItems}
+          onItemsChange={() => console.log('Items changed.')}
+        />
 
         {/* Issues */}
-        <Card style={styles.mediumCard}>
-          <Heading size='md'>Reported Issues</Heading>
-          <View className='flex-row items-center gap-2'>
-            <Icon as={Circle} />
-            <Text>One of the dining chairs has a loose leg</Text>
-          </View>
-          <View className='flex-row items-center gap-2'>
-            <Icon as={Circle} />
-            <Text>Garbage area needs to be cleaned</Text>
-          </View>
-          <View className='flex-row items-center gap-2'>
-            <Icon as={Circle} />
-            <Text>Need more replacement towels</Text>
-          </View>
-        </Card>
+        <ReportedIssuesSection issues={reportedIssues} />
       </View>
     </ScrollView>
   );
