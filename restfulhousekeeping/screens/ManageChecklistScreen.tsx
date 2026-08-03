@@ -3,8 +3,9 @@ import { Card } from '@/components/ui/card';
 import { Button, ButtonText } from '@/components/ui/button';
 import React from 'react';
 import { usePropertyById } from '@/hooks/useProperties';
-import { CleaningChecklistItem } from '@/types/entityTypes';
+import { ChecklistItem } from '@/types/entityTypes';
 
+// TODO: i think this screen can be deleted?
 // @ts-ignore
 export default function ManageChecklistScreen({ route }) {
   const { cleaning } = route.params;
@@ -18,7 +19,7 @@ export default function ManageChecklistScreen({ route }) {
         {property?.street} {property?.name}, {property?.city}
       </Text>
 
-      {cleaning?.cleaningChecklistItems.map((item: CleaningChecklistItem) => (
+      {cleaning?.cleaningChecklistItems.map((item: ChecklistItem) => (
         <Card key={item.id} className='w-full max-w-96 mt-4 gap-2'>
           <View style={styles.infoGroup}>
             <Text style={styles.sectionTitle}>{item.description}</Text>

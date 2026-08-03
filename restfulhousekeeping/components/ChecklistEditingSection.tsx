@@ -68,7 +68,7 @@ export function ChecklistEditingSection({
   items,
   onItemsChange,
 }: ChecklistSectionProps) {
-  const [editableItems, setEditableItems] = useState<ChecklistItem[]>([]);
+  const [editableItems, setEditableItems] = useState<ChecklistItem[]>(items);
   const [newItemDescription, setNewItemDescription] = useState<string>('');
   const [newItemFrequencyDays, setNewItemFrequencyDays] = useState<
     number | null
@@ -78,9 +78,10 @@ export function ChecklistEditingSection({
     setEditableItems(items);
   }, [items]);
 
-  useEffect(() => {
-    onItemsChange(editableItems);
-  }, [editableItems, onItemsChange]);
+  function commitItems(nextItems: ChecklistItem[]) {
+    setEditableItems(nextItems);
+    onItemsChange(nextItems);
+  }
 
   function addItem() {
     const description = newItemDescription.trim();
@@ -95,28 +96,26 @@ export function ChecklistEditingSection({
       lastCompleted: null,
     };
 
-    setEditableItems((currentItems) => [...currentItems, newItem]);
+    commitItems([...editableItems, newItem]);
     setNewItemDescription('');
     setNewItemFrequencyDays(1);
   }
 
   function deleteItem(id: number) {
-    setEditableItems((currentItems) =>
-      currentItems.filter((item) => item.id !== id),
-    );
+    commitItems(editableItems.filter((item) => item.id !== id));
   }
 
   function updateItemDescription(id: number, description: string) {
-    setEditableItems((currentItems) =>
-      currentItems.map((item) =>
+    commitItems(
+      editableItems.map((item) =>
         item.id === id ? { ...item, description } : item,
       ),
     );
   }
 
   function updateItemFrequencyDays(id: number, frequencyDays: number | null) {
-    setEditableItems((currentItems) =>
-      currentItems.map((item) =>
+    commitItems(
+      editableItems.map((item) =>
         item.id === id ? { ...item, frequencyDays } : item,
       ),
     );

@@ -20,13 +20,27 @@ import { useFocusEffect } from '@react-navigation/native';
 
 // region Cleaning Card
 
+type CleaningStatus = 'unassigned' | 'assigned' | 'complete';
+
+const cleaningCardColors: Record<CleaningStatus, string> = {
+  unassigned: 'bg-red-50',
+  assigned: 'bg-amber-50',
+  complete: 'bg-lime-50',
+};
+
+function getCleaningStatus(cleaning: Cleaning): CleaningStatus {
+  if (cleaning.cleanerId == null) return 'unassigned';
+  return cleaning.isComplete ? 'complete' : 'assigned';
+}
+
 type CleaningCardProps = {
   readonly cleaning: Cleaning;
+  readonly status: CleaningStatus;
   //readonly property: Property;
   navigation: any;
 };
 
-function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
+function CleaningCard({ cleaning, status, navigation }: CleaningCardProps) {
   const { data: property } = usePropertyById(cleaning.propertyId);
   const { data: cleaner } = useCleanerById(cleaning.cleanerId);
   //const { data: cleaning } = useCleaningById(cleaning.cleaningId);
@@ -41,7 +55,10 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
         });
       }}
     >
-      <Card style={styles.mediumCardWithAvatar}>
+      <Card
+        className={cleaningCardColors[status]}
+        style={styles.mediumCardWithAvatar}
+      >
         {/* Left Side (Text) */}
         <View style={styles.mediumCardWithAvatarLeft}>
           <Heading size='md'>{property?.name}</Heading>
@@ -133,15 +150,15 @@ function ManagerInfo({ upcoming, issues, unassigned }: ManagerInfoProps) {
   return (
     <>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{upcoming}</Text>
+        <Heading size='2xl'>{upcoming}</Heading>
         <Text>Upcoming</Text>
       </Card>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{issues}</Text>
+        <Heading size='2xl'>{issues}</Heading>
         <Text>Issues</Text>
       </Card>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{unassigned}</Text>
+        <Heading size='2xl'>{unassigned}</Heading>
         <Text>Unassigned</Text>
       </Card>
     </>
@@ -161,11 +178,11 @@ function CleanerInfo({ upcoming, completed }: CleaningInfoProps) {
   return (
     <>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{upcoming}</Text>
+        <Heading size='2xl'>{upcoming}</Heading>
         <Text>Assigned</Text>
       </Card>
       <Card className='flex-1 gap-1 rounded-3xl'>
-        <Text style={styles.summaryNumber}>{completed}</Text>
+        <Heading size='2xl'>{completed}</Heading>
         <Text>Completed</Text>
       </Card>
     </>
@@ -242,11 +259,12 @@ export default function HomeScreen({ navigation }: any) {
 
       {/* Today's Cleanings */}
       <View style={styles.vStack}>
-        <Text style={styles.sectionTitle}>Today</Text>
+        <Heading size='xl'>Today</Heading>
         {cleaningsToday.map((cleaning) => (
           <CleaningCard
             key={cleaning.id}
             cleaning={cleaning}
+            status={getCleaningStatus(cleaning)}
             navigation={navigation}
           />
         ))}
@@ -256,11 +274,12 @@ export default function HomeScreen({ navigation }: any) {
 
       {/* Upcoming Cleanings */}
       <View style={styles.vStack}>
-        <Text style={styles.sectionTitle}>Upcoming</Text>
+        <Heading size='xl'>Upcoming</Heading>
         {cleaningsUpcoming.map((cleaning) => (
           <CleaningCard
             key={cleaning.id}
             cleaning={cleaning}
+            status={getCleaningStatus(cleaning)}
             navigation={navigation}
           />
         ))}

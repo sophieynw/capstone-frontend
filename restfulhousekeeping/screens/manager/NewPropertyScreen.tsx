@@ -1,0 +1,111 @@
+import { Alert, ScrollView, View } from 'react-native';
+import { useContext, useState } from 'react';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { styles } from '@/styles/styles';
+import { Save } from 'lucide-react-native';
+import { ChecklistEditingSection } from '@/components/ChecklistEditingSection';
+import {
+  createEditableProperty,
+  EditableProperty,
+  PropertyEditingSection,
+} from '@/components/PropertyEditingSection';
+import { useCreateProperty } from '@/hooks/useProperties';
+import { AuthContext } from '@/auth/AuthContext';
+import {
+  ChecklistItem,
+  CreatePropertyPayload,
+  Role,
+} from '@/types/entityTypes';
+
+export default function NewPropertyScreen() {
+  const { user } = useContext(AuthContext);
+  const createPropertyMutation = useCreateProperty();
+
+  const [newPropertyForm, setNewPropertyForm] = useState<EditableProperty>(() =>
+    createEditableProperty(),
+  );
+  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
+
+  function handleSubmit() {
+    if (!user) {
+      Alert.alert('Error', 'You must be signed in.');
+      return;
+    }
+
+    if (user.role !== Role.MANAGER) {
+      Alert.alert('Error', 'You must be signed in.');
+      return;
+    }
+
+    const name = newPropertyForm.name;
+    const street = newPropertyForm.street;
+    const city = newPropertyForm.city;
+    const province = newPropertyForm.province;
+    const postalCode = newPropertyForm.postalCode;
+    const country = newPropertyForm.country;
+
+    if (!name || !street || !city || !province || !postalCode || !country) {
+      Alert.alert(
+        'Missing information',
+        'Please complete all required property fields.',
+      );
+      return;
+    }
+
+    const payload: CreatePropertyPayload = {
+      manager: {
+        id: user.id,
+        role: Role.MANAGER,
+      },
+      name,
+      street,
+      unit: newPropertyForm.unit.trim(),
+      city,
+      province,
+      postalCode,
+      country,
+      accessInstructions: newPropertyForm.accessInstructions.trim() || null,
+    };
+
+    createPropertyMutation.mutate(payload);
+  }
+
+  return (
+    <ScrollView
+      style={styles.modalScreen}
+      contentContainerStyle={styles.modalScreenContent}
+    >
+      {/* Heading */}
+      <View style={styles.modalHeader}>
+        <Heading size='2xl'>Add Property</Heading>
+        <Button
+          className='rounded-full'
+          size='lg'
+          onPress={handleSubmit}
+          isDisabled={createPropertyMutation.isPending}
+        >
+          <ButtonIcon as={Save} />
+          <ButtonText>
+            {createPropertyMutation.isPending ? 'Saving...' : 'Save'}
+          </ButtonText>
+        </Button>
+      </View>
+
+      {/* Content */}
+      <View style={styles.modalMain}>
+        {/* Property Details */}
+        <PropertyEditingSection
+          property={newPropertyForm}
+          onPropertyChange={setNewPropertyForm}
+        />
+
+        {/* Checklist Items */}
+        <ChecklistEditingSection
+          items={checklistItems}
+          onItemsChange={setChecklistItems}
+        />
+      </View>
+    </ScrollView>
+  );
+}

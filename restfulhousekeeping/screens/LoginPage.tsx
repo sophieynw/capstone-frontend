@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { authenticate } from '@/api/auth';
+import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -58,8 +59,12 @@ export default function LoginPage() {
           <Text style={globalStyles.buttonText}>Log In</Text>
         </Pressable>
 
-        <Text style={globalStyles.link}>Create Account</Text>
-        <Text style={globalStyles.link}>Forgot Password</Text>
+        <Pressable onPress={showComingSoonAlert}>
+          <Text style={globalStyles.link}>Create Account</Text>
+        </Pressable>
+        <Pressable onPress={showComingSoonAlert}>
+          <Text style={globalStyles.link}>Forgot Password</Text>
+        </Pressable>
       </View>
 
       <StatusBar style='auto' />

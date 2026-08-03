@@ -17,19 +17,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
     padding: 2,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  summaryNumber: {
-    fontSize: 24,
     fontWeight: '700',
   },
   modalScreen: {
@@ -39,6 +31,7 @@ export const styles = StyleSheet.create({
   },
   modalScreenContent: {
     gap: 12,
+    paddingBottom: 30,
   },
   modalHeader: {
     flex: 1,
@@ -59,7 +52,7 @@ export const styles = StyleSheet.create({
     gap: 16,
   },
   mediumCard: {
-    width: '100%',
+    // width: '100%',
     borderRadius: 28,
     padding: 18,
     gap: 4,

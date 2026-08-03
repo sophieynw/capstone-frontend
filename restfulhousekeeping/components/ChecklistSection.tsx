@@ -2,8 +2,17 @@ import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Heading } from '@/components/ui/heading';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
-import { Plus, Trash } from 'lucide-react-native';
+import { Circle, CircleCheck, Plus, Trash } from 'lucide-react-native';
 import { ChecklistItem } from '@/types/entityTypes';
+
+// region ChecklistItemInput
+
+/**
+ * This is the component which renders each item that is passed to the
+ * ChecklistSection. It conditionally renders a Circle/CircleCheck icon
+ * if the ChecklistItem has an 'isComplete' attribute, meaning that it is
+ * a CleaningChecklistItem record in the backend (attached to a cleaning).
+ */
 
 type ChecklistItemInputProps = {
   item: ChecklistItem;
@@ -20,6 +29,11 @@ function ChecklistItemInput({
 
   return (
     <Input className='rounded-full'>
+      {item.isComplete !== undefined && (
+        <Pressable>
+          <InputIcon as={item.isComplete ? CircleCheck : Circle} />
+        </Pressable>
+      )}
       <InputField
         value={item.description}
         editable={!isPreloadedItem}
@@ -35,6 +49,8 @@ function ChecklistItemInput({
     </Input>
   );
 }
+
+// endregion ChecklistItemInput
 
 type ChecklistSectionProps = {
   items: ChecklistItem[];
@@ -52,9 +68,10 @@ export function ChecklistSection({
     setEditableItems(items);
   }, [items]);
 
-  useEffect(() => {
-    onItemsChange(editableItems);
-  }, [editableItems, onItemsChange]);
+  function commitItems(nextItems: ChecklistItem[]) {
+    setEditableItems(nextItems);
+    onItemsChange(nextItems);
+  }
 
   function addItem() {
     const description = newItemDescription.trim();
@@ -69,19 +86,17 @@ export function ChecklistSection({
       lastCompleted: null,
     };
 
-    setEditableItems((currentItems) => [...currentItems, newItem]);
+    commitItems([...editableItems, newItem]);
     setNewItemDescription('');
   }
 
   function deleteItem(id: number) {
-    setEditableItems((currentItems) =>
-      currentItems.filter((item) => item.id !== id),
-    );
+    commitItems(editableItems.filter((item) => item.id !== id));
   }
 
   function updateItemDescription(id: number, description: string) {
-    setEditableItems((currentItems) =>
-      currentItems.map((item) =>
+    commitItems(
+      editableItems.map((item) =>
         item.id === id ? { ...item, description } : item,
       ),
     );
