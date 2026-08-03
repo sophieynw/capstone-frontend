@@ -1,8 +1,15 @@
 // hooks/useProperties.ts
 import { useContext } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/auth/AuthContext';
-import { getAllProperties, getPropertyById } from '@/api/propertiesApi';
+import {
+  createProperty,
+  getAllProperties,
+  getPropertyById,
+} from '@/api/propertiesApi';
+import { useNavigation } from '@react-navigation/native';
+import { Alert } from 'react-native';
+import { Property } from '@/types/entityTypes';
 
 export function usePropertyById(propertyId: number) {
   //const { user } = useContext(AuthContext);
@@ -20,5 +27,41 @@ export function usePropertyAll() {
   return useQuery({
     queryKey: ['properties', user?.id],
     queryFn: () => getAllProperties(),
+  });
+}
+
+// creates a new Property record
+export function useCreateProperty() {
+  const queryClient = useQueryClient();
+  const navigation = useNavigation();
+
+  return useMutation({
+    mutationFn: createProperty,
+
+    onSuccess: async (createdProperty) => {
+      queryClient.setQueryData<Property[]>(
+        ['properties', createdProperty.managerId],
+        (currentProperties = []) => [...currentProperties, createdProperty],
+      );
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['properties', createdProperty.managerId],
+        }),
+      ]);
+
+      Alert.alert('Success', 'The property was created.', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    },
+
+    onError: (error) => {
+      console.error('Create property error:', error);
+
+      Alert.alert('Unable to save', 'The property could not be created.');
+    },
   });
 }
