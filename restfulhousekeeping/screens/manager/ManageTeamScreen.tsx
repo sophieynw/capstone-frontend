@@ -18,45 +18,54 @@ import {
 } from '@/components/ui/avatar';
 import { styles } from '@/styles/styles';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
+import { useCleaners } from '@/hooks/useCleaners';
+
+import { User } from '@/types/entityTypes';
 
 type CleanerCardProps = {
-  name: string;
-  phoneNumber: string;
+  cleaner: User;
 };
 
-function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
+function CleanerCard({ cleaner }: CleanerCardProps) {
+  const fullName = `${cleaner.firstName} ${cleaner.lastName}`;
+
   return (
     <Card className='w-full gap-1.5 rounded-4xl'>
       <View className='flex-row items-center'>
         {/* Left (Image) */}
         <Avatar className='h-10 w-10'>
-          <AvatarFallbackText>{name}</AvatarFallbackText>
+          <AvatarFallbackText>{fullName}</AvatarFallbackText>
           <AvatarImage
             source={{
               uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
             }}
           />
         </Avatar>
+
         {/* Middle (Text) */}
         <View className='ml-3 flex-1 gap-0'>
-          <Heading size='md'>{name}</Heading>
+          <Heading size='md'>{fullName}</Heading>
+
           <View className='flex-row items-center gap-2'>
             <Icon as={PhoneIcon} size='sm' />
+
             <Text
               className='underline'
               onPress={() =>
-                Linking.openURL(`tel:${phoneNumber.replace(/\D/g, '')}`)
+                Linking.openURL(`tel:${cleaner.phoneNumber.replace(/\D/g, '')}`)
               }
             >
-              {phoneNumber}
+              {cleaner.phoneNumber}
             </Text>
           </View>
         </View>
+
         {/* Right (Icons) */}
         <View className='flex-row gap-3'>
           <Pressable onPress={showComingSoonAlert}>
             <Icon as={MessageCircleIcon} />
           </Pressable>
+
           <Pressable onPress={showComingSoonAlert}>
             <Icon as={TrashIcon} />
           </Pressable>
@@ -67,6 +76,17 @@ function CleanerCard({ name, phoneNumber }: CleanerCardProps) {
 }
 
 export default function ManageTeamScreen() {
+  const { data: cleaners = [], isPending, isError, error } = useCleaners();
+
+  if (isPending) {
+    return <Text>Loading cleaners...</Text>;
+  }
+
+  if (isError) {
+    console.error('Cleaners error:', error);
+    return <Text>Something went wrong while fetching cleaners.</Text>;
+  }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -75,6 +95,7 @@ export default function ManageTeamScreen() {
       {/* Header */}
       <View style={styles.modalHeader}>
         <Heading size='2xl'>My Cleaning Team</Heading>
+
         <Button
           className='rounded-full'
           size='lg'
@@ -87,12 +108,13 @@ export default function ManageTeamScreen() {
 
       {/* Content / Cleaner Cards */}
       <View style={styles.modalMain}>
-        <CleanerCard name='Katie McEwan' phoneNumber='226-224-0336' />
-        <CleanerCard name='Robert Fleming' phoneNumber='905-608-3833' />
-        <CleanerCard name='Maya Patel' phoneNumber='905-555-7821' />
-        <CleanerCard name='Daniel Brooks' phoneNumber='289-555-4190' />
-        <CleanerCard name='Aisha Thompson' phoneNumber='647-555-2639' />
-        <CleanerCard name='Liam Chen' phoneNumber='416-555-9072' />
+        {cleaners.length > 0 ? (
+          cleaners.map((cleaner) => (
+            <CleanerCard key={cleaner.id} cleaner={cleaner} />
+          ))
+        ) : (
+          <Text className='text-center text-gray-500'>No cleaners found.</Text>
+        )}
       </View>
     </ScrollView>
   );
