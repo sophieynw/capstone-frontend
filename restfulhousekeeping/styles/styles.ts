@@ -31,6 +31,7 @@ export const styles = StyleSheet.create({
   },
   modalScreenContent: {
     gap: 12,
+    paddingBottom: 30,
   },
   modalHeader: {
     flex: 1,
@@ -51,7 +52,7 @@ export const styles = StyleSheet.create({
     gap: 16,
   },
   mediumCard: {
-    width: '100%',
+    // width: '100%',
     borderRadius: 28,
     padding: 18,
     gap: 4,

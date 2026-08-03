@@ -34,3 +34,10 @@ export function createCleaning(
     data: cleaning,
   });
 }
+
+export function completeCleaning(cleaningId: number): Promise<Cleaning> {
+  return request<Cleaning>({
+    method: 'PATCH',
+    url: `/cleanings/${cleaningId}/complete`,
+  });
+}

@@ -20,13 +20,27 @@ import { useFocusEffect } from '@react-navigation/native';
 
 // region Cleaning Card
 
+type CleaningStatus = 'unassigned' | 'assigned' | 'complete';
+
+const cleaningCardColors: Record<CleaningStatus, string> = {
+  unassigned: 'bg-red-50',
+  assigned: 'bg-amber-50',
+  complete: 'bg-lime-50',
+};
+
+function getCleaningStatus(cleaning: Cleaning): CleaningStatus {
+  if (cleaning.cleanerId == null) return 'unassigned';
+  return cleaning.isComplete ? 'complete' : 'assigned';
+}
+
 type CleaningCardProps = {
   readonly cleaning: Cleaning;
+  readonly status: CleaningStatus;
   //readonly property: Property;
   navigation: any;
 };
 
-function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
+function CleaningCard({ cleaning, status, navigation }: CleaningCardProps) {
   const { data: property } = usePropertyById(cleaning.propertyId);
   const { data: cleaner } = useCleanerById(cleaning.cleanerId);
   //const { data: cleaning } = useCleaningById(cleaning.cleaningId);
@@ -41,7 +55,10 @@ function CleaningCard({ cleaning, navigation }: CleaningCardProps) {
         });
       }}
     >
-      <Card style={styles.mediumCardWithAvatar}>
+      <Card
+        className={cleaningCardColors[status]}
+        style={styles.mediumCardWithAvatar}
+      >
         {/* Left Side (Text) */}
         <View style={styles.mediumCardWithAvatarLeft}>
           <Heading size='md'>{property?.name}</Heading>
@@ -247,6 +264,7 @@ export default function HomeScreen({ navigation }: any) {
           <CleaningCard
             key={cleaning.id}
             cleaning={cleaning}
+            status={getCleaningStatus(cleaning)}
             navigation={navigation}
           />
         ))}
@@ -261,6 +279,7 @@ export default function HomeScreen({ navigation }: any) {
           <CleaningCard
             key={cleaning.id}
             cleaning={cleaning}
+            status={getCleaningStatus(cleaning)}
             navigation={navigation}
           />
         ))}

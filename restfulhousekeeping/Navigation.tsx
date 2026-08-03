@@ -9,6 +9,7 @@ import ManageTeamScreen from '@/screens/manager/ManageTeamScreen';
 import NewCleaningScreen from '@/screens/manager/NewCleaningScreen';
 import PropertyDetailsScreen from '@/screens/manager/PropertyDetailsScreen';
 import ManageChecklistScreen from './screens/ManageChecklistScreen';
+import NewPropertyScreen from '@/screens/manager/NewPropertyScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,11 @@ export default function Navigation() {
         <Stack.Screen
           name='ManageChecklistScreen'
           component={ManageChecklistScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen
+          name='NewPropertyScreen'
+          component={NewPropertyScreen}
           options={{ presentation: 'modal' }}
         />
       </Stack.Navigator>

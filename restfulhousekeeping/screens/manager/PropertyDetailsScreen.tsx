@@ -2,7 +2,6 @@ import { ScrollView, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
-import { useNextCleaningByProperty } from '@/hooks/useCleanings';
 import { styles } from '@/styles/styles';
 import { Save } from 'lucide-react-native';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
@@ -37,12 +36,6 @@ export default function PropertyDetailsScreen({ route }: any) {
     error: propertyError,
   } = usePropertyById(propertyId);
   const {
-    data: cleaning,
-    isPending: isCleaningPending,
-    isError: isCleaningError,
-    error: cleaningError,
-  } = useNextCleaningByProperty(propertyId);
-  const {
     data: checklistItems,
     isPending: isChecklistItemsPending,
     isError: isChecklistItemsError,
@@ -55,13 +48,12 @@ export default function PropertyDetailsScreen({ route }: any) {
     setPropertyForm(createEditableProperty(property));
   }, [property]);
 
-  if (isPropertyPending || isCleaningPending || isChecklistItemsPending) {
+  if (isPropertyPending || isChecklistItemsPending) {
     return <Text>Loading...</Text>;
   }
 
-  if (isPropertyError || isCleaningError || isChecklistItemsError) {
+  if (isPropertyError || isChecklistItemsError) {
     console.error('Property error:', propertyError);
-    console.error('Cleaning error:', cleaningError);
     console.error('ChecklistItems error:', checklistItemsError);
     return <Text>Could not load properties.</Text>;
   }

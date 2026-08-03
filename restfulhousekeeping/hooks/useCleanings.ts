@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/auth/AuthContext';
 import {
+  completeCleaning,
   createCleaning,
   getCleaningById,
   getNextCleaningByProperty,
@@ -16,7 +17,7 @@ export function useUpcomingCleanings() {
   const { user } = useContext(AuthContext);
 
   return useQuery({
-    queryKey: ['upcoming-cleanings', user?.id],
+    queryKey: ['upcoming-cleanings'],
     queryFn: () => getUpcomingCleanings(user!.id),
     enabled: !!user?.id,
 
@@ -89,6 +90,22 @@ export function useCreateCleaning() {
       console.error('Create cleaning error:', error);
 
       Alert.alert('Unable to save', 'The cleaning could not be created.');
+    },
+  });
+}
+
+// marks cleaning as complete
+export function useCompleteCleaning() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: completeCleaning,
+    onSuccess: (updatedCleaning) => {
+      queryClient.setQueryData(
+        ['cleaning-id', updatedCleaning.id],
+        updatedCleaning,
+      );
+      queryClient.invalidateQueries({ queryKey: ['upcoming-cleanings'] });
     },
   });
 }
