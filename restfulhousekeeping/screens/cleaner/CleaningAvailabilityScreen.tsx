@@ -15,11 +15,11 @@ import {
 import {
   Modal,
   ModalBackdrop,
-  ModalContent,
   ModalBody,
+  ModalCloseButton,
+  ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalCloseButton,
 } from '@/components/ui/modal';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Clock } from 'lucide-react-native';

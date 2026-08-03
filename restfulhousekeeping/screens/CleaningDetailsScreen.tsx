@@ -13,6 +13,7 @@ import {
   CircleAlert,
   Save,
   SquareCheckBig,
+  Trash,
 } from 'lucide-react-native';
 import {
   Avatar,
@@ -131,8 +132,8 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
             size='lg'
             onPress={showComingSoonAlert}
           >
-            <ButtonIcon as={Save} />
-            <ButtonText>Save</ButtonText>
+            <ButtonIcon as={Trash} />
+            <ButtonText>Delete</ButtonText>
           </Button>
         ) : (
           <Button

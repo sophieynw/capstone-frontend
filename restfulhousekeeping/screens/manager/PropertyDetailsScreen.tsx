@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { styles } from '@/styles/styles';
-import { Save } from 'lucide-react-native';
+import { Save, Trash } from 'lucide-react-native';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 import { usePropertyById } from '@/hooks/useProperties';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
@@ -71,8 +71,8 @@ export default function PropertyDetailsScreen({ route }: any) {
           size='lg'
           onPress={showComingSoonAlert}
         >
-          <ButtonIcon as={Save} />
-          <ButtonText>Save</ButtonText>
+          <ButtonIcon as={Trash} />
+          <ButtonText>Delete</ButtonText>
         </Button>
       </View>
 
