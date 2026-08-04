@@ -2,7 +2,7 @@
 import { Alert, ScrollView, View } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useState, useEffect } from 'react';
 import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { styles } from '@/styles/styles';
@@ -85,6 +85,10 @@ export default function NewCleaningScreen() {
     () => filterDueChecklistItems(propertyChecklistItems ?? []),
     [propertyChecklistItems],
   );
+
+  useEffect(() => {
+    setChecklistItems(dueChecklistItems);
+  }, [dueChecklistItems]);
 
   function handleSubmit() {
     if (!user) {
@@ -184,7 +188,7 @@ export default function NewCleaningScreen() {
             <Text>Could not load checklist.</Text>
           ) : (
             <ChecklistSection
-              items={dueChecklistItems}
+              items={checklistItems}
               onItemsChange={setChecklistItems}
             />
           )}
