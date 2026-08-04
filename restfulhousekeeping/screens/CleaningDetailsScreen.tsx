@@ -261,9 +261,11 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         </Card>
 
         {/* Photos Section Card */}
-        <Card style={styles.mediumCard}>
-          <PhotosSection photos={photos} onPhotosChange={setPhotos} />
-        </Card>
+        {user?.role == Role.CLEANER && (
+          <Card style={styles.mediumCard}>
+            <PhotosSection photos={photos} onPhotosChange={setPhotos} />
+          </Card>
+        )}
       </View>
 
       {user?.role == Role.CLEANER && (
