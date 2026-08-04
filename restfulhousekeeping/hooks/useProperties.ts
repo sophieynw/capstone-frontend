@@ -46,6 +46,11 @@ export function useCreateProperty() {
 
       await Promise.all([
         queryClient.invalidateQueries({
+          queryKey: ['checklist-items'],
+        }),
+      ]);
+      await Promise.all([
+        queryClient.invalidateQueries({
           queryKey: ['properties', createdProperty.managerId],
         }),
       ]);
