@@ -54,18 +54,27 @@ export default function NewPropertyScreen() {
     }
 
     const payload: CreatePropertyPayload = {
-      manager: {
-        id: user.id,
-        role: Role.MANAGER,
+      property: {
+        manager: {
+          id: user.id,
+          role: Role.MANAGER,
+        },
+        name,
+        street,
+        unit: newPropertyForm.unit.trim(),
+        city,
+        province,
+        postalCode,
+        country,
+        accessInstructions: newPropertyForm.accessInstructions.trim() || null,
       },
-      name,
-      street,
-      unit: newPropertyForm.unit.trim(),
-      city,
-      province,
-      postalCode,
-      country,
-      accessInstructions: newPropertyForm.accessInstructions.trim() || null,
+
+      checklistItems: checklistItems
+        .map((item) => ({
+          description: item.description.trim(),
+          frequencyDays: item.frequencyDays,
+        }))
+        .filter((item) => item.description.length > 0),
     };
 
     createPropertyMutation.mutate(payload);

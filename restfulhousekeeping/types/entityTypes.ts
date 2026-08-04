@@ -98,17 +98,25 @@ export interface CreateCleaningPayload {
   cleaningChecklistItems: CreateCleaningChecklistItem[];
 }
 
+export interface CreateChecklistItemPayload {
+  description: string;
+  frequencyDays: number | null;
+}
+
 export interface CreatePropertyPayload {
-  manager: {
-    id: number;
-    role: Role.MANAGER;
+  property: {
+    manager: {
+      id: number;
+      role: Role.MANAGER;
+    };
+    name: string;
+    street: string;
+    unit: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    country: string;
+    accessInstructions: string | null;
   };
-  name: string;
-  street: string;
-  unit: string;
-  city: string;
-  province: string;
-  postalCode: string;
-  country: string;
-  accessInstructions: string | null;
+  checklistItems: CreateChecklistItemPayload[];
 }
