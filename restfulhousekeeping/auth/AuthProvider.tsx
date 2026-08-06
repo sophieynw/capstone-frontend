@@ -18,18 +18,33 @@ export function AuthProvider({ children }: Props) {
     restoreSession();
   }, []);
 
+  // const restoreSession = async () => {
+  //   try {
+  //     const savedToken = await SecureStore.getItemAsync('token');
+  //
+  //     const savedUser = await SecureStore.getItemAsync('user');
+  //
+  //     if (savedToken && savedUser) {
+  //       setToken(savedToken);
+  //       setUser(JSON.parse(savedUser));
+  //     }
+  //   } catch (error) {
+  //     console.log('Failed restoring session', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const restoreSession = async () => {
     try {
-      const savedToken = await SecureStore.getItemAsync('token');
+      // TEMPORARY: delete the saved session
+      await SecureStore.deleteItemAsync('token');
+      await SecureStore.deleteItemAsync('user');
 
-      const savedUser = await SecureStore.getItemAsync('user');
-
-      if (savedToken && savedUser) {
-        setToken(savedToken);
-        setUser(JSON.parse(savedUser));
-      }
+      setToken(null);
+      setUser(null);
     } catch (error) {
-      console.log('Failed restoring session', error);
+      console.log('Failed clearing session', error);
     } finally {
       setIsLoading(false);
     }

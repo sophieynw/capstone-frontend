@@ -1,5 +1,5 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { useCallback, useContext } from 'react';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { useCallback, useContext, useState } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { groupCleaningsByDate, toFriendlyDate } from '@/utils/helpers';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
@@ -15,8 +15,10 @@ import { useUpcomingCleanings } from '@/hooks/useCleanings';
 import { usePropertyById } from '@/hooks/useProperties';
 import { useCleanerById } from '@/hooks/useCleaners';
 import { styles } from '@/styles/styles';
-import { Plus, UsersRound } from 'lucide-react-native';
+import { MessageCircle, Plus, UsersRound } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Icon } from '@/components/ui/icon';
+import { findOrCreateConversation } from '@/api/chatApi';
 
 // region Cleaning Card
 
@@ -172,9 +174,16 @@ function ManagerInfo({ upcoming, issues, unassigned }: ManagerInfoProps) {
 type CleaningInfoProps = {
   upcoming: number;
   completed: number;
+  isOpeningChat: boolean;
+  onChatPress: () => void;
 };
 
-function CleanerInfo({ upcoming, completed }: CleaningInfoProps) {
+function CleanerInfo({
+  upcoming,
+  completed,
+  isOpeningChat,
+  onChatPress,
+}: CleaningInfoProps) {
   return (
     <>
       <Card className='flex-1 gap-1 rounded-3xl'>
@@ -185,6 +194,18 @@ function CleanerInfo({ upcoming, completed }: CleaningInfoProps) {
         <Heading size='2xl'>{completed}</Heading>
         <Text>Completed</Text>
       </Card>
+      <Pressable
+        className='flex-1'
+        onPress={onChatPress}
+        disabled={isOpeningChat}
+        accessibilityRole='button'
+        accessibilityLabel='Open manager chat'
+      >
+        <Card className='flex-1 items-center justify-center gap-1 rounded-3xl'>
+          <Icon as={MessageCircle} size='xl' />
+          <Text>{isOpeningChat ? 'Opening...' : 'Chat'}</Text>
+        </Card>
+      </Pressable>
     </>
   );
 }
@@ -193,6 +214,7 @@ function CleanerInfo({ upcoming, completed }: CleaningInfoProps) {
 
 export default function HomeScreen({ navigation }: any) {
   const { user } = useContext(AuthContext);
+  const [isOpeningChat, setIsOpeningChat] = useState(false);
   const {
     data: cleanings,
     isLoading,
@@ -214,6 +236,36 @@ export default function HomeScreen({ navigation }: any) {
     cleanings?.filter((cleaning) => cleaning.cleanerId == null).length ?? 0;
   const completed =
     cleanings?.filter((cleaning) => cleaning.isComplete).length ?? 0;
+
+  async function handleOpenCleanerChat() {
+    const managerId = cleanings?.find(
+      (cleaning) => cleaning.managerId != null,
+    )?.managerId;
+
+    if (!managerId) {
+      Alert.alert(
+        'Chat unavailable',
+        'A manager could not be found for this cleaner.',
+      );
+      return;
+    }
+
+    setIsOpeningChat(true);
+
+    try {
+      const conversation = await findOrCreateConversation(managerId);
+
+      navigation.navigate('ChatScreen', {
+        conversationId: conversation.id,
+        otherUserName: conversation.otherUserName,
+      });
+    } catch (chatError) {
+      console.error('Could not open cleaner chat:', chatError);
+      Alert.alert('Chat error', 'Could not open the conversation.');
+    } finally {
+      setIsOpeningChat(false);
+    }
+  }
 
   if (isLoading) {
     return <Text>Loading cleanings...</Text>;
@@ -253,7 +305,12 @@ export default function HomeScreen({ navigation }: any) {
           />
         )}
         {user?.role == Role.CLEANER && (
-          <CleanerInfo upcoming={upcoming} completed={completed} />
+          <CleanerInfo
+            upcoming={upcoming}
+            completed={completed}
+            isOpeningChat={isOpeningChat}
+            onChatPress={handleOpenCleanerChat}
+          />
         )}
       </ScrollView>
 

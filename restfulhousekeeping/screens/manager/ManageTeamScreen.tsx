@@ -1,6 +1,6 @@
 // screens/home/ManageTeamScreen.tsx
 import { Text } from '@/components/ui/text';
-import { Linking, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, View } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import {
   Icon,
@@ -19,14 +19,15 @@ import {
 import { styles } from '@/styles/styles';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 import { useCleaners } from '@/hooks/useCleaners';
-
+import { findOrCreateConversation } from '@/api/chatApi';
 import { User } from '@/types/entityTypes';
 
 type CleanerCardProps = {
   cleaner: User;
+  onMessagePress: () => void;
 };
 
-function CleanerCard({ cleaner }: CleanerCardProps) {
+function CleanerCard({ cleaner, onMessagePress }: CleanerCardProps) {
   const fullName = `${cleaner.firstName} ${cleaner.lastName}`;
 
   return (
@@ -62,7 +63,7 @@ function CleanerCard({ cleaner }: CleanerCardProps) {
 
         {/* Right (Icons) */}
         <View className='flex-row gap-3'>
-          <Pressable onPress={showComingSoonAlert}>
+          <Pressable onPress={onMessagePress}>
             <Icon as={MessageCircleIcon} />
           </Pressable>
 
@@ -75,7 +76,7 @@ function CleanerCard({ cleaner }: CleanerCardProps) {
   );
 }
 
-export default function ManageTeamScreen() {
+export default function ManageTeamScreen({ navigation }: any) {
   const { data: cleaners = [], isPending, isError, error } = useCleaners();
 
   if (isPending) {
@@ -110,7 +111,28 @@ export default function ManageTeamScreen() {
       <View style={styles.modalMain}>
         {cleaners.length > 0 ? (
           cleaners.map((cleaner) => (
-            <CleanerCard key={cleaner.id} cleaner={cleaner} />
+            <CleanerCard
+              key={cleaner.id}
+              cleaner={cleaner}
+              onMessagePress={async () => {
+                try {
+                  const conversation = await findOrCreateConversation(
+                    cleaner.id,
+                  );
+
+                  navigation.navigate('ChatScreen', {
+                    conversationId: conversation.id,
+                    otherUserName: conversation.otherUserName,
+                  });
+                } catch (error) {
+                  console.error(error);
+                  Alert.alert(
+                    'Chat error',
+                    'Could not open this conversation.',
+                  );
+                }
+              }}
+            />
           ))
         ) : (
           <Text className='text-center text-gray-500'>No cleaners found.</Text>

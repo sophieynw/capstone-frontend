@@ -120,3 +120,25 @@ export interface CreatePropertyPayload {
   };
   checklistItems: CreateChecklistItemPayload[];
 }
+
+export interface Conversation {
+  id: number;
+  otherUserId: number;
+  otherUserName: string;
+  createdAt: string;
+}
+
+export interface ChatMessage {
+  id: number;
+  conversationId: number;
+  senderId: number;
+  senderName: string;
+  body: string;
+  sentAt: string;
+  readAt: string | null;
+}
+
+export interface SendChatMessagePayload {
+  conversationId: number;
+  body: string;
+}
