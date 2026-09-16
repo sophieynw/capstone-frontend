@@ -6,6 +6,7 @@ import {
   createProperty,
   getAllProperties,
   getPropertyById,
+  deletePropertyById,
 } from '@/api/propertiesApi';
 import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
@@ -67,6 +68,39 @@ export function useCreateProperty() {
       console.error('Create property error:', error);
 
       Alert.alert('Unable to save', 'The property could not be created.');
+    },
+  });
+}
+
+export function useDeleteProperty() {
+  const queryClient = useQueryClient();
+  const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
+
+  return useMutation({
+    mutationFn: deletePropertyById,
+
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['properties', user?.id],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ['checklist-items'],
+      });
+
+      Alert.alert('Success', 'The property was deleted.', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    },
+
+    onError: (error) => {
+      console.error('Delete property error:', error);
+
+      Alert.alert('Unable to delete', 'The property could not be deleted.');
     },
   });
 }
