@@ -25,3 +25,10 @@ export function createProperty(
     data: property,
   });
 }
+
+export function deletePropertyById(propertyId: number): Promise<Property> {
+  return request<Property>({
+    method: 'DELETE',
+    url: `/properties/${propertyId}`,
+  });
+}
