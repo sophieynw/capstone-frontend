@@ -5,7 +5,7 @@ import { Heading } from '@/components/ui/heading';
 import { styles } from '@/styles/styles';
 import { Save, Trash } from 'lucide-react-native';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
-import { useCreateProperty, usePropertyById } from '@/hooks/useProperties';
+import { usePropertyById } from '@/hooks/useProperties';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
 import { ChecklistEditingSection } from '@/components/ChecklistEditingSection';
 import {
@@ -18,9 +18,6 @@ import {
   ReportedIssuesSection,
 } from '@/components/ReportedIssuesSection';
 
-import { useDeleteProperty } from '@/hooks/useProperties';
-import { deletePropertyById } from '@/api/propertiesApi';
-
 const reportedIssues: ReportedIssue[] = [
   { id: 1, description: 'One of the dining chairs has a loose leg' },
   { id: 2, description: 'Garbage area needs to be cleaned' },
@@ -29,7 +26,6 @@ const reportedIssues: ReportedIssue[] = [
 
 export default function PropertyDetailsScreen({ route }: any) {
   const { propertyId } = route.params;
-  const deletePropertyMutation = useDeleteProperty();
   const [propertyForm, setPropertyForm] = useState<EditableProperty>(() =>
     createEditableProperty(),
   );
@@ -61,9 +57,7 @@ export default function PropertyDetailsScreen({ route }: any) {
     console.error('ChecklistItems error:', checklistItemsError);
     return <Text>Could not load properties.</Text>;
   }
-  function handleDelete() {
-    deletePropertyMutation.mutate(propertyId)
-  }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -75,8 +69,7 @@ export default function PropertyDetailsScreen({ route }: any) {
         <Button
           className='rounded-full'
           size='lg'
-          //onPress={showComingSoonAlert}
-          onPress={handleDelete}
+          onPress={showComingSoonAlert}
         >
           <ButtonIcon as={Trash} />
           <ButtonText>Delete</ButtonText>
