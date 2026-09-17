@@ -70,6 +70,15 @@ export interface Property {
   accessInstructions: string | null;
 }
 
+export interface AvailabilitySlot {
+  id: number;
+  //private Availability availability;
+  cleanerId: number;
+  dayOfWeek: DaysOfTheWeek;
+  startTime: string;
+  endTime: string;
+}
+
 export type CreateCleaningChecklistItem =
   | {
       checklistItem: {

@@ -4,7 +4,7 @@ import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
 import { DaysOfTheWeek } from '@/types/entityTypes';
 import { toTitleCase } from '@/utils/helpers';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { CloseIcon, Icon } from '@/components/ui/icon';
 import {
   DateTimePicker,
@@ -24,8 +24,12 @@ import {
 import { Button, ButtonText } from '@/components/ui/button';
 import { Clock } from 'lucide-react-native';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
+import { useAvailabilities } from '@/hooks/useAvailabilities';
+import { AuthContext } from '@/auth/AuthContext';
 
-export default function MoreScreen() {
+export default function CleaningAvailabilityScreen() {
+  const { user } = useContext(AuthContext);
+  const { data: availabilitySlots } = useAvailabilities(user?.id);
   const [showModal, setShowModal] = useState(false);
 
   const [selectedDay, setSelectedDay] = useState<DaysOfTheWeek | null>(null);
@@ -52,42 +56,20 @@ export default function MoreScreen() {
       style={styles.screen}
       contentContainerStyle={styles.screenContent}
     >
-      {Object.values(DaysOfTheWeek).map((day) => (
-        
-        <Pressable
-          key={day}
-          onPress={() => {
-            setSelectedDay(day);
-
-            const savedTime = availability[day];
-
-            if (savedTime) {
-              setStartTime(savedTime.startTime);
-              setEndTime(savedTime.endTime);
-            } else {
-              setStartTime(new Date());
-              setEndTime(new Date());
-            } 
-
-    setShowModal(true);
-  }}
->
+      {availabilitySlots?.map((slot) => (
+        <Pressable key={slot.id} onPress={() => setShowModal(true)}>
           <Card className='rounded-3xl gap-1'>
-            <Heading size='md'>{`${toTitleCase(day.toString())}s`}</Heading>
+            {/*<Heading size='md'>{toTitleCase(slot.get.toString())}</Heading>*/}
+            <Heading size='md'>
+              {toTitleCase(slot?.dayOfWeek.toString())}
+            </Heading>
             <Text>
-              {availability[day]
-                ? `${availability[day]!.startTime.toLocaleTimeString([], {
-                    hour: 'numeric',
-                    minute: '2-digit',
-              })} to ${availability[day]!.endTime.toLocaleTimeString([], {
-                    hour: 'numeric',
-                    minute: '2-digit',
-              })}`
-            : '9:00 am to 10:00 pm'}
-          </Text>
+              {slot.startTime} to {slot.endTime}
+            </Text>
           </Card>
         </Pressable>
       ))}
+
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} size='md'>
         <ModalBackdrop />
 
@@ -140,16 +122,16 @@ export default function MoreScreen() {
             <Button
               className='rounded-full'
               onPress={() => {
-                if (!selectedDay || !startTime || !endTime) {
-                  return;
-                }
+                // if (!selectedDay || !startTime || !endTime) {
+                //   return;
+                // }
 
                 if (endTime <= startTime) {
                   Alert.alert(
                     'Invalid time',
                     'End time must be later than start time.',
-                 );
-                return;
+                  );
+                  return;
                 }
 
                 setAvailability((current) => ({
@@ -158,10 +140,10 @@ export default function MoreScreen() {
                     startTime,
                     endTime,
                   },
-              }));
+                }));
 
-  setShowModal(false);
-}}
+                setShowModal(false);
+              }}
             >
               <ButtonText>Done</ButtonText>
             </Button>
