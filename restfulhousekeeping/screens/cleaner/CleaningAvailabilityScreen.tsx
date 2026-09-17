@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, Text } from 'react-native';
+import { Alert, Pressable, ScrollView, Text } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
@@ -27,8 +27,23 @@ import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
 export default function MoreScreen() {
   const [showModal, setShowModal] = useState(false);
+
+  const [selectedDay, setSelectedDay] = useState<DaysOfTheWeek | null>(null);
+
   const [startTime, setStartTime] = useState<Date | undefined>(new Date());
   const [endTime, setEndTime] = useState<Date | undefined>(new Date());
+
+  const [availability, setAvailability] = useState<
+  Partial<
+    Record<
+      DaysOfTheWeek,
+      {
+        startTime: Date;
+        endTime: Date;
+      }
+    >
+  >
+>({});
 
   // TODO: implement functionality for getting and updating cleaner availability
 
@@ -38,10 +53,38 @@ export default function MoreScreen() {
       contentContainerStyle={styles.screenContent}
     >
       {Object.values(DaysOfTheWeek).map((day) => (
-        <Pressable key={day} onPress={() => setShowModal(true)}>
+        
+        <Pressable
+          key={day}
+          onPress={() => {
+            setSelectedDay(day);
+
+            const savedTime = availability[day];
+
+            if (savedTime) {
+              setStartTime(savedTime.startTime);
+              setEndTime(savedTime.endTime);
+            } else {
+              setStartTime(new Date());
+              setEndTime(new Date());
+            } 
+
+    setShowModal(true);
+  }}
+>
           <Card className='rounded-3xl gap-1'>
             <Heading size='md'>{`${toTitleCase(day.toString())}s`}</Heading>
-            <Text>9:00 am to 10:00 pm</Text>
+            <Text>
+              {availability[day]
+                ? `${availability[day]!.startTime.toLocaleTimeString([], {
+                    hour: 'numeric',
+                    minute: '2-digit',
+              })} to ${availability[day]!.endTime.toLocaleTimeString([], {
+                    hour: 'numeric',
+                    minute: '2-digit',
+              })}`
+            : '9:00 am to 10:00 pm'}
+          </Text>
           </Card>
         </Pressable>
       ))}
@@ -50,7 +93,11 @@ export default function MoreScreen() {
 
         <ModalContent className='rounded-4xl'>
           <ModalHeader>
-            <Heading size='lg'>Select a time</Heading>
+            <Heading size='lg'>
+              {selectedDay
+                ? `${toTitleCase(selectedDay.toString())} Availability`
+                : 'Select a time'}
+            </Heading>
 
             <ModalCloseButton>
               <Icon as={CloseIcon} />
@@ -93,9 +140,28 @@ export default function MoreScreen() {
             <Button
               className='rounded-full'
               onPress={() => {
-                showComingSoonAlert();
-                setShowModal(false);
-              }}
+                if (!selectedDay || !startTime || !endTime) {
+                  return;
+                }
+
+                if (endTime <= startTime) {
+                  Alert.alert(
+                    'Invalid time',
+                    'End time must be later than start time.',
+                 );
+                return;
+                }
+
+                setAvailability((current) => ({
+                  ...current,
+                  [selectedDay]: {
+                    startTime,
+                    endTime,
+                  },
+              }));
+
+  setShowModal(false);
+}}
             >
               <ButtonText>Done</ButtonText>
             </Button>
