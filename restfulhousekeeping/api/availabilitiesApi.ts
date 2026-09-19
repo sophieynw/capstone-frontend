@@ -7,3 +7,12 @@ export function getAvailabilitySlots(cleanerId: number): Promise<AvailabilitySlo
     url: `/availability-slots/cleaner/${cleanerId}`
   });
 }
+
+export function updateAvailabilitySlot(
+    id: number, payload: {startTime: string, endTime: string}): Promise<AvailabilitySlot> {
+    return request<AvailabilitySlot>({
+        method: 'PATCH',
+        url: `/availability-slots/${id}`,
+        data: payload
+  });
+}
