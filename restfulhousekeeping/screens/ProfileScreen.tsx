@@ -9,11 +9,10 @@ import { toTitleCase } from '@/utils/helpers';
 import { styles } from '@/styles/styles';
 import { LogOut, UserPen } from 'lucide-react-native';
 import { Role } from '@/types/entityTypes';
-import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
 // region Manager Summary Card
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }: any) {
   const { user, logout } = useContext(AuthContext);
   const { data: cleanings } = useUpcomingCleanings();
 
@@ -79,7 +78,7 @@ export default function ProfileScreen() {
           size='lg'
           variant='outline'
           className='rounded-full'
-          onPress={showComingSoonAlert}
+          onPress={() => navigation.navigate("ProfileEditScreen")}
         >
           <ButtonIcon as={UserPen} />
           <ButtonText>Edit Profile</ButtonText>
