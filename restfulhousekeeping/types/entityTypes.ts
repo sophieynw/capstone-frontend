@@ -129,3 +129,21 @@ export interface CreatePropertyPayload {
   };
   checklistItems: CreateChecklistItemPayload[];
 }
+export interface UpdatePropertyPayload {
+  name?: string;
+  street?: string;
+  unit?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  country?: string;
+  accessInstructions?: string;
+  managerId?: number;
+}
+
+export interface UpdateUserPayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+}

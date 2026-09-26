@@ -3,20 +3,22 @@ import { Heading } from '@/components/ui/heading';
 import { Input, InputField } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { styles } from '@/styles/styles';
-import { User } from '@/types/entityTypes';
+import { Organization, User } from '@/types/entityTypes';
 
 export type EditableProfile = {
+  firstName: string;
+  lastName: string;
   email: string;
   phoneNumber: string;
-  //organization: string
-}
+};
 
 export function createEditableProfile(user?: User): EditableProfile {
-  return {
-    email: user?.email ?? '',
-    phoneNumber: user?.phoneNumber ?? '',
-    //organization: user?.organization ?? '',
-  };
+return {
+  firstName: user?.firstName ?? '',
+  lastName: user?.lastName ?? '',
+  email: user?.email ?? '',
+  phoneNumber: user?.phoneNumber ?? '',
+};
 }
 
 type ProfileInputProps = {
@@ -71,17 +73,22 @@ export function ProfileEditingSection({
       <View className='gap-3'>
         <Heading size='md'>Profile</Heading>
         <ProfileInput
+          label='First Name'
+          value={user.firstName}
+          onChangeText={(value) => updateProfileField('firstName', value)}
+        />
+        <ProfileInput
+          label='Last Name'
+          value={user.lastName}
+          onChangeText={(value) => updateProfileField('lastName', value)}
+        />
+        <ProfileInput
           label='Email'
-          value={user.phoneNumber}
-          onChangeText={(value) => updateProfileField('phoneNumber', value)}
+          value={user.email}
+          onChangeText={(value) => updateProfileField('email', value)}
         />
         <ProfileInput
           label='Phone Number'
-          value={user.phoneNumber}
-          onChangeText={(value) => updateProfileField('phoneNumber', value)}
-        />
-        <ProfileInput
-          label='Organization'
           value={user.phoneNumber}
           onChangeText={(value) => updateProfileField('phoneNumber', value)}
         />
