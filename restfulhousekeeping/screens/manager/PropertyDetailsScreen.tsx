@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { styles } from '@/styles/styles';
-import { Save, Trash } from 'lucide-react-native';
-import { showComingSoonAlert } from '@/components/ComingSoonAlert';
-import { useCreateProperty, usePropertyById } from '@/hooks/useProperties';
+import { Trash } from 'lucide-react-native';
+import {
+  usePropertyById,
+  useUpdateProperty,
+} from '@/hooks/useProperties';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
 import { ChecklistEditingSection } from '@/components/ChecklistEditingSection';
 import {
@@ -19,7 +21,6 @@ import {
 } from '@/components/ReportedIssuesSection';
 
 import { useDeleteProperty } from '@/hooks/useProperties';
-import { deletePropertyById } from '@/api/propertiesApi';
 
 const reportedIssues: ReportedIssue[] = [
   { id: 1, description: 'One of the dining chairs has a loose leg' },
@@ -30,6 +31,7 @@ const reportedIssues: ReportedIssue[] = [
 export default function PropertyDetailsScreen({ route }: any) {
   const { propertyId } = route.params;
   const deletePropertyMutation = useDeleteProperty();
+  const updatePropertyMutation = useUpdateProperty();
   const [propertyForm, setPropertyForm] = useState<EditableProperty>(() =>
     createEditableProperty(),
   );
@@ -64,6 +66,12 @@ export default function PropertyDetailsScreen({ route }: any) {
   function handleDelete() {
     deletePropertyMutation.mutate(propertyId)
   }
+  function handleUpdate() {
+    updatePropertyMutation.mutate({
+      propertyId,
+      property: propertyForm,
+    });
+  }
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -72,14 +80,16 @@ export default function PropertyDetailsScreen({ route }: any) {
       {/* Heading */}
       <View style={styles.modalHeader}>
         <Heading size='2xl'>Property Details</Heading>
-        <Button
-          className='rounded-full'
-          size='lg'
-          //onPress={showComingSoonAlert}
-          onPress={handleDelete}
-        >
+      </View>
+
+      <View style={styles.hStack}>
+        <Button className='rounded-full' size='lg' onPress={handleDelete}>
           <ButtonIcon as={Trash} />
           <ButtonText>Delete</ButtonText>
+        </Button>
+        <Button className='rounded-full' size='lg' onPress={handleUpdate}>
+          <ButtonIcon as={Trash} />
+          <ButtonText>Update</ButtonText>
         </Button>
       </View>
 
