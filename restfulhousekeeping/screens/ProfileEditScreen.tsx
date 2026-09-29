@@ -2,11 +2,9 @@ import { ScrollView, View } from 'react-native';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { Save, Trash } from 'lucide-react-native';
-import { showComingSoonAlert } from '@/components/ComingSoonAlert';
+import { Save } from 'lucide-react-native';
 import {createEditableProfile, EditableProfile, ProfileEditingSection } from '@/components/ProfileEditingSection';
 import { useContext, useEffect, useState } from 'react';
-import { createEditableProperty } from '@/components/PropertyEditingSection';
 import { AuthContext } from '@/auth/AuthContext';
 import { useUpdateUser } from '@/hooks/useCleaners';
 

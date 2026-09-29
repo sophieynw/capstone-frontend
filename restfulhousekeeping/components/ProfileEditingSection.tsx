@@ -3,7 +3,7 @@ import { Heading } from '@/components/ui/heading';
 import { Input, InputField } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { styles } from '@/styles/styles';
-import { Organization, User } from '@/types/entityTypes';
+import { User } from '@/types/entityTypes';
 
 export type EditableProfile = {
   firstName: string;
