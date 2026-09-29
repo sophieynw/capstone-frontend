@@ -1,5 +1,4 @@
 import {
-  UpdatePropertyPayload,
   UpdateUserPayload,
   User,
 } from '@/types/entityTypes';

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/avatar';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 import { Icon } from '@/components/ui/icon';
-import { HousePlus, Plus } from 'lucide-react-native';
+import { HousePlus } from 'lucide-react-native';
 
 // region Property Card
 

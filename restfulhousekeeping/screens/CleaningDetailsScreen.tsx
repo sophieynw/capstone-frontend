@@ -11,7 +11,6 @@ import { Heading } from '@/components/ui/heading';
 import {
   ChevronDown,
   CircleAlert,
-  Save,
   SquareCheckBig,
   Trash,
 } from 'lucide-react-native';
@@ -40,7 +39,6 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 import { useCompleteCleaning } from '@/hooks/useCleanings';
-import { completeCleaning } from '@/api/cleaningsApi';
 
 const UNASSIGNED_CLEANER_VALUE = 'unassigned';
 
