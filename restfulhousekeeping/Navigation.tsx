@@ -26,8 +26,14 @@ export default function Navigation() {
         {token ? (
           <Stack.Screen name='MainPage' component={MainPage} />
         ) : (
-          // <Stack.Screen name='LoginPage' component={LoginPage} />
-          <Stack.Screen name='SignUpPage' component={SignUpPage} />
+          <>
+            <Stack.Screen name='LoginPage' component={LoginPage} />
+            <Stack.Screen
+              name='SignUpPage'
+              component={SignUpPage}
+              options={{ presentation: 'modal' }}
+            />
+          </>
         )}
         <Stack.Screen
           name='CleaningDetailsScreen'

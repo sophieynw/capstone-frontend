@@ -9,7 +9,7 @@ import { AuthContext } from '@/auth/AuthContext';
 import { authenticate } from '@/api/auth';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 
-export default function LoginPage() {
+export default function LoginPage({ navigation }: any) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);
@@ -59,7 +59,7 @@ export default function LoginPage() {
           <Text style={globalStyles.buttonText}>Log In</Text>
         </Pressable>
 
-        <Pressable onPress={showComingSoonAlert}>
+        <Pressable onPress={() => navigation.navigate('SignUpPage')}>
           <Text style={globalStyles.link}>Create Account</Text>
         </Pressable>
         <Pressable onPress={showComingSoonAlert}>
