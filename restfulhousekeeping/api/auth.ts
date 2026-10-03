@@ -7,6 +7,18 @@ type AuthResponse = {
   user: User;
 };
 
+type UsernameAvailabilityResponse = {
+  available: boolean;
+};
+
+export function checkUsernameAvailability(username: string) {
+  return request<UsernameAvailabilityResponse>({
+    method: 'GET',
+    url: '/api/v1/auth/username-availability',
+    params: { username },
+  });
+}
+
 export function register(payload: CreateUserPayload) {
   return request<AuthResponse>({
     method: 'POST',

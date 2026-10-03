@@ -39,7 +39,7 @@ export function useCreateUser() {
 
     onError: (error) => {
       console.error('Create user error:', error);
-      Alert.alert('Unable to register', 'The account could not be created.');
+      Alert.alert('Unable to register', error.message);
     },
   });
 }

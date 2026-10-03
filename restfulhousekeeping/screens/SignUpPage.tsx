@@ -30,6 +30,7 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 import { useCreateUser } from '@/hooks/useUsers';
+import { checkUsernameAvailability } from '@/api/auth';
 
 type SignUpForm = {
   firstName: string;
@@ -62,8 +63,9 @@ export default function SignUpPage() {
     watch,
     setValue,
     clearErrors,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValidating },
   } = useForm<SignUpForm>({
+    mode: 'onBlur',
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -170,9 +172,26 @@ export default function SignUpPage() {
             name='username'
             rules={{
               required: 'Username is required',
+
               minLength: {
                 value: 3,
                 message: 'Username must be at least 3 characters',
+              },
+
+              validate: async (value) => {
+                const username = value.trim();
+
+                if (username.length < 3) {
+                  return true;
+                }
+
+                try {
+                  const result = await checkUsernameAvailability(username);
+
+                  return result.available || 'Username is already taken';
+                } catch {
+                  return 'Unable to check username availability';
+                }
               },
             }}
             render={({ field: { value, onChange, onBlur } }) => (
