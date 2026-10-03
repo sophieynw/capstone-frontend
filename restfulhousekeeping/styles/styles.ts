@@ -70,4 +70,45 @@ export const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
+
+  inputError: {
+    borderColor: '#d32f2f',
+  },
+
+  errorText: {
+    color: '#d32f2f',
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 10,
+  },
+
+  roleRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 6,
+    marginBottom: 12,
+  },
+
+  roleButton: {
+    flex: 1,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 16,
+  },
+
+  selectedRole: {
+    backgroundColor: '#32cbb6',
+    borderColor: '#32cbb6',
+  },
+
+  selectedRoleText: {
+    color: '#ffffff',
+    fontWeight: '700',
+  },
+
+  disabledButton: {
+    opacity: 0.6,
+  },
 });

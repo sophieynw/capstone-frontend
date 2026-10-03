@@ -1,14 +1,22 @@
 // api/auth.ts
 import { request } from './apiClient';
-import { User } from '@/types/entityTypes';
+import { CreateUserPayload, User } from '@/types/entityTypes';
 
-type LoginResponse = {
+type AuthResponse = {
   token: string;
   user: User;
 };
 
+export function register(payload: CreateUserPayload) {
+  return request<AuthResponse>({
+    method: 'POST',
+    url: '/api/v1/auth/register',
+    data: payload,
+  });
+}
+
 export function authenticate(username: string, password: string) {
-  return request<LoginResponse>({
+  return request<AuthResponse>({
     method: 'POST',
     url: '/api/v1/auth/authenticate',
     data: {
