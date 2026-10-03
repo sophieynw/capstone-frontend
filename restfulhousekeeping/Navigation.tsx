@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthContext } from '@/auth/AuthContext';
 import LoginPage from './screens/LoginPage';
+import SignUpPage from './screens/SignUpPage';
 import MainPage from './screens/MainPage';
 import CleaningDetailsScreen from '@/screens/CleaningDetailsScreen';
 import ManageTeamScreen from '@/screens/manager/ManageTeamScreen';
@@ -25,7 +26,14 @@ export default function Navigation() {
         {token ? (
           <Stack.Screen name='MainPage' component={MainPage} />
         ) : (
-          <Stack.Screen name='LoginPage' component={LoginPage} />
+          <>
+            <Stack.Screen name='LoginPage' component={LoginPage} />
+            <Stack.Screen
+              name='SignUpPage'
+              component={SignUpPage}
+              options={{ presentation: 'modal' }}
+            />
+          </>
         )}
         <Stack.Screen
           name='CleaningDetailsScreen'

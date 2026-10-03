@@ -141,6 +141,18 @@ export interface UpdatePropertyPayload {
   managerId?: number;
 }
 
+export interface CreateUserPayload {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  role: Role;
+  organizationId?: number;
+  organizationName?: string;
+}
+
 export interface UpdateUserPayload {
   firstName?: string;
   lastName?: string;

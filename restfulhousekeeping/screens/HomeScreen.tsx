@@ -13,7 +13,7 @@ import {
 import { Cleaning, Role } from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
 import { usePropertyById } from '@/hooks/useProperties';
-import { useCleanerById } from '@/hooks/useCleaners';
+import { useCleanerById } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
 import { Plus, UsersRound } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
