@@ -1,19 +1,8 @@
 import { Controller, useForm } from 'react-hook-form';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
-
 import '../global.css';
 import { styles } from '@/styles/styles';
-import { globalStyles } from '@/styles/globalStyles';
 import { Role } from '@/types/entityTypes';
 import { useOrganizations } from '@/hooks/useOrganizations';
 import {
@@ -46,13 +35,10 @@ type SignUpForm = {
 };
 
 export default function SignUpPage() {
-  const insets = useSafeAreaInsets();
-
   const {
     data: organizations,
     isPending: isOrganizationsPending,
     isError: isOrganizationsError,
-    error: organizationsError,
   } = useOrganizations();
   const createUser = useCreateUser();
 
@@ -63,7 +49,7 @@ export default function SignUpPage() {
     watch,
     setValue,
     clearErrors,
-    formState: { errors, isSubmitting, isValidating },
+    formState: { errors, isSubmitting },
   } = useForm<SignUpForm>({
     mode: 'onBlur',
     defaultValues: {
@@ -106,22 +92,18 @@ export default function SignUpPage() {
   };
 
   return (
-    // <KeyboardAvoidingView
-    //   style={styles.screen}
-    //   behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    // >
     <ScrollView
       style={styles.modalScreen}
       contentContainerStyle={styles.modalScreenContent}
       keyboardShouldPersistTaps='handled'
     >
-      {/*<View style={{ height: insets.top }} />*/}
       {/* Header */}
       <Text style={styles.modalHeader}>
         <Heading size='2xl'>Create Account</Heading>
       </Text>
 
-      <View style={globalStyles.card}>
+      {/* Content */}
+      <View style={styles.formCard}>
         <Text>First Name</Text>
         <Controller
           control={control}
@@ -129,10 +111,7 @@ export default function SignUpPage() {
           rules={{ required: 'First name is required' }}
           render={({ field: { value, onChange, onBlur } }) => (
             <TextInput
-              style={[
-                globalStyles.input,
-                errors.firstName && styles.inputError,
-              ]}
+              style={[styles.input, errors.firstName && styles.inputError]}
               placeholder='Enter your first name'
               value={value}
               onChangeText={onChange}
@@ -153,7 +132,7 @@ export default function SignUpPage() {
           rules={{ required: 'Last name is required' }}
           render={({ field: { value, onChange, onBlur } }) => (
             <TextInput
-              style={[globalStyles.input, errors.lastName && styles.inputError]}
+              style={[styles.input, errors.lastName && styles.inputError]}
               placeholder='Enter your last name'
               value={value}
               onChangeText={onChange}
@@ -173,19 +152,15 @@ export default function SignUpPage() {
           name='username'
           rules={{
             required: 'Username is required',
-
             minLength: {
               value: 3,
               message: 'Username must be at least 3 characters',
             },
-
             validate: async (value) => {
               const username = value.trim();
-
               if (username.length < 3) {
                 return true;
               }
-
               try {
                 const result = await checkUsernameAvailability(username);
 
@@ -197,7 +172,7 @@ export default function SignUpPage() {
           }}
           render={({ field: { value, onChange, onBlur } }) => (
             <TextInput
-              style={[globalStyles.input, errors.username && styles.inputError]}
+              style={[styles.input, errors.username && styles.inputError]}
               placeholder='Choose a username'
               value={value}
               onChangeText={onChange}
@@ -225,7 +200,7 @@ export default function SignUpPage() {
           }}
           render={({ field: { value, onChange, onBlur } }) => (
             <TextInput
-              style={[globalStyles.input, errors.email && styles.inputError]}
+              style={[styles.input, errors.email && styles.inputError]}
               placeholder='Enter your email'
               value={value}
               onChangeText={onChange}
@@ -254,10 +229,7 @@ export default function SignUpPage() {
           }}
           render={({ field: { value, onChange, onBlur } }) => (
             <TextInput
-              style={[
-                globalStyles.input,
-                errors.phoneNumber && styles.inputError,
-              ]}
+              style={[styles.input, errors.phoneNumber && styles.inputError]}
               placeholder='Enter your phone number'
               value={value}
               onChangeText={onChange}
@@ -315,6 +287,7 @@ export default function SignUpPage() {
             </View>
           )}
         />
+
         <Text>Organization</Text>
         {selectedRole === Role.CLEANER ? (
           <>
@@ -342,16 +315,15 @@ export default function SignUpPage() {
                       onValueChange={onChange}
                     >
                       <SelectTrigger
-                        className='w-full'
                         size='md'
                         variant='rounded'
                         style={[
-                          globalStyles.input,
+                          styles.select,
                           errors.organizationId && styles.inputError,
                         ]}
                       >
                         <SelectInput placeholder='Select an organization' />
-                        <SelectIcon className='mr-3' as={ChevronDown} />
+                        <SelectIcon as={ChevronDown} />
                       </SelectTrigger>
                       <SelectPortal useRNModal>
                         <SelectBackdrop />
@@ -389,7 +361,7 @@ export default function SignUpPage() {
               render={({ field: { value, onChange, onBlur } }) => (
                 <TextInput
                   style={[
-                    globalStyles.input,
+                    styles.input,
                     errors.organizationName && styles.inputError,
                   ]}
                   placeholder='Enter your organization name'
@@ -421,7 +393,7 @@ export default function SignUpPage() {
           }}
           render={({ field: { value, onChange, onBlur } }) => (
             <TextInput
-              style={[globalStyles.input, errors.password && styles.inputError]}
+              style={[styles.input, errors.password && styles.inputError]}
               placeholder='Enter at least 8 characters'
               value={value}
               onChangeText={onChange}
@@ -448,7 +420,7 @@ export default function SignUpPage() {
           render={({ field: { value, onChange, onBlur } }) => (
             <TextInput
               style={[
-                globalStyles.input,
+                styles.input,
                 errors.confirmPassword && styles.inputError,
               ]}
               placeholder='Enter your password again'
@@ -468,16 +440,15 @@ export default function SignUpPage() {
         )}
 
         <Pressable
-          style={[globalStyles.button, isSubmitting && styles.disabledButton]}
+          style={[styles.button, isSubmitting && styles.disabledButton]}
           onPress={() => void handleSubmit(handleSignUp)()}
           disabled={isSubmitting}
         >
-          <Text style={globalStyles.buttonText}>
+          <Text style={styles.buttonText}>
             {isSubmitting ? 'Creating Account...' : 'Create Account'}
           </Text>
         </Pressable>
       </View>
     </ScrollView>
-    // </KeyboardAvoidingView>
   );
 }

@@ -71,24 +71,35 @@ export const styles = StyleSheet.create({
     height: 70,
   },
 
+  formCard: {
+    width: '100%',
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 24,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 16,
+    padding: 12,
+    marginTop: 6,
+    marginBottom: 12,
+  },
   inputError: {
     borderColor: '#d32f2f',
   },
-
   errorText: {
     color: '#d32f2f',
     fontSize: 12,
     marginTop: -8,
     marginBottom: 10,
   },
-
   roleRow: {
     flexDirection: 'row',
     gap: 10,
     marginTop: 6,
     marginBottom: 12,
   },
-
   roleButton: {
     flex: 1,
     padding: 12,
@@ -97,17 +108,34 @@ export const styles = StyleSheet.create({
     borderColor: '#cccccc',
     borderRadius: 16,
   },
-
+  select: {
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
+    marginTop: 6,
+    marginBottom: 12,
+  },
   selectedRole: {
     backgroundColor: '#32cbb6',
     borderColor: '#32cbb6',
   },
-
   selectedRoleText: {
     color: '#ffffff',
     fontWeight: '700',
   },
-
+  button: {
+    backgroundColor: '#32cbb6',
+    padding: 12,
+    alignItems: 'center',
+    marginTop: 8,
+    borderRadius: 16,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontWeight: '700',
+  },
   disabledButton: {
     opacity: 0.6,
   },
