@@ -1,6 +1,7 @@
 // api/propertiesApi.ts
 import { request } from '@/api/apiClient';
 import {
+  CalendarImportResponse,
   CreatePropertyPayload,
   Property,
   UpdatePropertyPayload,
@@ -37,10 +38,24 @@ export function deletePropertyById(propertyId: number): Promise<Property> {
   });
 }
 
-export function updatePropertyById(propertyId: number, property: UpdatePropertyPayload): Promise<Property> {
+export function updatePropertyById(
+  propertyId: number,
+  property: UpdatePropertyPayload,
+): Promise<Property> {
   return request<Property>({
     method: 'PATCH',
     url: `/properties/${propertyId}`,
     data: property,
+  });
+}
+
+export function importAirbnbCalendar(
+  propertyId: number,
+  icalUrl: string,
+): Promise<CalendarImportResponse> {
+  return request<CalendarImportResponse>({
+    method: 'POST',
+    url: `/properties/${propertyId}/calendar-imports`,
+    data: { icalUrl },
   });
 }
