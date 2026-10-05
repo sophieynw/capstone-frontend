@@ -69,6 +69,7 @@ export interface Property {
   country: string | null;
   checkoutTime: string;
   checkinTime: string;
+  airbnbCalendarConnected: boolean;
   accessInstructions: string | null;
 }
 

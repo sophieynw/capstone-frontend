@@ -168,7 +168,13 @@ export default function PropertyDetailsScreen({ route }: any) {
 
       {/* Content */}
       <View style={styles.modalMain}>
-        <Pressable onPress={() => setShowAirbnbModal(true)}>
+        <Pressable
+          onPress={() => setShowAirbnbModal(true)}
+          disabled={property.airbnbCalendarConnected}
+          accessibilityState={{
+            disabled: property.airbnbCalendarConnected,
+          }}
+        >
           <Card style={styles.mediumCardWithAvatar}>
             <View style={styles.mediumCardWithAvatarLeft}>
               <Avatar>
@@ -177,7 +183,11 @@ export default function PropertyDetailsScreen({ route }: any) {
               </Avatar>
             </View>
             <View className='w-full'>
-              <Text>Import Airbnb calendar</Text>
+              <Text>
+                {property.airbnbCalendarConnected
+                  ? 'Your Airbnb calendar is connected!'
+                  : 'Import Airbnb calendar'}
+              </Text>
             </View>
           </Card>
         </Pressable>
