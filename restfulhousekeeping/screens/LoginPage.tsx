@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Text, View, TextInput, Pressable, Alert } from 'react-native';
 import '../global.css';
 import { globalStyles } from '@/styles/globalStyles';
+import { styles } from '@/styles/styles';
 import { Image } from 'react-native';
 import { useState } from 'react';
 import { useContext } from 'react';
@@ -37,10 +38,10 @@ export default function LoginPage({ navigation }: any) {
         style={globalStyles.logoImage}
       />
 
-      <View style={globalStyles.card}>
+      <View style={styles.formCard}>
         <Text>Username</Text>
         <TextInput
-          style={globalStyles.input}
+          style={styles.input}
           placeholder='Enter your username'
           value={username}
           onChangeText={setUsername}
@@ -48,22 +49,22 @@ export default function LoginPage({ navigation }: any) {
 
         <Text>Password</Text>
         <TextInput
-          style={globalStyles.input}
+          style={styles.input}
           placeholder='Enter your password'
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
 
-        <Pressable style={globalStyles.button} onPress={handleLogin}>
-          <Text style={globalStyles.buttonText}>Log In</Text>
+        <Pressable style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Log In</Text>
         </Pressable>
 
         <Pressable onPress={() => navigation.navigate('SignUpPage')}>
-          <Text style={globalStyles.link}>Create Account</Text>
+          <Text style={styles.link}>Create Account</Text>
         </Pressable>
         <Pressable onPress={showComingSoonAlert}>
-          <Text style={globalStyles.link}>Forgot Password</Text>
+          <Text style={styles.link}>Forgot Password</Text>
         </Pressable>
       </View>
 

@@ -71,6 +71,7 @@ export const styles = StyleSheet.create({
     height: 70,
   },
 
+  // TODO: remove margins
   formCard: {
     width: '100%',
     backgroundColor: '#ffffff',
@@ -138,5 +139,10 @@ export const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
+  },
+  link: {
+    textAlign: 'center',
+    marginTop: 12,
+    textDecorationLine: 'underline',
   },
 });
