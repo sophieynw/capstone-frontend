@@ -5,7 +5,7 @@ import { ChecklistItem, Role } from '@/types/entityTypes';
 import { usePropertyById } from '@/hooks/useProperties';
 import { toFriendlyDate } from '@/utils/helpers';
 import { useContext, useState } from 'react';
-import { useCleaners } from '@/hooks/useCleaners';
+import { useCleaners } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
 import {

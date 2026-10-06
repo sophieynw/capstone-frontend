@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/avatar';
 import { styles } from '@/styles/styles';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
-import { useCleaners, useGetAllAvailableCleaners } from '@/hooks/useCleaners';
+import { useCleaners, useGetAllAvailableCleaners } from '@/hooks/useUsers';
 
 import { User } from '@/types/entityTypes';
 

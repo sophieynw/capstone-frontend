@@ -67,6 +67,9 @@ export interface Property {
   province: string | null;
   postalCode: string | null;
   country: string | null;
+  checkoutTime: string | null;
+  checkinTime: string | null;
+  airbnbCalendarConnected: boolean;
   accessInstructions: string | null;
 }
 
@@ -125,6 +128,8 @@ export interface CreatePropertyPayload {
     province: string;
     postalCode: string;
     country: string;
+    checkoutTime: string;
+    checkinTime: string;
     accessInstructions: string | null;
   };
   checklistItems: CreateChecklistItemPayload[];
@@ -137,8 +142,33 @@ export interface UpdatePropertyPayload {
   province?: string;
   postalCode?: string;
   country?: string;
+  checkoutTime?: string;
+  checkinTime?: string;
   accessInstructions?: string;
   managerId?: number;
+}
+
+export interface CalendarImportResponse {
+  propertyId: number;
+  eventsFound: number;
+  reservationsFound: number;
+  cleaningsCreated: number;
+  duplicatesSkipped: number;
+  pastReservationsIgnored: number;
+  eventsIgnored: number;
+  cleaningIds: number[];
+}
+
+export interface CreateUserPayload {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  role: Role;
+  organizationId?: number;
+  organizationName?: string;
 }
 
 export interface UpdateUserPayload {

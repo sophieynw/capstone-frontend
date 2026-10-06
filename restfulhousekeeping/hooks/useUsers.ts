@@ -1,15 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  getAllAvailableCleaners,
-  getAllCleaners,
-  getUserById,
-  updateUserById,
-} from '@/api/usersApi';
+import { getAllCleaners, getAllAvailableCleaners, getUserById, updateUserById } from '@/api/usersApi';
 import { AuthContext } from '@/auth/AuthContext';
 import { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { UpdateUserPayload } from '@/types/entityTypes';
 import { Alert } from 'react-native';
+import { register } from '@/api/auth';
 
 export function useCleanerById(userId: number | null) {
   return useQuery({
@@ -27,6 +23,24 @@ export function useCleaners() {
     queryKey: ['cleaners', organizationId],
     queryFn: () => getAllCleaners(organizationId!),
     enabled: !!organizationId,
+  });
+}
+
+export function useCreateUser() {
+  const { login } = useContext(AuthContext);
+
+  return useMutation({
+    mutationFn: register,
+
+    onSuccess: async ({ token, user }) => {
+      await login(token, user);
+      Alert.alert('Account created', 'Your account was created successfully.');
+    },
+
+    onError: (error) => {
+      console.error('Create user error:', error);
+      Alert.alert('Unable to register', error.message);
+    },
   });
 }
 
