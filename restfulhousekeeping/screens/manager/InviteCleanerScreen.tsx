@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/avatar';
 import { styles } from '@/styles/styles';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
-import { useCleaners, useGetAllAvailableCleaners,useUpdateUser } from '@/hooks/useCleaners';
+import { useCleaners, useGetAllAvailableCleaners,useUpdateUser } from '@/hooks/useUsers';
 
 import { User } from '@/types/entityTypes';
 import { AuthContext } from '@/auth/AuthContext';
