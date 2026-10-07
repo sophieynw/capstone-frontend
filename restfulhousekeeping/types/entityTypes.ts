@@ -176,4 +176,5 @@ export interface UpdateUserPayload {
   lastName?: string;
   email?: string;
   phoneNumber?: string;
+  organization?: Organization;
 }

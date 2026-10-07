@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getAllCleaners, getUserById, updateUserById } from '@/api/usersApi';
+import { getAllCleaners, getAllAvailableCleaners, getUserById, updateUserById } from '@/api/usersApi';
 import { AuthContext } from '@/auth/AuthContext';
 import { useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -44,6 +44,15 @@ export function useCreateUser() {
   });
 }
 
+export function useGetAllAvailableCleaners() {
+  const { user } = useContext(AuthContext);
+  return useQuery({
+    queryKey: ['cleaners', user?.id],
+    queryFn: () => getAllAvailableCleaners(),
+    enabled: user?.id !== undefined
+  });
+}
+
 export function useUpdateUser() {
   const queryClient = useQueryClient();
   const navigation = useNavigation();
@@ -59,15 +68,28 @@ export function useUpdateUser() {
     }) => updateUserById(userId, user),
 
     onSuccess: async (updatedUser) => {
-      await update(updatedUser);
+      const isCurrentUser = updatedUser.id === user?.id;
+
+      if (isCurrentUser) {
+        await update(updatedUser);
+      }
 
       await queryClient.invalidateQueries({
         queryKey: ['cleaner', user?.id],
       });
 
-      Alert.alert('Success', 'The user was updated.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      Alert.alert(
+        'Success',
+        isCurrentUser
+          ? 'Your profile was updated.'
+          : 'The cleaner was successfully added to your organization.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack(),
+          },
+        ],
+      );
     },
 
     onError: (error) => {
