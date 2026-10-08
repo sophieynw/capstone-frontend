@@ -41,3 +41,12 @@ export function completeCleaning(cleaningId: number): Promise<Cleaning> {
     url: `/cleanings/${cleaningId}/complete`,
   });
 }
+
+export function getCompletedCleanings(
+  userId: number,
+): Promise<Cleaning[]> {
+  return request<Cleaning[]>({
+    method: 'GET',
+    url: `/cleanings/completed/${userId}`,
+  });
+}
