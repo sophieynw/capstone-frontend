@@ -38,7 +38,10 @@ import {
   SelectPortal,
   SelectTrigger,
 } from '@/components/ui/select';
-import { useCompleteCleaning } from '@/hooks/useCleanings';
+import {
+  useCompleteCleaning,
+  useDeleteCleaning,
+} from '@/hooks/useCleanings';
 
 const UNASSIGNED_CLEANER_VALUE = 'unassigned';
 
@@ -48,9 +51,11 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
   const [notes, setNotes] = useState('');
   const [photos, setPhotos] = useState<ImagePickerAsset[]>([]);
+
   const [cleanerSelected, setCleanerSelected] = useState(
     cleaning?.cleanerId?.toString() ?? UNASSIGNED_CLEANER_VALUE,
   );
+
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(
     cleaning?.cleaningChecklistItems ?? [],
   );
@@ -61,17 +66,21 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     isError: isPropertyError,
     error: propertyError,
   } = usePropertyById(propertyId);
+
   const {
     data: cleaners,
     isPending: isCleanersPending,
     isError: isCleanersError,
     error: cleanersError,
   } = useCleaners();
+
   const completeCleaningMutation = useCompleteCleaning();
+  const deleteCleaningMutation = useDeleteCleaning();
 
   const selectedCleaner = cleaners?.find(
     (cleaner) => cleaner.id.toString() === cleanerSelected,
   );
+
   const selectedCleanerLabel =
     cleanerSelected === UNASSIGNED_CLEANER_VALUE
       ? 'Unassigned'
@@ -86,6 +95,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
   if (isPropertyError || isCleanersError) {
     console.error('Property error:', propertyError);
     console.error('Cleaners error:', cleanersError);
+
     return <Text>Could not load properties.</Text>;
   }
 
@@ -94,7 +104,10 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
       'Complete Cleaning',
       'Are you sure you want to mark this cleaning as complete?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
         {
           text: 'Yes',
           onPress: () => {
@@ -115,6 +128,26 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     );
   }
 
+  function handleDeleteCleaning() {
+    Alert.alert(
+      'Delete Cleaning',
+      'Are you sure you want to delete this cleaning?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteCleaningMutation.mutate(cleaning.id);
+          },
+        },
+      ],
+    );
+  }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -128,10 +161,14 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           <Button
             className='rounded-full'
             size='lg'
-            onPress={showComingSoonAlert}
+            onPress={handleDeleteCleaning}
+            isDisabled={deleteCleaningMutation.isPending}
           >
             <ButtonIcon as={Trash} />
-            <ButtonText>Delete</ButtonText>
+
+            <ButtonText>
+              {deleteCleaningMutation.isPending ? 'Deleting...' : 'Delete'}
+            </ButtonText>
           </Button>
         ) : (
           <Button
@@ -143,6 +180,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
             }
           >
             <ButtonIcon as={SquareCheckBig} />
+
             <ButtonText>
               {completeCleaningMutation.isPending ? 'Completing...' : 'Done'}
             </ButtonText>
@@ -156,6 +194,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         <Card style={styles.mediumCardWithAvatar}>
           <View style={styles.mediumCardWithAvatarLeft}>
             <Heading size='md'>Cleaning Info</Heading>
+
             <View className='gap-1'>
               <Text>
                 Starts:{' '}
@@ -163,18 +202,22 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                   ? toFriendlyDate(cleaning.dateTimeStart)
                   : 'Loading...'}
               </Text>
+
               <Text>
                 Ends:{' '}
                 {cleaning?.dateTimeEnd
                   ? toFriendlyDate(cleaning.dateTimeEnd)
                   : 'Loading...'}
               </Text>
+
               <Text>
                 Status: {cleaning?.isComplete ? 'Complete' : 'Not Started'}
               </Text>
+
               {user?.role == Role.MANAGER && (
                 <View className='flex-row items-center gap-2'>
                   <Text>Cleaner:</Text>
+
                   <Select
                     selectedValue={cleanerSelected}
                     initialLabel={selectedCleanerLabel}
@@ -184,16 +227,20 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                       <SelectInput placeholder='Unassigned' />
                       <SelectIcon className='mr-3' as={ChevronDown} />
                     </SelectTrigger>
+
                     <SelectPortal useRNModal>
                       <SelectBackdrop />
+
                       <SelectContent>
                         <SelectDragIndicatorWrapper>
                           <SelectDragIndicator />
                         </SelectDragIndicatorWrapper>
+
                         <SelectItem
                           label='Unassigned'
                           value={UNASSIGNED_CLEANER_VALUE}
                         />
+
                         {cleaners?.map((cleanerItem) => (
                           <SelectItem
                             key={cleanerItem.id}
@@ -210,7 +257,10 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           </View>
 
           <Avatar style={styles.mediumCardWithAvatarRight}>
-            <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
+            <AvatarFallbackText>
+              Example Profile Picture
+            </AvatarFallbackText>
+
             {cleanerSelected !== UNASSIGNED_CLEANER_VALUE ? (
               <AvatarImage
                 source={{
@@ -226,12 +276,15 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         {/* Property Info Card */}
         <Card style={styles.mediumCard}>
           <Heading size='md'>Property Info</Heading>
+
           <View className='gap-1'>
             <Text>{property?.name}</Text>
+
             <Text>
               {property?.unit ? `${property?.unit}-` : ''}
               {property?.street}, {property?.city}
             </Text>
+
             <Text>{property?.accessInstructions}</Text>
           </View>
         </Card>
@@ -245,6 +298,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
               onItemsChange={setChecklistItems}
             />
           )}
+
           {/* Cleaner View */}
           {user?.role == Role.CLEANER && (
             <CleanerChecklistSection
@@ -255,17 +309,24 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
         {/* Notes Section Card */}
         <Card style={styles.mediumCard}>
-          <NotesSection notes={notes} setNotes={setNotes} />
+          <NotesSection
+            notes={notes}
+            setNotes={setNotes}
+          />
         </Card>
 
         {/* Photos Section Card */}
         {user?.role == Role.CLEANER && (
           <Card style={styles.mediumCard}>
-            <PhotosSection photos={photos} onPhotosChange={setPhotos} />
+            <PhotosSection
+              photos={photos}
+              onPhotosChange={setPhotos}
+            />
           </Card>
         )}
       </View>
 
+      {/* Cleaner Report Issue */}
       {user?.role == Role.CLEANER && (
         <Button
           size='lg'
@@ -273,14 +334,16 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           className='rounded-full'
           onPress={showComingSoonAlert}
         >
-          <ButtonIcon className='text-red-500' as={CircleAlert} />
-          <ButtonText className='text-red-500'>Report an Issue</ButtonText>
+          <ButtonIcon
+            className='text-red-500'
+            as={CircleAlert}
+          />
+
+          <ButtonText className='text-red-500'>
+            Report an Issue
+          </ButtonText>
         </Button>
       )}
-
-      {/*<Pressable style={globalStyles.button} onPress={console.debug()}>*/}
-      {/*  <Text style={globalStyles.buttonText}>Checkout & Submit</Text>*/}
-      {/*</Pressable>*/}
     </ScrollView>
   );
 }
