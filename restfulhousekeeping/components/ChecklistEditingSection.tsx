@@ -6,6 +6,7 @@ import { Plus, Trash } from 'lucide-react-native';
 import { ChecklistItem } from '@/types/entityTypes';
 import { styles } from '@/styles/styles';
 import { Card } from '@/components/ui/card';
+import { Icon } from '@/components/ui/icon';
 
 type ChecklistItemInputProps = {
   item: ChecklistItem;
@@ -48,7 +49,7 @@ function ChecklistItemInput({
         accessibilityRole='button'
         accessibilityLabel={`Delete ${item.description}`}
       >
-        <Trash size={20} />
+        <Icon as={Trash} size='sm' className='text-destructive' />
       </Pressable>
     </View>
   );
@@ -173,7 +174,7 @@ export function ChecklistEditingSection({
               accessibilityRole='button'
               accessibilityLabel='Add checklist item'
             >
-              <Plus size={20} />
+              <Icon as={Plus} size='sm' />
             </Pressable>
           </View>
         </View>

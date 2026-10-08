@@ -9,7 +9,7 @@ import { styles } from '@/styles/styles';
 import { SaveIcon } from 'lucide-react-native';
 import { usePropertyAll } from '@/hooks/useProperties';
 import { ChecklistItem, Role } from '@/types/entityTypes';
-import { useCleaners } from '@/hooks/useCleaners';
+import { useCleaners } from '@/hooks/useUsers';
 import { ChecklistSection } from '@/components/ChecklistSection';
 import { AuthContext } from '@/auth/AuthContext';
 import { useCreateCleaning } from '@/hooks/useCleanings';
