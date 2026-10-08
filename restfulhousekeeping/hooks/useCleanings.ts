@@ -5,6 +5,7 @@ import { AuthContext } from '@/auth/AuthContext';
 import {
   completeCleaning,
   createCleaning,
+  deleteCleaning,
   getCleaningById,
   getNextCleaningByProperty,
   getUpcomingCleanings,
@@ -106,6 +107,38 @@ export function useCompleteCleaning() {
         updatedCleaning,
       );
       queryClient.invalidateQueries({ queryKey: ['upcoming-cleanings'] });
+    },
+  });
+}
+
+export function useDeleteCleaning() {
+  const queryClient = useQueryClient();
+  const navigation = useNavigation();
+
+  return useMutation({
+    mutationFn: deleteCleaning,
+
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['upcoming-cleanings'],
+        refetchType: 'all',
+      });
+
+      Alert.alert('Success', 'The cleaning was deleted.', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    },
+
+    onError: (error) => {
+      console.error('Delete cleaning error:', error);
+
+      Alert.alert(
+        'Unable to delete',
+        'The cleaning could not be deleted.',
+      );
     },
   });
 }

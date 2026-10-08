@@ -41,3 +41,10 @@ export function completeCleaning(cleaningId: number): Promise<Cleaning> {
     url: `/cleanings/${cleaningId}/complete`,
   });
 }
+
+export function deleteCleaning(cleaningId: number): Promise<void> {
+  return request<void>({
+    method: 'DELETE',
+    url: `/cleanings/${cleaningId}`,
+  });
+}
