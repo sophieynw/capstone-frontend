@@ -4,17 +4,26 @@ import { AuthContext } from '@/auth/AuthContext';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
-import { useUpcomingCleanings } from '@/hooks/useCleanings';
+import { useUpcomingCleanings,  useCompletedCleanings,} from '@/hooks/useCleanings';
 import { toTitleCase } from '@/utils/helpers';
 import { styles } from '@/styles/styles';
 import { LogOut, UserPen } from 'lucide-react-native';
 import { Role } from '@/types/entityTypes';
-
+import { usePropertyAll } from '@/hooks/useProperties';
+import { useCleaners } from '@/hooks/useUsers';
+import { useAvailabilities } from '@/hooks/useAvailabilities';
 // region Manager Summary Card
 
 export default function ProfileScreen({ navigation }: any) {
   const { user, logout } = useContext(AuthContext);
   const { data: cleanings } = useUpcomingCleanings();
+  const { data: completedCleanings } = useCompletedCleanings();
+  const { data: properties } = usePropertyAll();
+  const { data: cleaners } = useCleaners();
+  const { data: availabilities } = useAvailabilities(
+  user?.role === Role.CLEANER ? user.id : undefined,
+);
+
 
   const handleLogout = async () => {
     try {
@@ -29,6 +38,16 @@ export default function ProfileScreen({ navigation }: any) {
       Alert.alert('Logout failed', 'Something went wrong while logging out.');
     }
   };
+
+  function formatTime(time: string) {
+    const [hourString, minute] = time.split(':');
+    const hour = Number(hourString);
+
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+
+    return `${displayHour}:${minute} ${period}`;
+  }
 
   return (
     <ScrollView
@@ -56,8 +75,8 @@ export default function ProfileScreen({ navigation }: any) {
           <Heading size='lg'>Account Summary</Heading>
           <View className='gap-2'>
             <Text>Upcoming Cleanings: {cleanings?.length ?? 0}</Text>
-            <Text>Properties: Coming soon</Text>
-            <Text>Team Members: Coming soon</Text>
+            <Text>Properties: {properties?.length ?? 0}</Text>
+            <Text>Team Members: {cleaners?.length ?? 0}</Text>
           </View>
         </Card>
       )}
@@ -67,8 +86,18 @@ export default function ProfileScreen({ navigation }: any) {
           <Heading size='lg'>Cleaner Summary</Heading>
           <View className='gap-2'>
             <Text>Assigned Cleanings: {cleanings?.length ?? 0}</Text>
-            <Text>Completed Cleanings: Coming soon</Text>
-            <Text>Availability: Coming soon</Text>
+            <Text>
+              Completed Cleanings: {completedCleanings?.length ?? 0}
+            </Text>
+            <Text>Availability:</Text>
+
+            {availabilities?.map((availability) => (
+              <Text key={availability.id}>
+                {toTitleCase(availability.dayOfWeek)}:{' '}
+                {formatTime(availability.startTime)} -{' '}
+                {formatTime(availability.endTime)}
+              </Text>
+          ))}
           </View>
         </Card>
       )}
