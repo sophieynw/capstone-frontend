@@ -40,7 +40,10 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 
-import { useCompleteCleaning } from '@/hooks/useCleanings';
+import {
+  useCompleteCleaning,
+  useDeleteCleaning,
+} from '@/hooks/useCleanings';
 
 import {
   Modal,
@@ -91,6 +94,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
   } = useCleaners();
 
   const completeCleaningMutation = useCompleteCleaning();
+  const deleteCleaningMutation = useDeleteCleaning();
 
   const selectedCleaner = cleaners?.find(
     (cleaner) => cleaner.id.toString() === cleanerSelected,
@@ -143,6 +147,29 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     );
   }
 
+  function handleDeleteCleaning() {
+    Alert.alert(
+      'Delete Cleaning',
+      'Are you sure you want to delete this cleaning?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteCleaningMutation.mutate({
+              cleaningId: cleaning.id,
+              propertyId: cleaning.propertyId,
+            });
+          },
+        },
+      ],
+    );
+  }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -156,10 +183,14 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           <Button
             className='rounded-full'
             size='lg'
-            onPress={showComingSoonAlert}
+            onPress={handleDeleteCleaning}
+            isDisabled={deleteCleaningMutation.isPending}
           >
             <ButtonIcon as={Trash} />
-            <ButtonText>Delete</ButtonText>
+
+            <ButtonText>
+              {deleteCleaningMutation.isPending ? 'Deleting...' : 'Delete'}
+            </ButtonText>
           </Button>
         ) : (
           <Button
@@ -300,13 +331,19 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
         {/* Notes Section Card */}
         <Card style={styles.mediumCard}>
-          <NotesSection notes={notes} setNotes={setNotes} />
+          <NotesSection
+            notes={notes}
+            setNotes={setNotes}
+          />
         </Card>
 
         {/* Photos Section Card */}
         {user?.role == Role.CLEANER && (
           <Card style={styles.mediumCard}>
-            <PhotosSection photos={photos} onPhotosChange={setPhotos} />
+            <PhotosSection
+              photos={photos}
+              onPhotosChange={setPhotos}
+            />
           </Card>
         )}
       </View>
@@ -319,7 +356,11 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           className='rounded-full'
           onPress={() => setShowIssueModal(true)}
         >
-          <ButtonIcon className='text-red-500' as={CircleAlert} />
+          <ButtonIcon
+            className='text-red-500'
+            as={CircleAlert}
+          />
+
 
           <ButtonText className='text-red-500'>
             Report an Issue

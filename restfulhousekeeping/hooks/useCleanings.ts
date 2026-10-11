@@ -5,6 +5,7 @@ import { AuthContext } from '@/auth/AuthContext';
 import {
   completeCleaning,
   createCleaning,
+  deleteCleaning,
   getCleaningById,
   getNextCleaningByProperty,
   getUpcomingCleanings,
@@ -106,6 +107,52 @@ export function useCompleteCleaning() {
         updatedCleaning,
       );
       queryClient.invalidateQueries({ queryKey: ['upcoming-cleanings'] });
+    },
+  });
+}
+
+export function useDeleteCleaning() {
+  const queryClient = useQueryClient();
+  const navigation = useNavigation();
+
+  return useMutation({
+    mutationFn: ({ cleaningId }: { cleaningId: number; propertyId: number }) =>
+      deleteCleaning(cleaningId),
+
+    onSuccess: async (_, { cleaningId, propertyId }) => {
+      queryClient.removeQueries({
+        queryKey: ['cleaning-id', cleaningId],
+        exact: true,
+      });
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['upcoming-cleanings'],
+          exact: true,
+          refetchType: 'all',
+        }),
+
+        queryClient.resetQueries({
+          queryKey: ['next-property-cleaning', propertyId],
+          exact: true,
+        }),
+      ]);
+
+      Alert.alert('Success', 'The cleaning was deleted.', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    },
+
+    onError: (error) => {
+      console.error('Delete cleaning error:', error);
+
+      Alert.alert(
+        'Unable to delete',
+        'The cleaning could not be deleted.',
+      );
     },
   });
 }
