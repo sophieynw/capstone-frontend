@@ -26,6 +26,7 @@ import { ChecklistSection } from '@/components/ChecklistSection';
 import { CleanerChecklistSection } from '@/components/CleanerChecklistSection';
 import { PhotosSection } from '@/components/PhotosSection';
 import type { ImagePickerAsset } from 'expo-image-picker';
+
 import {
   Select,
   SelectBackdrop,
@@ -38,10 +39,24 @@ import {
   SelectPortal,
   SelectTrigger,
 } from '@/components/ui/select';
+
 import {
   useCompleteCleaning,
   useDeleteCleaning,
 } from '@/hooks/useCleanings';
+
+import {
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from '@/components/ui/modal';
+
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import { Textarea, TextareaInput } from '@/components/ui/textarea';
 
 const UNASSIGNED_CLEANER_VALUE = 'unassigned';
 
@@ -59,6 +74,10 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(
     cleaning?.cleaningChecklistItems ?? [],
   );
+
+  const [showIssueModal, setShowIssueModal] = useState(false);
+  const [issueType, setIssueType] = useState('');
+  const [issueDescription, setIssueDescription] = useState('');
 
   const {
     data: property,
@@ -326,24 +345,148 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         )}
       </View>
 
-      {/* Cleaner Report Issue */}
+      {/* Report Issue Button */}
       {user?.role == Role.CLEANER && (
         <Button
           size='lg'
           variant='outline'
           className='rounded-full'
-          onPress={showComingSoonAlert}
+          onPress={() => setShowIssueModal(true)}
         >
           <ButtonIcon
             className='text-red-500'
             as={CircleAlert}
           />
 
+
           <ButtonText className='text-red-500'>
             Report an Issue
           </ButtonText>
         </Button>
       )}
+
+      {/* Report Issue Modal */}
+      <Modal
+        isOpen={showIssueModal}
+        onClose={() => setShowIssueModal(false)}
+        size='md'
+        useRNModal
+      >
+        <ModalBackdrop />
+
+        <ModalContent className='rounded-4xl'>
+          <ModalHeader>
+            <Heading size='lg'>Report an Issue</Heading>
+
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+
+          <ModalBody>
+            <Text className='mb-2'>Issue Type</Text>
+
+            <Select
+              selectedValue={issueType}
+              onValueChange={setIssueType}
+            >
+              <SelectTrigger
+                size='md'
+                variant='rounded'
+                className='mb-4'
+              >
+                <SelectInput
+                  className='flex-1'
+                  placeholder='Select issue type'
+                />
+                <SelectIcon className='mr-3' as={ChevronDown} />
+              </SelectTrigger>
+
+              <SelectPortal useRNModal>
+                <SelectBackdrop />
+
+                <SelectContent>
+                  <SelectDragIndicatorWrapper>
+                    <SelectDragIndicator />
+                  </SelectDragIndicatorWrapper>
+
+                  <SelectItem
+                    label='Damage'
+                    value='damage'
+                  />
+
+                  <SelectItem
+                    label='Missing Supplies'
+                    value='missing-supplies'
+                  />
+
+                  <SelectItem
+                    label='Access Problem'
+                    value='access-problem'
+                  />
+
+                  <SelectItem
+                    label='Other'
+                    value='other'
+                  />
+                </SelectContent>
+              </SelectPortal>
+            </Select>
+
+            <Text className='mb-2'>Describe the issue</Text>
+
+            <Textarea className='rounded-2xl'>
+              <TextareaInput
+                placeholder='Example: Broken lamp beside the bed...'
+                value={issueDescription}
+                onChangeText={setIssueDescription}
+              />
+            </Textarea>
+          </ModalBody>
+
+          <ModalFooter className='gap-2'>
+            <Button
+              variant='outline'
+              className='rounded-full'
+              onPress={() => setShowIssueModal(false)}
+            >
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+
+            <Button
+              className='rounded-full'
+              onPress={() => {
+                if (!issueType) {
+                  Alert.alert(
+                    'Missing issue type',
+                    'Please select an issue type.',
+                  );
+                  return;
+                }
+
+                if (!issueDescription.trim()) {
+                  Alert.alert(
+                    'Missing description',
+                    'Please describe the issue.',
+                  );
+                  return;
+                }
+
+                Alert.alert(
+                  'Issue submitted',
+                  'The issue was recorded.',
+                );
+
+                setIssueType('');
+                setIssueDescription('');
+                setShowIssueModal(false);
+              }}
+            >
+              <ButtonText>Submit</ButtonText>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </ScrollView>
   );
 }

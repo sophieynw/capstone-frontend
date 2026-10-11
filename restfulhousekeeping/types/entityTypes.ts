@@ -30,6 +30,7 @@ export interface User {
   email: string;
   phoneNumber: string;
   role: Role;
+  profilePicturePath?: string | null;
 }
 
 export interface Cleaning {
