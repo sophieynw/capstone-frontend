@@ -160,7 +160,10 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            deleteCleaningMutation.mutate(cleaning.id);
+            deleteCleaningMutation.mutate({
+              cleaningId: cleaning.id,
+              propertyId: cleaning.propertyId,
+            });
           },
         },
       ],

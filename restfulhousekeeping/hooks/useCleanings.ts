@@ -116,13 +116,27 @@ export function useDeleteCleaning() {
   const navigation = useNavigation();
 
   return useMutation({
-    mutationFn: deleteCleaning,
+    mutationFn: ({ cleaningId }: { cleaningId: number; propertyId: number }) =>
+      deleteCleaning(cleaningId),
 
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['upcoming-cleanings'],
-        refetchType: 'all',
+    onSuccess: async (_, { cleaningId, propertyId }) => {
+      queryClient.removeQueries({
+        queryKey: ['cleaning-id', cleaningId],
+        exact: true,
       });
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['upcoming-cleanings'],
+          exact: true,
+          refetchType: 'all',
+        }),
+
+        queryClient.resetQueries({
+          queryKey: ['next-property-cleaning', propertyId],
+          exact: true,
+        }),
+      ]);
 
       Alert.alert('Success', 'The cleaning was deleted.', [
         {
