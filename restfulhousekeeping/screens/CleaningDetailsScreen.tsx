@@ -332,6 +332,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         isOpen={showIssueModal}
         onClose={() => setShowIssueModal(false)}
         size='md'
+        useRNModal
       >
         <ModalBackdrop />
 
