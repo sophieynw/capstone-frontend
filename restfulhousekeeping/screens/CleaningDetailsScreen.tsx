@@ -357,7 +357,10 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                 variant='rounded'
                 className='mb-4'
               >
-                <SelectInput placeholder='Select issue type' />
+                <SelectInput
+                  className='flex-1'
+                  placeholder='Select issue type'
+                />
                 <SelectIcon className='mr-3' as={ChevronDown} />
               </SelectTrigger>
 
