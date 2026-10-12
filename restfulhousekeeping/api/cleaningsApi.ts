@@ -50,3 +50,10 @@ export function getCompletedCleanings(
     url: `/cleanings/completed/${userId}`,
   });
 }
+
+export function deleteCleaning(cleaningId: number): Promise<void> {
+  return request<void>({
+    method: 'DELETE',
+    url: `/cleanings/${cleaningId}`,
+  });
+}
