@@ -1,16 +1,13 @@
 import { Client } from '@stomp/stompjs';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
 
+import { API_BASE_URL } from '@/api/apiClient';
 import { AuthContext } from '@/auth/AuthContext';
 import { ChatMessage, SendChatMessagePayload } from '@/types/entityTypes';
 
-// const socketUrl = Platform.select({
-//   android: 'ws://10.0.2.2:50000/ws',
-//   ios: 'ws://127.0.0.1:50000/ws',
-//   default: 'ws://192.168.68.104:50000/ws',
-// })!;
-const socketUrl = 'wss://restfulhousekeeping-v1.onrender.com/ws';
+const socketUrl = API_BASE_URL
+  ? `${API_BASE_URL.replace(/^http/, 'ws')}/ws`
+  : 'wss://restfulhousekeeping-v1.onrender.com/ws';
 
 export function useChatSocket(onMessage: (message: ChatMessage) => void) {
   const { token } = useContext(AuthContext);
