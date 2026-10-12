@@ -44,11 +44,21 @@ export default function NewPropertyScreen() {
     const province = newPropertyForm.province;
     const postalCode = newPropertyForm.postalCode;
     const country = newPropertyForm.country;
+    const checkoutTime = newPropertyForm.checkoutTime;
+    const checkinTime = newPropertyForm.checkinTime;
 
     if (!name || !street || !city || !province || !postalCode || !country) {
       Alert.alert(
         'Missing information',
         'Please complete all required property fields.',
+      );
+      return;
+    }
+
+    if (checkinTime <= checkoutTime) {
+      Alert.alert(
+        'Invalid times',
+        'Check-in time must be later than checkout time.',
       );
       return;
     }
@@ -66,6 +76,8 @@ export default function NewPropertyScreen() {
         province,
         postalCode,
         country,
+        checkoutTime,
+        checkinTime,
         accessInstructions: newPropertyForm.accessInstructions.trim() || null,
       },
 

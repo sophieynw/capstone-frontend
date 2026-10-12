@@ -66,6 +66,11 @@ export function AuthProvider({ children }: Props) {
     await SecureStore.deleteItemAsync('user');
   };
 
+  const update = async (updatedUser: User) => {
+    setUser(updatedUser);
+    await SecureStore.setItemAsync('user', JSON.stringify(updatedUser));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -74,6 +79,7 @@ export function AuthProvider({ children }: Props) {
         isLoading,
         login,
         logout,
+        update,
       }}
     >
       {children}

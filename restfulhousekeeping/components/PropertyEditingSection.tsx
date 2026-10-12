@@ -4,6 +4,14 @@ import { Input, InputField } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { styles } from '@/styles/styles';
 import { Property } from '@/types/entityTypes';
+import {
+  DateTimePicker,
+  DateTimePickerIcon,
+  DateTimePickerInput,
+  DateTimePickerTrigger,
+} from '@/components/ui/date-time-picker';
+import { Clock } from 'lucide-react-native';
+import { dateToTimeString, timeStringToDate } from '@/utils/helpers';
 
 export type EditableProperty = {
   name: string;
@@ -13,6 +21,8 @@ export type EditableProperty = {
   province: string;
   postalCode: string;
   country: string;
+  checkoutTime: string;
+  checkinTime: string;
   accessInstructions: string;
 };
 
@@ -25,8 +35,37 @@ export function createEditableProperty(property?: Property): EditableProperty {
     province: property?.province ?? '',
     postalCode: property?.postalCode ?? '',
     country: property?.country ?? '',
+    checkoutTime: property?.checkoutTime ?? '11:00',
+    checkinTime: property?.checkinTime ?? '16:00',
     accessInstructions: property?.accessInstructions ?? '',
   };
+}
+
+type PropertyTimeInputProps = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+};
+
+function PropertyTimeInput({ label, value, onChange }: PropertyTimeInputProps) {
+  return (
+    <View className='gap-1'>
+      <Text>{label}</Text>
+      <DateTimePicker
+        value={timeStringToDate(value)}
+        onChange={(date) => {
+          if (date) onChange(dateToTimeString(date));
+        }}
+        mode='time'
+        format='HH:mm'
+      >
+        <DateTimePickerTrigger className='rounded-full'>
+          <DateTimePickerInput />
+          <DateTimePickerIcon as={Clock} className='mr-3' />
+        </DateTimePickerTrigger>
+      </DateTimePicker>
+    </View>
+  );
 }
 
 type PropertyInputProps = {
@@ -114,6 +153,16 @@ export function PropertyEditingSection({
           label='Country'
           value={property.country}
           onChangeText={(value) => updatePropertyField('country', value)}
+        />
+        <PropertyTimeInput
+          label='Checkout time'
+          value={property.checkoutTime}
+          onChange={(value) => updatePropertyField('checkoutTime', value)}
+        />
+        <PropertyTimeInput
+          label='Check-in time'
+          value={property.checkinTime}
+          onChange={(value) => updatePropertyField('checkinTime', value)}
         />
         <PropertyInput
           label='Access instructions'

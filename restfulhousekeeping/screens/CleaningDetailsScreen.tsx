@@ -5,13 +5,12 @@ import { ChecklistItem, Role } from '@/types/entityTypes';
 import { usePropertyById } from '@/hooks/useProperties';
 import { toFriendlyDate } from '@/utils/helpers';
 import { useContext, useState } from 'react';
-import { useCleaners } from '@/hooks/useCleaners';
+import { useCleaners } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
 import {
   ChevronDown,
   CircleAlert,
-  Save,
   SquareCheckBig,
   Trash,
 } from 'lucide-react-native';
@@ -27,6 +26,7 @@ import { ChecklistSection } from '@/components/ChecklistSection';
 import { CleanerChecklistSection } from '@/components/CleanerChecklistSection';
 import { PhotosSection } from '@/components/PhotosSection';
 import type { ImagePickerAsset } from 'expo-image-picker';
+
 import {
   Select,
   SelectBackdrop,
@@ -39,8 +39,24 @@ import {
   SelectPortal,
   SelectTrigger,
 } from '@/components/ui/select';
-import { useCompleteCleaning } from '@/hooks/useCleanings';
-import { completeCleaning } from '@/api/cleaningsApi';
+
+import {
+  useCompleteCleaning,
+  useDeleteCleaning,
+} from '@/hooks/useCleanings';
+
+import {
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from '@/components/ui/modal';
+
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import { Textarea, TextareaInput } from '@/components/ui/textarea';
 
 const UNASSIGNED_CLEANER_VALUE = 'unassigned';
 
@@ -50,12 +66,18 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
   const [notes, setNotes] = useState('');
   const [photos, setPhotos] = useState<ImagePickerAsset[]>([]);
+
   const [cleanerSelected, setCleanerSelected] = useState(
     cleaning?.cleanerId?.toString() ?? UNASSIGNED_CLEANER_VALUE,
   );
+
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(
     cleaning?.cleaningChecklistItems ?? [],
   );
+
+  const [showIssueModal, setShowIssueModal] = useState(false);
+  const [issueType, setIssueType] = useState('');
+  const [issueDescription, setIssueDescription] = useState('');
 
   const {
     data: property,
@@ -63,17 +85,21 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     isError: isPropertyError,
     error: propertyError,
   } = usePropertyById(propertyId);
+
   const {
     data: cleaners,
     isPending: isCleanersPending,
     isError: isCleanersError,
     error: cleanersError,
   } = useCleaners();
+
   const completeCleaningMutation = useCompleteCleaning();
+  const deleteCleaningMutation = useDeleteCleaning();
 
   const selectedCleaner = cleaners?.find(
     (cleaner) => cleaner.id.toString() === cleanerSelected,
   );
+
   const selectedCleanerLabel =
     cleanerSelected === UNASSIGNED_CLEANER_VALUE
       ? 'Unassigned'
@@ -88,6 +114,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
   if (isPropertyError || isCleanersError) {
     console.error('Property error:', propertyError);
     console.error('Cleaners error:', cleanersError);
+
     return <Text>Could not load properties.</Text>;
   }
 
@@ -96,7 +123,10 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
       'Complete Cleaning',
       'Are you sure you want to mark this cleaning as complete?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
         {
           text: 'Yes',
           onPress: () => {
@@ -117,6 +147,29 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     );
   }
 
+  function handleDeleteCleaning() {
+    Alert.alert(
+      'Delete Cleaning',
+      'Are you sure you want to delete this cleaning?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteCleaningMutation.mutate({
+              cleaningId: cleaning.id,
+              propertyId: cleaning.propertyId,
+            });
+          },
+        },
+      ],
+    );
+  }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -130,10 +183,14 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           <Button
             className='rounded-full'
             size='lg'
-            onPress={showComingSoonAlert}
+            onPress={handleDeleteCleaning}
+            isDisabled={deleteCleaningMutation.isPending}
           >
             <ButtonIcon as={Trash} />
-            <ButtonText>Delete</ButtonText>
+
+            <ButtonText>
+              {deleteCleaningMutation.isPending ? 'Deleting...' : 'Delete'}
+            </ButtonText>
           </Button>
         ) : (
           <Button
@@ -145,6 +202,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
             }
           >
             <ButtonIcon as={SquareCheckBig} />
+
             <ButtonText>
               {completeCleaningMutation.isPending ? 'Completing...' : 'Done'}
             </ButtonText>
@@ -158,6 +216,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         <Card style={styles.mediumCardWithAvatar}>
           <View style={styles.mediumCardWithAvatarLeft}>
             <Heading size='md'>Cleaning Info</Heading>
+
             <View className='gap-1'>
               <Text>
                 Starts:{' '}
@@ -165,18 +224,22 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                   ? toFriendlyDate(cleaning.dateTimeStart)
                   : 'Loading...'}
               </Text>
+
               <Text>
                 Ends:{' '}
                 {cleaning?.dateTimeEnd
                   ? toFriendlyDate(cleaning.dateTimeEnd)
                   : 'Loading...'}
               </Text>
+
               <Text>
                 Status: {cleaning?.isComplete ? 'Complete' : 'Not Started'}
               </Text>
+
               {user?.role == Role.MANAGER && (
                 <View className='flex-row items-center gap-2'>
                   <Text>Cleaner:</Text>
+
                   <Select
                     selectedValue={cleanerSelected}
                     initialLabel={selectedCleanerLabel}
@@ -186,16 +249,20 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                       <SelectInput placeholder='Unassigned' />
                       <SelectIcon className='mr-3' as={ChevronDown} />
                     </SelectTrigger>
+
                     <SelectPortal useRNModal>
                       <SelectBackdrop />
+
                       <SelectContent>
                         <SelectDragIndicatorWrapper>
                           <SelectDragIndicator />
                         </SelectDragIndicatorWrapper>
+
                         <SelectItem
                           label='Unassigned'
                           value={UNASSIGNED_CLEANER_VALUE}
                         />
+
                         {cleaners?.map((cleanerItem) => (
                           <SelectItem
                             key={cleanerItem.id}
@@ -212,7 +279,10 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           </View>
 
           <Avatar style={styles.mediumCardWithAvatarRight}>
-            <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
+            <AvatarFallbackText>
+              Example Profile Picture
+            </AvatarFallbackText>
+
             {cleanerSelected !== UNASSIGNED_CLEANER_VALUE ? (
               <AvatarImage
                 source={{
@@ -228,12 +298,15 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         {/* Property Info Card */}
         <Card style={styles.mediumCard}>
           <Heading size='md'>Property Info</Heading>
+
           <View className='gap-1'>
             <Text>{property?.name}</Text>
+
             <Text>
               {property?.unit ? `${property?.unit}-` : ''}
               {property?.street}, {property?.city}
             </Text>
+
             <Text>{property?.accessInstructions}</Text>
           </View>
         </Card>
@@ -247,6 +320,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
               onItemsChange={setChecklistItems}
             />
           )}
+
           {/* Cleaner View */}
           {user?.role == Role.CLEANER && (
             <CleanerChecklistSection
@@ -257,32 +331,165 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
         {/* Notes Section Card */}
         <Card style={styles.mediumCard}>
-          <NotesSection notes={notes} setNotes={setNotes} />
+          <NotesSection
+            notes={notes}
+            setNotes={setNotes}
+          />
         </Card>
 
         {/* Photos Section Card */}
         {user?.role == Role.CLEANER && (
           <Card style={styles.mediumCard}>
-            <PhotosSection photos={photos} onPhotosChange={setPhotos} />
+            <PhotosSection
+              photos={photos}
+              onPhotosChange={setPhotos}
+            />
           </Card>
         )}
       </View>
 
+      {/* Report Issue Button */}
       {user?.role == Role.CLEANER && (
         <Button
           size='lg'
           variant='outline'
           className='rounded-full'
-          onPress={showComingSoonAlert}
+          onPress={() => setShowIssueModal(true)}
         >
-          <ButtonIcon className='text-red-500' as={CircleAlert} />
-          <ButtonText className='text-red-500'>Report an Issue</ButtonText>
+          <ButtonIcon
+            className='text-red-500'
+            as={CircleAlert}
+          />
+
+
+          <ButtonText className='text-red-500'>
+            Report an Issue
+          </ButtonText>
         </Button>
       )}
 
-      {/*<Pressable style={globalStyles.button} onPress={console.debug()}>*/}
-      {/*  <Text style={globalStyles.buttonText}>Checkout & Submit</Text>*/}
-      {/*</Pressable>*/}
+      {/* Report Issue Modal */}
+      <Modal
+        isOpen={showIssueModal}
+        onClose={() => setShowIssueModal(false)}
+        size='md'
+        useRNModal
+      >
+        <ModalBackdrop />
+
+        <ModalContent className='rounded-4xl'>
+          <ModalHeader>
+            <Heading size='lg'>Report an Issue</Heading>
+
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+
+          <ModalBody>
+            <Text className='mb-2'>Issue Type</Text>
+
+            <Select
+              selectedValue={issueType}
+              onValueChange={setIssueType}
+            >
+              <SelectTrigger
+                size='md'
+                variant='rounded'
+                className='mb-4'
+              >
+                <SelectInput
+                  className='flex-1'
+                  placeholder='Select issue type'
+                />
+                <SelectIcon className='mr-3' as={ChevronDown} />
+              </SelectTrigger>
+
+              <SelectPortal useRNModal>
+                <SelectBackdrop />
+
+                <SelectContent>
+                  <SelectDragIndicatorWrapper>
+                    <SelectDragIndicator />
+                  </SelectDragIndicatorWrapper>
+
+                  <SelectItem
+                    label='Damage'
+                    value='damage'
+                  />
+
+                  <SelectItem
+                    label='Missing Supplies'
+                    value='missing-supplies'
+                  />
+
+                  <SelectItem
+                    label='Access Problem'
+                    value='access-problem'
+                  />
+
+                  <SelectItem
+                    label='Other'
+                    value='other'
+                  />
+                </SelectContent>
+              </SelectPortal>
+            </Select>
+
+            <Text className='mb-2'>Describe the issue</Text>
+
+            <Textarea className='rounded-2xl'>
+              <TextareaInput
+                placeholder='Example: Broken lamp beside the bed...'
+                value={issueDescription}
+                onChangeText={setIssueDescription}
+              />
+            </Textarea>
+          </ModalBody>
+
+          <ModalFooter className='gap-2'>
+            <Button
+              variant='outline'
+              className='rounded-full'
+              onPress={() => setShowIssueModal(false)}
+            >
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+
+            <Button
+              className='rounded-full'
+              onPress={() => {
+                if (!issueType) {
+                  Alert.alert(
+                    'Missing issue type',
+                    'Please select an issue type.',
+                  );
+                  return;
+                }
+
+                if (!issueDescription.trim()) {
+                  Alert.alert(
+                    'Missing description',
+                    'Please describe the issue.',
+                  );
+                  return;
+                }
+
+                Alert.alert(
+                  'Issue submitted',
+                  'The issue was recorded.',
+                );
+
+                setIssueType('');
+                setIssueDescription('');
+                setShowIssueModal(false);
+              }}
+            >
+              <ButtonText>Submit</ButtonText>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </ScrollView>
   );
 }

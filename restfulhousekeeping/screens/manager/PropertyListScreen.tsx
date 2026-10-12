@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/avatar';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 import { Icon } from '@/components/ui/icon';
-import { HousePlus, Plus } from 'lucide-react-native';
+import { HousePlus } from 'lucide-react-native';
 
 // region Property Card
 
@@ -94,33 +94,19 @@ export default function PropertyListScreen({ navigation }: any) {
           </Card>
         </Pressable>
 
-        <Pressable onPress={showComingSoonAlert}>
-          <Card style={styles.mediumCardWithAvatar}>
-            <View style={styles.mediumCardWithAvatarLeft}>
-              <Avatar>
-                <AvatarFallbackText>Airbnb Logo</AvatarFallbackText>
-                <AvatarImage source={require('@/assets/airbnb.png')} />
-              </Avatar>
-            </View>
-            <View className='w-full'>
-              <Text>Connect your Airbnb account</Text>
-            </View>
-          </Card>
-        </Pressable>
-
-        <Pressable onPress={showComingSoonAlert}>
-          <Card style={styles.mediumCardWithAvatar}>
-            <View style={styles.mediumCardWithAvatarLeft}>
-              <Avatar>
-                <AvatarFallbackText>VRBO Logo</AvatarFallbackText>
-                <AvatarImage source={require('@/assets/vrbo.webp')} />
-              </Avatar>
-            </View>
-            <View className='w-full'>
-              <Text>Connect your VRBO account</Text>
-            </View>
-          </Card>
-        </Pressable>
+        {/*<Pressable onPress={showComingSoonAlert}>*/}
+        {/*  <Card style={styles.mediumCardWithAvatar}>*/}
+        {/*    <View style={styles.mediumCardWithAvatarLeft}>*/}
+        {/*      <Avatar>*/}
+        {/*        <AvatarFallbackText>VRBO Logo</AvatarFallbackText>*/}
+        {/*        <AvatarImage source={require('@/assets/vrbo.webp')} />*/}
+        {/*      </Avatar>*/}
+        {/*    </View>*/}
+        {/*    <View className='w-full'>*/}
+        {/*      <Text>Connect your VRBO account</Text>*/}
+        {/*    </View>*/}
+        {/*  </Card>*/}
+        {/*</Pressable>*/}
       </View>
     </ScrollView>
   );
