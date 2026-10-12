@@ -7,6 +7,7 @@ import {
   createCleaning,
   deleteCleaning,
   getCleaningById,
+  getCompletedCleanings,
   getNextCleaningByProperty,
   getUpcomingCleanings,
 } from '@/api/cleaningsApi';
@@ -28,6 +29,16 @@ export function useUpcomingCleanings() {
           new Date(a.dateTimeStart).getTime() -
           new Date(b.dateTimeStart).getTime(),
       ),
+  });
+}
+
+export function useCompletedCleanings() {
+  const { user } = useContext(AuthContext);
+
+  return useQuery({
+    queryKey: ['completed-cleanings', user?.id],
+    queryFn: () => getCompletedCleanings(user!.id),
+    enabled: !!user?.id,
   });
 }
 
@@ -106,7 +117,16 @@ export function useCompleteCleaning() {
         ['cleaning-id', updatedCleaning.id],
         updatedCleaning,
       );
-      queryClient.invalidateQueries({ queryKey: ['upcoming-cleanings'] });
+      queryClient.invalidateQueries({ 
+        queryKey: ['upcoming-cleanings'],
+        refetchType: 'all',
+        });
+
+      queryClient.invalidateQueries({
+        queryKey: ['completed-cleanings'],
+        refetchType: 'all',
+    });
+
     },
   });
 }
