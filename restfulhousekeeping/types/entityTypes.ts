@@ -30,6 +30,7 @@ export interface User {
   email: string;
   phoneNumber: string;
   role: Role;
+  profilePicturePath?: string | null;
 }
 
 export interface Cleaning {
@@ -134,6 +135,7 @@ export interface CreatePropertyPayload {
   };
   checklistItems: CreateChecklistItemPayload[];
 }
+
 export interface UpdatePropertyPayload {
   name?: string;
   street?: string;
@@ -177,4 +179,26 @@ export interface UpdateUserPayload {
   email?: string;
   phoneNumber?: string;
   organization?: Organization;
+}
+
+export interface Conversation {
+  id: number;
+  otherUserId: number;
+  otherUserName: string;
+  createdAt: string;
+}
+
+export interface ChatMessage {
+  id: number;
+  conversationId: number;
+  senderId: number;
+  senderName: string;
+  body: string;
+  sentAt: string;
+  readAt: string | null;
+}
+
+export interface SendChatMessagePayload {
+  conversationId: number;
+  body: string;
 }

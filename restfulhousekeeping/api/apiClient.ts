@@ -2,12 +2,16 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
+// exported so we can build image urls in other files
+export const API_BASE_URL = Platform.select({
+  default: 'http://192.168.68.104:50000',
+  android: 'http://10.0.2.2:50000',
+  ios: 'http://127.0.0.1:50000',
+});
+
 const apiClient = axios.create({
-  baseURL: Platform.select({
-    default: 'http://192.168.68.104:50000',
-    android: 'http://10.0.2.2:50000',
-    ios: 'http://127.0.0.1:50000',
-  }),
+  baseURL: API_BASE_URL,
+  // baseURL: 'https://restfulhousekeeping-v1.onrender.com', // deployed backend
   timeout: 10_000,
   headers: { 'Content-Type': 'application/json' },
 });

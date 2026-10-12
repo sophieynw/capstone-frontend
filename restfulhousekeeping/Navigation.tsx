@@ -13,6 +13,7 @@ import ManageChecklistScreen from './screens/ManageChecklistScreen';
 import NewPropertyScreen from '@/screens/manager/NewPropertyScreen';
 import ProfileEditScreen from '@/screens/ProfileEditScreen';
 import InviteCleanerScreen from '@/screens/manager/InviteCleanerScreen';
+import ChatScreen from '@/screens/ChatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -74,6 +75,11 @@ export default function Navigation() {
         <Stack.Screen
           name='InviteCleanerScreen'
           component={InviteCleanerScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen
+          name='ChatScreen'
+          component={ChatScreen}
           options={{ presentation: 'modal' }}
         />
       </Stack.Navigator>
