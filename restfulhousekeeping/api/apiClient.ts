@@ -11,6 +11,7 @@ export const API_BASE_URL = Platform.select({
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  // baseURL: 'https://restfulhousekeeping-v1.onrender.com', // deployed backend
   timeout: 10_000,
   headers: { 'Content-Type': 'application/json' },
 });
