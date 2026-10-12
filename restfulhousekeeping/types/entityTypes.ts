@@ -202,3 +202,27 @@ export interface SendChatMessagePayload {
   conversationId: number;
   body: string;
 }
+
+export enum InvitationStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  DECLINED = 'DECLINED',
+  EXPIRED = 'EXPIRED',
+}
+
+export interface Invitation {
+  id: number;
+  cleanerId: number;
+  cleanerName: string;
+  organizationId: number;
+  organizationName: string;
+  invitedByUserId: number;
+  status: InvitationStatus;
+  createdAt: string;
+  expiresAt: string | null;
+}
+
+export interface CreateInvitationPayload {
+  cleanerId: number;
+  organizationId: number;
+}

@@ -1,6 +1,6 @@
 // screens/home/ManageTeamScreen.tsx
 import { Text } from '@/components/ui/text';
-import { Linking, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, View } from 'react-native';
 import {
   CheckIcon,
   Icon,
@@ -21,37 +21,63 @@ import { AuthContext } from '@/auth/AuthContext';
 import { useContext } from 'react';
 import { sendEmail } from '@/api/emailApi';
 import { useSendEmail } from '@/hooks/useSendEmail';
+import { useCreateInvitation } from '@/hooks/useInvitations';
 
 type CleanerCardProps = {
   cleaner: User;
 };
 
 function CleanerCard({ cleaner }: CleanerCardProps) {
-  const manager = useContext(AuthContext);
+  const {user: manager} = useContext(AuthContext);
   const sendEmailMutation = useSendEmail();
-  const { mutate: updateUser } = useUpdateUser();
+  const createInvitation = useCreateInvitation();
   const fullName = `${cleaner.firstName} ${cleaner.lastName}`;
 
-  const handleInvite = () => {
-    const organization = manager.user?.organization;
+  const isPending = createInvitation.isPending || sendEmailMutation.isPending;
 
-    if (!organization) {
-      console.error('Manager does not have an organization');
+  const handleInvite = async () => {
+    const organization = manager?.organization;
+
+    if (!manager || !organization) {
+      Alert.alert(
+        'Unable to invite',
+        'Your manager account is not associated with an organization.',
+      );
       return;
     }
 
-    // updateUser({
-    //   userId: cleaner.id,
-    //   user: { organization: organization },
-    // });
+    try {
+      const invitation = await createInvitation.mutateAsync({
+        cleanerId: cleaner.id,
+        organizationId: organization.id,
+      });
 
-    sendEmailMutation.mutate(
-      {
+      await sendEmailMutation.mutateAsync({
         to: cleaner.email,
-        subject: 'RESTFul Housekeeping: Invite',
-        text: `You have been invited to work for ${manager.user?.firstName} ${manager.user?.lastName} at ${organization.name}!\nPlease check the app to accept the invite. Actually, don't. Because that part hasn't been implemented yet. Too bad!`
-      }
-    )
+        subject: 'RESTful Housekeeping: Invitation',
+        text:
+          `Hello ${cleaner.firstName},\n\n` +
+          `You have been invited to work with ` +
+          `${manager.firstName} ${manager.lastName} ` +
+          `at ${organization.name}.\n\n` +
+          `Your invitation ID is ${invitation.id}. ` +
+          `Please open RESTful Housekeeping to review your invitation.\n\n` +
+          `Regards,\nRESTful Housekeeping`,
+      });
+
+      Alert.alert(
+        'Invitation sent',
+        `${fullName} has been invited and the email was sent.`,
+      );
+    } catch (error) {
+      console.error('Invitation process failed:', error);
+
+      Alert.alert(
+        'Invitation issue',
+        'The invitation process did not complete successfully. ' +
+          'Check the invitation status before trying again.',
+      );
+    }
   };
 
   return (
@@ -87,7 +113,12 @@ function CleanerCard({ cleaner }: CleanerCardProps) {
 
         {/* Right (Icons) */}
         <View className='flex-row gap-3'>
-          <Pressable onPress={handleInvite}>
+          <Pressable
+            onPress={handleInvite}
+            disabled={isPending}
+            accessibilityRole='button'
+            accessibilityLabel={`Invite ${fullName}`}
+          >
             <Icon as={CheckIcon} />
           </Pressable>
         </View>
