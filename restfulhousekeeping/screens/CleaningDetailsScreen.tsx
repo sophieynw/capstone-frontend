@@ -26,6 +26,7 @@ import { ChecklistSection } from '@/components/ChecklistSection';
 import { CleanerChecklistSection } from '@/components/CleanerChecklistSection';
 import { PhotosSection } from '@/components/PhotosSection';
 import type { ImagePickerAsset } from 'expo-image-picker';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 import {
   Select,
@@ -108,7 +109,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         : undefined;
 
   if (isPropertyPending || isCleanersPending) {
-    return <Text>Loading...</Text>;
+    return <LoadingSpinner label='Loading cleaning details...' />;
   }
 
   if (isPropertyError || isCleanersError) {
