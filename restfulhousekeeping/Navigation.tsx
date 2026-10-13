@@ -13,13 +13,14 @@ import ManageChecklistScreen from './screens/ManageChecklistScreen';
 import NewPropertyScreen from '@/screens/manager/NewPropertyScreen';
 import ProfileEditScreen from '@/screens/ProfileEditScreen';
 import ChatScreen from '@/screens/ChatScreen';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 const Stack = createNativeStackNavigator();
 
 export default function Navigation() {
   const { token, isLoading } = useContext(AuthContext);
 
-  if (isLoading) return null;
+  if (isLoading) return <LoadingSpinner label='Restoring your session...' />;
 
   return (
     <NavigationContainer>

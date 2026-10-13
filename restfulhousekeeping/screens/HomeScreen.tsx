@@ -19,6 +19,7 @@ import { MessageCircle, Plus, UsersRound } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from '@/components/ui/icon';
 import { findOrCreateConversation } from '@/api/chatApi';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 // region Cleaning Card
 
@@ -268,7 +269,7 @@ export default function HomeScreen({ navigation }: any) {
   }
 
   if (isLoading) {
-    return <Text>Loading cleanings...</Text>;
+    return <LoadingSpinner label='Loading cleanings...' />;
   }
 
   if (isError) {

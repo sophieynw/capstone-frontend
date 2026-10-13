@@ -16,6 +16,7 @@ import { useCreateCleaning } from '@/hooks/useCleanings';
 import { NotesSection } from '@/components/NotesSection';
 import { DetailsSection } from '@/components/DetailsSection';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 function formatLocalDateTime(date: Date): string {
   const pad = (value: number) => value.toString().padStart(2, '0');
@@ -128,7 +129,7 @@ export default function NewCleaningScreen() {
   }
 
   if (isPropertiesLoading || isCleanersLoading) {
-    return <Text>Loading properties...</Text>;
+    return <LoadingSpinner label='Loading form options...' />;
   }
 
   if (isPropertiesError || isCleanersError) {
@@ -183,7 +184,7 @@ export default function NewCleaningScreen() {
               <Text>Select a property to load its checklist.</Text>
             </View>
           ) : isChecklistItemsLoading ? (
-            <Text>Loading checklist...</Text>
+            <LoadingSpinner inline label='Loading checklist...' />
           ) : isChecklistItemsError ? (
             <Text>Could not load checklist.</Text>
           ) : (

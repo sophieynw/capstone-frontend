@@ -20,6 +20,7 @@ import {
 import { useCreateUser } from '@/hooks/useUsers';
 import { checkUsernameAvailability } from '@/api/auth';
 import { Heading } from '@/components/ui/heading';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 type SignUpForm = {
   firstName: string;
@@ -292,7 +293,7 @@ export default function SignUpPage() {
         {selectedRole === Role.CLEANER ? (
           <>
             {isOrganizationsPending ? (
-              <Text>Loading organizations...</Text>
+              <LoadingSpinner inline label='Loading organizations...' />
             ) : isOrganizationsError ? (
               <Text style={styles.errorText}>
                 Unable to load organizations. Please try again.
