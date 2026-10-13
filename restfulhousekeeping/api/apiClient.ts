@@ -2,6 +2,14 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
+type UnauthorizedHandler = () => void | Promise<void>;
+
+let unauthorizedHandler: UnauthorizedHandler | null = null;
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null) {
+  unauthorizedHandler = handler;
+}
+
 // exported so we can build image urls in other files
 export const API_BASE_URL = Platform.select({
   default: 'http://192.168.68.104:50000',
@@ -42,6 +50,14 @@ apiClient.interceptors.response.use(
       data: error.response?.data,
       url: error.config?.url,
     });
+
+    if (error.response?.status === 401) {
+      void Promise.resolve()
+        .then(() => unauthorizedHandler?.())
+        .catch((logoutError) => {
+          console.error('Failed clearing unauthorized session', logoutError);
+        });
+    }
 
     return Promise.reject(error);
   },

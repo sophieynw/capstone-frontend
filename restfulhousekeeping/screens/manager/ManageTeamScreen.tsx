@@ -21,6 +21,7 @@ import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 import { useCleaners, useGetAllAvailableCleaners } from '@/hooks/useUsers';
 import { findOrCreateConversation } from '@/api/chatApi';
 import { User } from '@/types/entityTypes';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 type CleanerCardProps = {
   cleaner: User;
@@ -80,7 +81,7 @@ export default function ManageTeamScreen({ navigation }: any) {
   const { data: cleaners = [], isPending, isError, error } = useCleaners();
 
   if (isPending) {
-    return <Text>Loading cleaners...</Text>;
+    return <LoadingSpinner label='Loading cleaners...' />;
   }
 
   if (isError) {

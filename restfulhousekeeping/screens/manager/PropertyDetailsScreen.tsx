@@ -39,6 +39,7 @@ import {
 } from '@/components/ui/modal';
 import { CloseIcon, Icon } from '@/components/ui/icon';
 import { Input, InputField } from '@/components/ui/input';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 const reportedIssues: ReportedIssue[] = [
   { id: 1, description: 'One of the dining chairs has a loose leg' },
@@ -76,7 +77,7 @@ export default function PropertyDetailsScreen({ route }: any) {
   }, [property]);
 
   if (isPropertyPending || isChecklistItemsPending) {
-    return <Text>Loading...</Text>;
+    return <LoadingSpinner label='Loading property details...' />;
   }
 
   if (isPropertyError || isChecklistItemsError) {

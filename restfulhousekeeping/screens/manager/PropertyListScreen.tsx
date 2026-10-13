@@ -14,6 +14,7 @@ import {
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 import { Icon } from '@/components/ui/icon';
 import { HousePlus } from 'lucide-react-native';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 // region Property Card
 
@@ -58,7 +59,7 @@ export default function PropertyListScreen({ navigation }: any) {
   const { data: properties, isLoading, isError, error } = usePropertyAll();
 
   if (isLoading) {
-    return <Text>Loading properties...</Text>;
+    return <LoadingSpinner label='Loading properties...' />;
   }
 
   if (isError) {

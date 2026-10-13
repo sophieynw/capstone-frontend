@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   FlatList,
   KeyboardAvoidingView,
@@ -20,6 +19,7 @@ import { ChatMessage } from '@/types/entityTypes';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 type ChatScreenRouteParams = {
   conversationId: number;
@@ -279,10 +279,7 @@ export default function ChatScreen({ navigation, route }: ChatScreenProps) {
 
         {/* Message history */}
         {isHistoryLoading ? (
-          <View style={chatStyles.centeredContent}>
-            <ActivityIndicator size='large' />
-            <Text>Loading messages...</Text>
-          </View>
+          <LoadingSpinner label='Loading messages...' />
         ) : (
           <FlatList
             ref={messageListRef}
