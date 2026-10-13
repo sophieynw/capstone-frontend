@@ -8,6 +8,8 @@ import {
   getCleanerInvitations,
 } from '@/api/invitationApi';
 import { CreateInvitationPayload, InvitationStatus } from '@/types/entityTypes';
+import { AuthContext } from '@/auth/AuthContext';
+import { useContext } from 'react';
 
 export function useCreateInvitation() {
   const queryClient = useQueryClient();
@@ -44,14 +46,16 @@ export function useCleanerInvitations(cleanerId?: number) {
   });
 }
 
-// Accept an invitation.
 export function useAcceptInvitation() {
   const queryClient = useQueryClient();
+  const { refreshUser } = useContext(AuthContext);
 
   return useMutation({
     mutationFn: (invitationId: number) => acceptInvitation(invitationId),
 
     onSuccess: async () => {
+      await refreshUser();
+
       await queryClient.invalidateQueries({
         queryKey: ['cleaner-invitations'],
       });
@@ -70,7 +74,6 @@ export function useAcceptInvitation() {
   });
 }
 
-// Decline an invitation.
 export function useDeclineInvitation() {
   const queryClient = useQueryClient();
 

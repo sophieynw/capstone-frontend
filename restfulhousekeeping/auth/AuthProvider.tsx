@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 
 import { AuthContext } from './AuthContext';
 import { User } from '@/types/entityTypes';
+import { getUserById } from '@/api/usersApi';
 
 interface Props {
   children: React.ReactNode;
@@ -71,6 +72,18 @@ export function AuthProvider({ children }: Props) {
     await SecureStore.setItemAsync('user', JSON.stringify(updatedUser));
   };
 
+  const userId = user?.id;
+
+  const refreshUser = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const fresh = await getUserById(userId);
+      await update(fresh);
+    } catch (error) {
+      console.log('Failed refreshing user', error);
+    }
+  }, [userId, update]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -80,6 +93,7 @@ export function AuthProvider({ children }: Props) {
         login,
         logout,
         update,
+        refreshUser
       }}
     >
       {children}
