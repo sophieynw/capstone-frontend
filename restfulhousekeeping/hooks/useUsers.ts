@@ -55,7 +55,7 @@ export function useCreateUser() {
 export function useGetAllAvailableCleaners() {
   const { user } = useContext(AuthContext);
   return useQuery({
-    queryKey: ['cleaners', user?.id],
+    queryKey: ['available-cleaners', user?.id],
     queryFn: () => getAllAvailableCleaners(),
     enabled: user?.id !== undefined
   });
@@ -83,7 +83,7 @@ export function useUpdateUser() {
       }
 
       await queryClient.invalidateQueries({
-        queryKey: ['cleaner', user?.id],
+        queryKey: ['cleaner', updatedUser?.id],
       });
 
       Alert.alert(
