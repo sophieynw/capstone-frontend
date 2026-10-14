@@ -21,6 +21,7 @@ import { useCreateUser } from '@/hooks/useUsers';
 import { checkUsernameAvailability } from '@/api/auth';
 import { Heading } from '@/components/ui/heading';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorState } from '@/components/ErrorState';
 
 type SignUpForm = {
   firstName: string;
@@ -295,9 +296,7 @@ export default function SignUpPage() {
             {isOrganizationsPending ? (
               <LoadingSpinner inline label='Loading organizations...' />
             ) : isOrganizationsError ? (
-              <Text style={styles.errorText}>
-                Unable to load organizations. Please try again.
-              </Text>
+              <ErrorState inline />
             ) : (
               <Controller
                 control={control}
