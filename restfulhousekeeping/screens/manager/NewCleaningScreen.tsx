@@ -17,6 +17,7 @@ import { NotesSection } from '@/components/NotesSection';
 import { DetailsSection } from '@/components/DetailsSection';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorState } from '@/components/ErrorState';
 
 function formatLocalDateTime(date: Date): string {
   const pad = (value: number) => value.toString().padStart(2, '0');
@@ -135,7 +136,7 @@ export default function NewCleaningScreen() {
   if (isPropertiesError || isCleanersError) {
     console.error('Properties error:', propertiesError);
     console.error('Cleaners error:', cleanersError);
-    return <Text>Could not load properties.</Text>;
+    return <ErrorState />;
   }
 
   if (isChecklistItemsError) {
@@ -186,7 +187,7 @@ export default function NewCleaningScreen() {
           ) : isChecklistItemsLoading ? (
             <LoadingSpinner inline label='Loading checklist...' />
           ) : isChecklistItemsError ? (
-            <Text>Could not load checklist.</Text>
+            <ErrorState inline />
           ) : (
             <ChecklistSection
               items={checklistItems}

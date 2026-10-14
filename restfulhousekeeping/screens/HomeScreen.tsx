@@ -20,6 +20,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from '@/components/ui/icon';
 import { findOrCreateConversation } from '@/api/chatApi';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorState } from '@/components/ErrorState';
 
 // region Cleaning Card
 
@@ -274,7 +275,7 @@ export default function HomeScreen({ navigation }: any) {
 
   if (isError) {
     console.error(error);
-    return <Text>Could not load cleanings.</Text>;
+    return <ErrorState />;
   }
 
   const { today: cleaningsToday, upcoming: cleaningsUpcoming } =

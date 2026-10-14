@@ -27,6 +27,7 @@ import { CleanerChecklistSection } from '@/components/CleanerChecklistSection';
 import { PhotosSection } from '@/components/PhotosSection';
 import type { ImagePickerAsset } from 'expo-image-picker';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorState } from '@/components/ErrorState';
 
 import {
   Select,
@@ -116,7 +117,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     console.error('Property error:', propertyError);
     console.error('Cleaners error:', cleanersError);
 
-    return <Text>Could not load properties.</Text>;
+    return <ErrorState />;
   }
 
   function handleCompleteCleaning() {

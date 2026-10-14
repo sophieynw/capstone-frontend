@@ -40,6 +40,7 @@ import {
 import { CloseIcon, Icon } from '@/components/ui/icon';
 import { Input, InputField } from '@/components/ui/input';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorState } from '@/components/ErrorState';
 
 const reportedIssues: ReportedIssue[] = [
   { id: 1, description: 'One of the dining chairs has a loose leg' },
@@ -83,7 +84,7 @@ export default function PropertyDetailsScreen({ route }: any) {
   if (isPropertyError || isChecklistItemsError) {
     console.error('Property error:', propertyError);
     console.error('ChecklistItems error:', checklistItemsError);
-    return <Text>Could not load properties.</Text>;
+    return <ErrorState />;
   }
   function handleDelete() {
     Alert.alert(

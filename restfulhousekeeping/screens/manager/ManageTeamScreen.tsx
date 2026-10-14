@@ -22,6 +22,7 @@ import { useCleaners } from '@/hooks/useUsers';
 import { findOrCreateConversation } from '@/api/chatApi';
 import { User } from '@/types/entityTypes';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorState } from '@/components/ErrorState';
 
 type CleanerCardProps = {
   cleaner: User;
@@ -86,7 +87,7 @@ export default function ManageTeamScreen({ navigation }: any) {
 
   if (isError) {
     console.error('Cleaners error:', error);
-    return <Text>Something went wrong while fetching cleaners.</Text>;
+    return <ErrorState />;
   }
 
   return (

@@ -20,6 +20,7 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorState } from '@/components/ErrorState';
 
 type ChatScreenRouteParams = {
   conversationId: number;
@@ -280,6 +281,8 @@ export default function ChatScreen({ navigation, route }: ChatScreenProps) {
         {/* Message history */}
         {isHistoryLoading ? (
           <LoadingSpinner label='Loading messages...' />
+        ) : historyError ? (
+          <ErrorState />
         ) : (
           <FlatList
             ref={messageListRef}
@@ -308,12 +311,6 @@ export default function ChatScreen({ navigation, route }: ChatScreenProps) {
               </View>
             }
           />
-        )}
-
-        {historyError && (
-          <View style={chatStyles.errorContainer}>
-            <Text style={chatStyles.errorText}>{historyError}</Text>
-          </View>
         )}
 
         {/* Message composer */}
@@ -472,17 +469,6 @@ const chatStyles = StyleSheet.create({
   },
   myMessageTime: {
     color: '#dbeafe',
-  },
-  errorContainer: {
-    borderTopWidth: 1,
-    borderTopColor: '#fecaca',
-    backgroundColor: '#fef2f2',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  errorText: {
-    color: '#b91c1c',
-    textAlign: 'center',
   },
   composer: {
     flexDirection: 'row',
