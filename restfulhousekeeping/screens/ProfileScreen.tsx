@@ -15,6 +15,7 @@ import { Heading } from '@/components/ui/heading';
 import { useUpcomingCleanings,  useCompletedCleanings,} from '@/hooks/useCleanings';
 import {
   useProfilePicture,
+  useUpdateUser,
   useUploadProfilePicture,
 } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
