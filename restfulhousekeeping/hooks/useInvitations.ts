@@ -23,17 +23,10 @@ export function useCreateInvitation() {
       await queryClient.invalidateQueries({
         queryKey: ['organization-invitations', invitation.organizationId],
       });
-
-      Alert.alert('Success', 'The cleaner has been invited successfully.');
     },
 
     onError: (error) => {
       console.error('Create invitation error:', error);
-
-      Alert.alert(
-        'Unable to invite cleaner',
-        'The invitation could not be created. Please try again.',
-      );
     },
   });
 }

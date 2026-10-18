@@ -47,22 +47,9 @@ function CleanerCard({ cleaner }: CleanerCardProps) {
     }
 
     try {
-      const invitation = await createInvitation.mutateAsync({
+      await createInvitation.mutateAsync({
         cleanerId: cleaner.id,
         organizationId: organization.id,
-      });
-
-      await sendEmailMutation.mutateAsync({
-        to: cleaner.email,
-        subject: 'RESTful Housekeeping: Invitation',
-        text:
-          `Hello ${cleaner.firstName},\n\n` +
-          `You have been invited to work with ` +
-          `${manager.firstName} ${manager.lastName} ` +
-          `at ${organization.name}.\n\n` +
-          `Your invitation ID is ${invitation.id}. ` +
-          `Please open RESTful Housekeeping to review your invitation.\n\n` +
-          `Regards,\nRESTful Housekeeping`,
       });
 
       Alert.alert(
@@ -73,9 +60,8 @@ function CleanerCard({ cleaner }: CleanerCardProps) {
       console.error('Invitation process failed:', error);
 
       Alert.alert(
-        'Invitation issue',
-        'The invitation process did not complete successfully. ' +
-          'Check the invitation status before trying again.',
+        'Invitation failed',
+        'The email could not be sent, and no invitation was created. Please check whether Mailpit is running.',
       );
     }
   };
