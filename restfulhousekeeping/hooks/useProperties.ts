@@ -4,15 +4,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/auth/AuthContext';
 import {
   createProperty,
+  deletePropertyById,
   getAllProperties,
   getPropertyById,
-  deletePropertyById,
   importAirbnbCalendar,
   updatePropertyById,
 } from '@/api/propertiesApi';
 import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
-import { Property, UpdatePropertyPayload } from '@/types/entityTypes';
+import { Property, Role, UpdatePropertyPayload } from '@/types/entityTypes';
 
 export function usePropertyById(propertyId: number) {
   //const { user } = useContext(AuthContext);
@@ -30,6 +30,7 @@ export function usePropertyAll() {
   return useQuery({
     queryKey: ['properties', user?.id],
     queryFn: () => getAllProperties(),
+    enabled: user?.role === Role.MANAGER,
   });
 }
 
