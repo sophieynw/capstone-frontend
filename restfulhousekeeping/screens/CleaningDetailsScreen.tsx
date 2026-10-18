@@ -2,7 +2,6 @@ import { Alert, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { ChecklistItem, Role } from '@/types/entityTypes';
-import { usePropertyById } from '@/hooks/useProperties';
 import { toFriendlyDate } from '@/utils/helpers';
 import { useContext, useState } from 'react';
 import { useCleaners } from '@/hooks/useUsers';
@@ -21,7 +20,6 @@ import {
 } from '@/components/ui/avatar';
 import { AuthContext } from '@/auth/AuthContext';
 import { NotesSection } from '@/components/NotesSection';
-import { showComingSoonAlert } from '@/components/ComingSoonAlert';
 import { ChecklistSection } from '@/components/ChecklistSection';
 import { CleanerChecklistSection } from '@/components/CleanerChecklistSection';
 import { PhotosSection } from '@/components/PhotosSection';
@@ -42,10 +40,7 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 
-import {
-  useCompleteCleaning,
-  useDeleteCleaning,
-} from '@/hooks/useCleanings';
+import { useCompleteCleaning, useDeleteCleaning } from '@/hooks/useCleanings';
 
 import {
   Modal,
@@ -64,7 +59,8 @@ const UNASSIGNED_CLEANER_VALUE = 'unassigned';
 
 export default function CleaningDetailsScreen({ route, navigation }: any) {
   const { user } = useContext(AuthContext);
-  const { cleaning, propertyId } = route.params;
+  const { cleaning } = route.params;
+  const property = cleaning.property;
 
   const [notes, setNotes] = useState('');
   const [photos, setPhotos] = useState<ImagePickerAsset[]>([]);
@@ -80,13 +76,6 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [issueType, setIssueType] = useState('');
   const [issueDescription, setIssueDescription] = useState('');
-
-  const {
-    data: property,
-    isPending: isPropertyPending,
-    isError: isPropertyError,
-    error: propertyError,
-  } = usePropertyById(propertyId);
 
   const {
     data: cleaners,
@@ -109,12 +98,11 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         ? `${selectedCleaner.firstName} ${selectedCleaner.lastName}`
         : undefined;
 
-  if (isPropertyPending || isCleanersPending) {
+  if (isCleanersPending) {
     return <LoadingSpinner label='Loading cleaning details...' />;
   }
 
-  if (isPropertyError || isCleanersError) {
-    console.error('Property error:', propertyError);
+  if (isCleanersError) {
     console.error('Cleaners error:', cleanersError);
 
     return <ErrorState />;
@@ -164,7 +152,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           onPress: () => {
             deleteCleaningMutation.mutate({
               cleaningId: cleaning.id,
-              propertyId: cleaning.propertyId,
+              propertyId: cleaning.property.id,
             });
           },
         },
@@ -281,9 +269,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           </View>
 
           <Avatar style={styles.mediumCardWithAvatarRight}>
-            <AvatarFallbackText>
-              Example Profile Picture
-            </AvatarFallbackText>
+            <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
 
             {cleanerSelected !== UNASSIGNED_CLEANER_VALUE ? (
               <AvatarImage
@@ -333,19 +319,13 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
         {/* Notes Section Card */}
         <Card style={styles.mediumCard}>
-          <NotesSection
-            notes={notes}
-            setNotes={setNotes}
-          />
+          <NotesSection notes={notes} setNotes={setNotes} />
         </Card>
 
         {/* Photos Section Card */}
         {user?.role == Role.CLEANER && (
           <Card style={styles.mediumCard}>
-            <PhotosSection
-              photos={photos}
-              onPhotosChange={setPhotos}
-            />
+            <PhotosSection photos={photos} onPhotosChange={setPhotos} />
           </Card>
         )}
       </View>
@@ -358,15 +338,9 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           className='rounded-full'
           onPress={() => setShowIssueModal(true)}
         >
-          <ButtonIcon
-            className='text-red-500'
-            as={CircleAlert}
-          />
+          <ButtonIcon className='text-red-500' as={CircleAlert} />
 
-
-          <ButtonText className='text-red-500'>
-            Report an Issue
-          </ButtonText>
+          <ButtonText className='text-red-500'>Report an Issue</ButtonText>
         </Button>
       )}
 
@@ -391,15 +365,8 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           <ModalBody>
             <Text className='mb-2'>Issue Type</Text>
 
-            <Select
-              selectedValue={issueType}
-              onValueChange={setIssueType}
-            >
-              <SelectTrigger
-                size='md'
-                variant='rounded'
-                className='mb-4'
-              >
+            <Select selectedValue={issueType} onValueChange={setIssueType}>
+              <SelectTrigger size='md' variant='rounded' className='mb-4'>
                 <SelectInput
                   className='flex-1'
                   placeholder='Select issue type'
@@ -415,25 +382,16 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                     <SelectDragIndicator />
                   </SelectDragIndicatorWrapper>
 
-                  <SelectItem
-                    label='Damage'
-                    value='damage'
-                  />
+                  <SelectItem label='Damage' value='damage' />
 
                   <SelectItem
                     label='Missing Supplies'
                     value='missing-supplies'
                   />
 
-                  <SelectItem
-                    label='Access Problem'
-                    value='access-problem'
-                  />
+                  <SelectItem label='Access Problem' value='access-problem' />
 
-                  <SelectItem
-                    label='Other'
-                    value='other'
-                  />
+                  <SelectItem label='Other' value='other' />
                 </SelectContent>
               </SelectPortal>
             </Select>
@@ -477,10 +435,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                   return;
                 }
 
-                Alert.alert(
-                  'Issue submitted',
-                  'The issue was recorded.',
-                );
+                Alert.alert('Issue submitted', 'The issue was recorded.');
 
                 setIssueType('');
                 setIssueDescription('');
