@@ -38,6 +38,7 @@ export interface Cleaning {
   managerId: number;
   cleanerId: number | null;
   propertyId: number;
+  property: Property;
   dateTimeStart: string;
   dateTimeEnd: string;
   dateTimeStarted: string | null;
@@ -70,8 +71,8 @@ export interface Property {
   country: string | null;
   checkoutTime: string | null;
   checkinTime: string | null;
-  airbnbCalendarConnected: boolean;
   accessInstructions: string | null;
+  airbnbCalendarConnected?: boolean;
 }
 
 export interface AvailabilitySlot {
