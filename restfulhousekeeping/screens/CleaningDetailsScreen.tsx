@@ -152,7 +152,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           onPress: () => {
             deleteCleaningMutation.mutate({
               cleaningId: cleaning.id,
-              propertyId: cleaning.propertyId,
+              propertyId: cleaning.property.id,
             });
           },
         },

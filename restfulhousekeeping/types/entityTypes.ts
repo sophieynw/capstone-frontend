@@ -37,7 +37,6 @@ export interface Cleaning {
   id: number;
   managerId: number;
   cleanerId: number | null;
-  propertyId: number;
   property: Property;
   dateTimeStart: string;
   dateTimeEnd: string;
@@ -61,7 +60,6 @@ export interface ChecklistItem {
 
 export interface Property {
   id: number;
-  managerId: number;
   name: string;
   street: string | null;
   unit: string | null;

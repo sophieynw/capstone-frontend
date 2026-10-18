@@ -42,20 +42,13 @@ export function useCreateProperty() {
   return useMutation({
     mutationFn: createProperty,
 
-    onSuccess: async (createdProperty) => {
-      queryClient.setQueryData<Property[]>(
-        ['properties', createdProperty.managerId],
-        (currentProperties = []) => [...currentProperties, createdProperty],
-      );
-
+    onSuccess: async () => {
       await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['properties'],
+        }),
         queryClient.invalidateQueries({
           queryKey: ['checklist-items'],
-        }),
-      ]);
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ['properties', createdProperty.managerId],
         }),
       ]);
 
