@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from './AuthContext';
 import { setUnauthorizedHandler } from '@/api/apiClient';
 import { User } from '@/types/entityTypes';
+import { getUserById } from '@/api/usersApi';
 
 interface Props {
   children: React.ReactNode;
@@ -133,6 +134,18 @@ export function AuthProvider({ children }: Props) {
     setUser(updatedUser);
   };
 
+  const userId = user?.id;
+
+  const refreshUser = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const fresh = await getUserById(userId);
+      await update(fresh);
+    } catch (error) {
+      console.log('Failed refreshing user', error);
+    }
+  }, [userId, update]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -142,6 +155,7 @@ export function AuthProvider({ children }: Props) {
         login,
         logout,
         update,
+        refreshUser
       }}
     >
       {children}

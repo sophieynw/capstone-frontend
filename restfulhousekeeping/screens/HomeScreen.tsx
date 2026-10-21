@@ -10,7 +10,12 @@ import {
   AvatarFallbackText,
   AvatarImage,
 } from '@/components/ui/avatar';
-import { Cleaning, Role } from '@/types/entityTypes';
+import {
+  Cleaning,
+  Invitation,
+  InvitationStatus,
+  Role,
+} from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
 import { useCleanerById } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
@@ -20,6 +25,12 @@ import { Icon } from '@/components/ui/icon';
 import { findOrCreateConversation } from '@/api/chatApi';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
+
+import {
+  useCleanerInvitations,
+  useAcceptInvitation,
+  useDeclineInvitation,
+} from '@/hooks/useInvitations';
 
 // region Cleaning Card
 
@@ -209,6 +220,46 @@ function CleanerInfo({
   );
 }
 
+type InvitationCardProps = {
+  invitation: Invitation;
+  onAccept: (id: number) => void;
+  onDecline: (id: number) => void;
+  isProcessing: boolean;
+};
+
+function InvitationCard({
+  invitation,
+  onAccept,
+  onDecline,
+  isProcessing,
+}: InvitationCardProps) {
+  return (
+    <Card className='gap-3 rounded-2xl'>
+
+      <Text>You've been invited to join {invitation.organizationName}.</Text>
+
+      <View className='flex-row gap-3'>
+        <Button
+          className='flex-1'
+          onPress={() => onAccept(invitation.id)}
+          disabled={isProcessing}
+        >
+          <ButtonText>{isProcessing ? 'Processing...' : 'Accept'}</ButtonText>
+        </Button>
+
+        <Button
+          className='flex-1'
+          variant='outline'
+          onPress={() => onDecline(invitation.id)}
+          disabled={isProcessing}
+        >
+          <ButtonText>Decline</ButtonText>
+        </Button>
+      </View>
+    </Card>
+  );
+}
+
 // endregion Cleaner Info
 
 export default function HomeScreen({ navigation }: any) {
@@ -227,6 +278,24 @@ export default function HomeScreen({ navigation }: any) {
       refetch();
     }, [refetch]),
   );
+
+  const isCleaner = user?.role === Role.CLEANER;
+
+  const {
+    data: invitations = [],
+    isLoading: invitationsLoading,
+    isError: invitationsError,
+  } = useCleanerInvitations(isCleaner ? user?.id : undefined);
+
+  const acceptMutation = useAcceptInvitation();
+  const declineMutation = useDeclineInvitation();
+
+  const pendingInvitations = invitations.filter(
+    (invitation) => invitation.status === InvitationStatus.PENDING,
+  );
+
+  const isProcessingInvitation =
+    acceptMutation.isPending || declineMutation.isPending;
 
   // cleanings info
   const upcoming = cleanings?.length ?? 0;
@@ -289,10 +358,38 @@ export default function HomeScreen({ navigation }: any) {
           <ManagerActions navigation={navigation} />
         </View>
       )}
-
       {/*{user?.role == Role.CLEANER && (*/}
       {/*  <CleanerActions navigation={navigation} />*/}
       {/*)}*/}
+
+      {/* Organization Invitations */}
+      {isCleaner && (
+        <View className='gap-3'>
+          {invitationsLoading && <Text>Checking for invitations...</Text>}
+
+          {invitationsError && (
+            <Text>Could not load organization invitations.</Text>
+          )}
+
+          {!invitationsLoading &&
+            !invitationsError &&
+            pendingInvitations.length > 0 && (
+              <>
+                <Heading size='xl'>Organization Invitations</Heading>
+
+                {pendingInvitations.map((invitation) => (
+                  <InvitationCard
+                    key={invitation.id}
+                    invitation={invitation}
+                    onAccept={(id) => acceptMutation.mutate(id)}
+                    onDecline={(id) => declineMutation.mutate(id)}
+                    isProcessing={isProcessingInvitation}
+                  />
+                ))}
+              </>
+            )}
+        </View>
+      )}
 
       {/* Info */}
       <ScrollView horizontal contentContainerStyle={styles.hStack}>
@@ -312,7 +409,6 @@ export default function HomeScreen({ navigation }: any) {
           />
         )}
       </ScrollView>
-
       {/* Today's Cleanings */}
       <View style={styles.vStack}>
         <Heading size='xl'>Today</Heading>
@@ -327,7 +423,6 @@ export default function HomeScreen({ navigation }: any) {
 
         {cleaningsToday.length === 0 && <Text>No cleanings today!</Text>}
       </View>
-
       {/* Upcoming Cleanings */}
       <View style={styles.vStack}>
         <Heading size='xl'>Upcoming</Heading>
