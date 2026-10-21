@@ -15,8 +15,6 @@ import { Alert } from 'react-native';
 import { Property, Role, UpdatePropertyPayload } from '@/types/entityTypes';
 
 export function usePropertyById(propertyId: number) {
-  //const { user } = useContext(AuthContext);
-
   return useQuery({
     queryKey: ['property', propertyId],
     queryFn: () => getPropertyById(propertyId),
@@ -71,11 +69,18 @@ export function useCreateProperty() {
 export function useDeleteProperty() {
   const queryClient = useQueryClient();
   const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
 
   return useMutation({
     mutationFn: deletePropertyById,
 
     onSuccess: async (_, propertyId) => {
+      navigation.goBack();
+      queryClient.setQueryData<Property[]>(
+        ['properties', user?.id],
+        (properties = []) =>
+          properties.filter((property) => property.id !== propertyId),
+      );
       queryClient.removeQueries({
         queryKey: ['property', propertyId],
         exact: true,
@@ -90,19 +95,13 @@ export function useDeleteProperty() {
       });
 
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['properties'] }),
+        queryClient.invalidateQueries({ queryKey: ['properties', user?.id] }),
         queryClient.invalidateQueries({ queryKey: ['upcoming-cleanings'] }),
         queryClient.invalidateQueries({ queryKey: ['cleaning-id'] }),
       ]);
 
-      Alert.alert('Success', 'The property was deleted.', [
-        {
-          text: 'OK',
-          onPress: () => navigation.goBack(),
-        },
-      ]);
+      Alert.alert('Success', 'The property was deleted.');
     },
-
     onError: (error) => {
       console.error('Delete property error:', error);
 
@@ -110,6 +109,7 @@ export function useDeleteProperty() {
     },
   });
 }
+
 
 export function useUpdateProperty() {
   const queryClient = useQueryClient();

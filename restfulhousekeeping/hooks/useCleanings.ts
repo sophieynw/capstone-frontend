@@ -48,7 +48,7 @@ export function useNextCleaningByProperty(propertyId: number) {
   return useQuery({
     queryKey: ['next-property-cleaning', propertyId],
     queryFn: () => getNextCleaningByProperty(propertyId),
-    enabled: !!user?.id,
+    enabled: !!propertyId,
   });
 }
 
