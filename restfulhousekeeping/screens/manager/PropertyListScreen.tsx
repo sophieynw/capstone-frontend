@@ -6,12 +6,7 @@ import { useNextCleaningByProperty } from '@/hooks/useCleanings';
 import { toFriendlyDate } from '@/utils/helpers';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
-import {
-  Avatar,
-  AvatarFallbackText,
-  AvatarImage,
-} from '@/components/ui/avatar';
-import { showComingSoonAlert } from '@/components/ComingSoonAlert';
+import { Avatar } from '@/components/ui/avatar';
 import { Icon } from '@/components/ui/icon';
 import { HousePlus } from 'lucide-react-native';
 import { LoadingSpinner } from '@/components/LoadingSpinner';

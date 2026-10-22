@@ -19,7 +19,7 @@ export function useUpcomingCleanings() {
   const { user } = useContext(AuthContext);
 
   return useQuery({
-    queryKey: ['upcoming-cleanings'],
+    queryKey: ['upcoming-cleanings', user?.id],
     queryFn: () => getUpcomingCleanings(user!.id),
     enabled: !!user?.id,
 
@@ -48,7 +48,7 @@ export function useNextCleaningByProperty(propertyId: number) {
   return useQuery({
     queryKey: ['next-property-cleaning', propertyId],
     queryFn: () => getNextCleaningByProperty(propertyId),
-    enabled: !!user?.id,
+    enabled: !!propertyId,
   });
 }
 
@@ -147,7 +147,6 @@ export function useDeleteCleaning() {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: ['upcoming-cleanings'],
-          exact: true,
           refetchType: 'all',
         }),
 
