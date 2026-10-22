@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/avatar';
 import { Cleaning, Role } from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
-import { usePropertyById } from '@/hooks/useProperties';
 import { useCleanerById } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
 import { MessageCircle, Plus, UsersRound } from 'lucide-react-native';
@@ -45,7 +44,6 @@ type CleaningCardProps = {
 };
 
 function CleaningCard({ cleaning, status, navigation }: CleaningCardProps) {
-  const { data: property } = usePropertyById(cleaning.propertyId);
   const { data: cleaner } = useCleanerById(cleaning.cleanerId);
   //const { data: cleaning } = useCleaningById(cleaning.cleaningId);
 
@@ -54,7 +52,6 @@ function CleaningCard({ cleaning, status, navigation }: CleaningCardProps) {
       onPress={() => {
         navigation.navigate('CleaningDetailsScreen', {
           cleaning: cleaning,
-          propertyId: cleaning.propertyId,
           cleanerId: cleaning.cleanerId,
         });
       }}
@@ -65,7 +62,7 @@ function CleaningCard({ cleaning, status, navigation }: CleaningCardProps) {
       >
         {/* Left Side (Text) */}
         <View style={styles.mediumCardWithAvatarLeft}>
-          <Heading size='md'>{property?.name}</Heading>
+          <Heading size='md'>{cleaning.property.name}</Heading>
           <View className='gap-1'>
             <Text>{toFriendlyDate(cleaning.dateTimeStart)}</Text>
             <Text>

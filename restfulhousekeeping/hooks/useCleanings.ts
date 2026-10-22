@@ -84,7 +84,7 @@ export function useCreateCleaning() {
         }),
 
         queryClient.invalidateQueries({
-          queryKey: ['next-property-cleaning', createdCleaning.propertyId],
+          queryKey: ['next-property-cleaning', createdCleaning.property.id],
           exact: true,
           refetchType: 'all',
         }),
@@ -117,16 +117,15 @@ export function useCompleteCleaning() {
         ['cleaning-id', updatedCleaning.id],
         updatedCleaning,
       );
-      queryClient.invalidateQueries({ 
+      queryClient.invalidateQueries({
         queryKey: ['upcoming-cleanings'],
         refetchType: 'all',
-        });
+      });
 
       queryClient.invalidateQueries({
         queryKey: ['completed-cleanings'],
         refetchType: 'all',
-    });
-
+      });
     },
   });
 }
@@ -169,10 +168,7 @@ export function useDeleteCleaning() {
     onError: (error) => {
       console.error('Delete cleaning error:', error);
 
-      Alert.alert(
-        'Unable to delete',
-        'The cleaning could not be deleted.',
-      );
+      Alert.alert('Unable to delete', 'The cleaning could not be deleted.');
     },
   });
 }

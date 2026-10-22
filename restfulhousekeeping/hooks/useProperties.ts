@@ -4,15 +4,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/auth/AuthContext';
 import {
   createProperty,
+  deletePropertyById,
   getAllProperties,
   getPropertyById,
-  deletePropertyById,
   importAirbnbCalendar,
   updatePropertyById,
 } from '@/api/propertiesApi';
 import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
-import { Property, UpdatePropertyPayload } from '@/types/entityTypes';
+import { Property, Role, UpdatePropertyPayload } from '@/types/entityTypes';
 
 export function usePropertyById(propertyId: number) {
   return useQuery({
@@ -28,6 +28,7 @@ export function usePropertyAll() {
   return useQuery({
     queryKey: ['properties', user?.id],
     queryFn: () => getAllProperties(),
+    enabled: user?.role === Role.MANAGER,
   });
 }
 
@@ -39,20 +40,13 @@ export function useCreateProperty() {
   return useMutation({
     mutationFn: createProperty,
 
-    onSuccess: async (createdProperty) => {
-      queryClient.setQueryData<Property[]>(
-        ['properties', createdProperty.managerId],
-        (currentProperties = []) => [...currentProperties, createdProperty],
-      );
-
+    onSuccess: async () => {
       await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['properties'],
+        }),
         queryClient.invalidateQueries({
           queryKey: ['checklist-items'],
-        }),
-      ]);
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ['properties', createdProperty.managerId],
         }),
       ]);
 

@@ -9,7 +9,6 @@ import CleaningDetailsScreen from '@/screens/CleaningDetailsScreen';
 import ManageTeamScreen from '@/screens/manager/ManageTeamScreen';
 import NewCleaningScreen from '@/screens/manager/NewCleaningScreen';
 import PropertyDetailsScreen from '@/screens/manager/PropertyDetailsScreen';
-import ManageChecklistScreen from './screens/ManageChecklistScreen';
 import NewPropertyScreen from '@/screens/manager/NewPropertyScreen';
 import ProfileEditScreen from '@/screens/ProfileEditScreen';
 import ChatScreen from '@/screens/ChatScreen';
@@ -46,11 +45,6 @@ export default function Navigation() {
             <Stack.Screen
               name='PropertyDetailsScreen'
               component={PropertyDetailsScreen}
-              options={{ presentation: 'modal' }}
-            />
-            <Stack.Screen
-              name='ManageChecklistScreen'
-              component={ManageChecklistScreen}
               options={{ presentation: 'modal' }}
             />
             <Stack.Screen
