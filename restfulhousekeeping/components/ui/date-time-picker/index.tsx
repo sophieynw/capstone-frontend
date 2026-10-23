@@ -558,13 +558,18 @@ const DateTimePickerIcon = React.forwardRef<
 
 function formatDate(date: Date, format: string): string {
   const pad = (n: number) => n.toString().padStart(2, '0');
+  const hours = date.getHours();
+  const hours12 = hours % 12 || 12;
+
   return format
     .replace('YYYY', date.getFullYear().toString())
     .replace('MM', pad(date.getMonth() + 1))
     .replace('DD', pad(date.getDate()))
-    .replace('HH', pad(date.getHours()))
+    .replace('HH', pad(hours))
+    .replace('hh', pad(hours12))
     .replace('mm', pad(date.getMinutes()))
-    .replace('ss', pad(date.getSeconds()));
+    .replace('ss', pad(date.getSeconds()))
+    .replace('A', hours >= 12 ? 'PM' : 'AM');
 }
 
 export {

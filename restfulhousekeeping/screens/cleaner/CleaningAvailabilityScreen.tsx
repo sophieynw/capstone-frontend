@@ -120,7 +120,8 @@ export default function CleaningAvailabilityScreen() {
             if (date) onChange(date);
           }}
           mode='time'
-          format='HH:mm'
+          format='hh:mm A'
+          is24Hour={false}
         >
           <DateTimePickerTrigger className='m-2 rounded-full'>
             <DateTimePickerInput />
