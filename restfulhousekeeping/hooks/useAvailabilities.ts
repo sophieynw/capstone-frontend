@@ -4,14 +4,17 @@ import {
   getAvailabilitySlots,
   updateAvailabilitySlot,
   createAvailabilitySlot,
-  deleteAvailabilitySlot
+  deleteAvailabilitySlot,
 } from '@/api/availabilitiesApi';
 import { Alert } from 'react-native';
 import { DaysOfTheWeek } from '@/types/entityTypes';
 
+const availabilityQueryKey = (cleanerId?: number) =>
+  ['availability-slots', cleanerId] as const;
+
 export function useAvailabilities(cleanerId?: number) {
   return useQuery({
-    queryKey: ['availability-slots', cleanerId],
+    queryKey: availabilityQueryKey(cleanerId),
     queryFn: () => getAvailabilitySlots(cleanerId!),
     enabled: cleanerId !== undefined,
   });
@@ -28,14 +31,16 @@ export function useCreateAvailability(cleanerId?: number) {
     }) => createAvailabilitySlot(payload),
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: ['availability-slots', cleanerId],
+        queryKey: availabilityQueryKey(cleanerId),
+        exact: true,
+        refetchType: 'active',
       }),
     onError: () =>
       Alert.alert('Unable to save', 'The availability could not be added.'),
   });
 }
 
-export function useUpdateAvailability(id?: number) {
+export function useUpdateAvailability(cleanerId?: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -48,7 +53,11 @@ export function useUpdateAvailability(id?: number) {
       endTime: string;
     }) => updateAvailabilitySlot(id, payload),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ['availability-slots', id] }),
+      queryClient.invalidateQueries({
+        queryKey: availabilityQueryKey(cleanerId),
+        exact: true,
+        refetchType: 'active',
+      }),
     onError: () =>
       Alert.alert('Unable to save', 'The availability could not be updated.'),
   });
@@ -61,7 +70,9 @@ export function useDeleteAvailability(cleanerId?: number) {
     mutationFn: (id: number) => deleteAvailabilitySlot(id),
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: ['availability-slots', cleanerId],
+        queryKey: availabilityQueryKey(cleanerId),
+        exact: true,
+        refetchType: 'active',
       }),
     onError: () =>
       Alert.alert('Unable to delete', 'The availability could not be removed.'),

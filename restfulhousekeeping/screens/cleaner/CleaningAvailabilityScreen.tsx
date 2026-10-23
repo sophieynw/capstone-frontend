@@ -33,6 +33,34 @@ import { Select, SelectTrigger, SelectBackdrop, SelectIcon, SelectInput, SelectP
 import { useAvailabilities,useUpdateAvailability, useCreateAvailability, useDeleteAvailability } from '@/hooks/useAvailabilities';
 import { AuthContext } from '@/auth/AuthContext';
 
+function minutesSinceMidnight(date: Date): number {
+  return date.getHours() * 60 + date.getMinutes();
+}
+
+function hasOverlappingAvailability(
+  slots: AvailabilitySlot[] | undefined,
+  dayOfWeek: DaysOfTheWeek,
+  startTime: Date,
+  endTime: Date,
+  excludedSlotId?: number,
+): boolean {
+  const candidateStart = minutesSinceMidnight(startTime);
+  const candidateEnd = minutesSinceMidnight(endTime);
+
+  return (slots ?? []).some((slot) => {
+    if (slot.id === excludedSlotId || slot.dayOfWeek !== dayOfWeek) {
+      return false;
+    }
+
+    const existingStart = minutesSinceMidnight(
+      timeStringToDate(slot.startTime),
+    );
+    const existingEnd = minutesSinceMidnight(timeStringToDate(slot.endTime));
+
+    return candidateStart < existingEnd && candidateEnd > existingStart;
+  });
+}
+
 export default function CleaningAvailabilityScreen() {
   const { user } = useContext(AuthContext);
   const { data: availabilitySlots } = useAvailabilities(user?.id);
@@ -211,15 +239,39 @@ return (
           <Button
             className='rounded-full'
             onPress={() => {
-              //if (!editingSlot) return;
-              // @ts-ignore
-              if (endTime <= startTime) {
+              if (!availabilitySlots) {
+                Alert.alert(
+                  'Availability unavailable',
+                  'Wait for your availability to load before saving.',
+                );
+                return;
+              }
+
+              if (endTime.getTime() <= startTime.getTime()) {
                 Alert.alert(
                   'Invalid time',
                   'End time must be later than start time.',
                 );
                 return;
               }
+
+              const dayOfWeek = editingSlot?.dayOfWeek ?? selectedDay;
+              if (
+                hasOverlappingAvailability(
+                  availabilitySlots,
+                  dayOfWeek,
+                  startTime,
+                  endTime,
+                  editingSlot?.id,
+                )
+              ) {
+                Alert.alert(
+                  'Overlapping availability',
+                  `This time overlaps with an existing availability period on ${toTitleCase(dayOfWeek)}.`,
+                );
+                return;
+              }
+
               if (editingSlot) {
                 updateAvailability.mutate(
                   {
