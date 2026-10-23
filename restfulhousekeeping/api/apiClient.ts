@@ -10,7 +10,10 @@ export function setUnauthorizedHandler(handler: UnauthorizedHandler | null) {
   unauthorizedHandler = handler;
 }
 
-// exported so we can build image urls in other files
+// For the deployed frontend, comment out the local API_BASE_URL below and
+// uncomment this endpoint to connect to the deployed Render backend:
+// export const API_BASE_URL = 'https://restfulhousekeeping-v1.onrender.com';
+
 export const API_BASE_URL = Platform.select({
   default: 'http://192.168.68.104:50000',
   android: 'http://10.0.2.2:50000',
@@ -19,7 +22,6 @@ export const API_BASE_URL = Platform.select({
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  // baseURL: 'https://restfulhousekeeping-v1.onrender.com', // deployed backend
   timeout: 10_000,
   headers: { 'Content-Type': 'application/json' },
 });
