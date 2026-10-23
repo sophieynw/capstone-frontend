@@ -213,7 +213,6 @@ function InvitationCard({
 }: InvitationCardProps) {
   return (
     <Card className='gap-3 rounded-2xl'>
-
       <Text>You've been invited to join {invitation.organizationName}.</Text>
 
       <View className='flex-row gap-3'>
@@ -312,9 +311,6 @@ export default function HomeScreen({ navigation }: any) {
           <ManagerActions navigation={navigation} />
         </View>
       )}
-      {/*{user?.role == Role.CLEANER && (*/}
-      {/*  <CleanerActions navigation={navigation} />*/}
-      {/*)}*/}
 
       {/* Organization Invitations */}
       {isCleaner && (
