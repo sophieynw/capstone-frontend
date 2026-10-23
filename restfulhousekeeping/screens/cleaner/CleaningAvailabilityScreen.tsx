@@ -32,7 +32,9 @@ export default function CleaningAvailabilityScreen() {
   const { data: availabilitySlots } = useAvailabilities(user?.id);
   const [showModal, setShowModal] = useState(false);
 
-  const [selectedDay, setSelectedDay] = useState<DaysOfTheWeek | null>(null);
+  const [selectedDay, setSelectedDay] = useState<DaysOfTheWeek>(
+    DaysOfTheWeek.MONDAY,
+  );
 
   const [startTime, setStartTime] = useState<Date>(new Date());
   const [endTime, setEndTime] = useState<Date>(new Date());
