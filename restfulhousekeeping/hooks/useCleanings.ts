@@ -3,15 +3,18 @@ import { useContext } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/auth/AuthContext';
 import {
+  addCleaningChecklistItem,
   completeCleaning,
   createCleaning,
   deleteCleaning,
+  deleteCleaningChecklistItem,
   getCleaningById,
   getCompletedCleanings,
   getNextCleaningByProperty,
   getUpcomingCleanings,
   updateCleaningCleaner,
 } from '@/api/cleaningsApi';
+import { Cleaning } from '@/types/entityTypes';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -201,6 +204,110 @@ export function useDeleteCleaning() {
       console.error('Delete cleaning error:', error);
 
       Alert.alert('Unable to delete', 'The cleaning could not be deleted.');
+    },
+  });
+}
+
+export function useAddCleaningChecklistItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      cleaningId,
+      description,
+    }: {
+      cleaningId: number;
+      propertyId: number;
+      description: string;
+    }) => addCleaningChecklistItem(cleaningId, description),
+
+    onSuccess: (createdItem, { cleaningId, propertyId }) => {
+      const addItem = (cleaning: Cleaning | undefined) =>
+        cleaning?.id === cleaningId
+          ? {
+              ...cleaning,
+              cleaningChecklistItems: [
+                ...cleaning.cleaningChecklistItems,
+                createdItem,
+              ],
+            }
+          : cleaning;
+
+      queryClient.setQueryData<Cleaning>(['cleaning-id', cleaningId], addItem);
+
+      queryClient.setQueriesData<Cleaning[]>(
+        { queryKey: ['upcoming-cleanings'] },
+        (cleanings) => cleanings?.map((cleaning) => addItem(cleaning)!),
+      );
+
+      queryClient.setQueryData<Cleaning>(
+        ['next-property-cleaning', propertyId],
+        addItem,
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: ['upcoming-cleanings'],
+        refetchType: 'all',
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['next-property-cleaning', propertyId],
+        exact: true,
+        refetchType: 'all',
+      });
+    },
+  });
+}
+
+export function useDeleteCleaningChecklistItem() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      cleaningId,
+      itemId,
+    }: {
+      cleaningId: number;
+      propertyId: number;
+      itemId: number;
+    }) => deleteCleaningChecklistItem(cleaningId, itemId),
+
+    onSuccess: (_, { cleaningId, propertyId, itemId }) => {
+      const removeItem = (cleaning: Cleaning | undefined) =>
+        cleaning?.id === cleaningId
+          ? {
+              ...cleaning,
+              cleaningChecklistItems: cleaning.cleaningChecklistItems.filter(
+                (item) => item.id !== itemId,
+              ),
+            }
+          : cleaning;
+
+      queryClient.setQueryData<Cleaning>(
+        ['cleaning-id', cleaningId],
+        removeItem,
+      );
+
+      queryClient.setQueriesData<Cleaning[]>(
+        { queryKey: ['upcoming-cleanings'] },
+        (cleanings) => cleanings?.map((cleaning) => removeItem(cleaning)!),
+      );
+
+      queryClient.setQueryData<Cleaning>(
+        ['next-property-cleaning', propertyId],
+        removeItem,
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: ['upcoming-cleanings'],
+        refetchType: 'all',
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['next-property-cleaning', propertyId],
+        exact: true,
+        refetchType: 'all',
+      });
     },
   });
 }

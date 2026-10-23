@@ -1,6 +1,10 @@
 // api/cleaningsApi.ts
 import { request } from '@/api/apiClient';
-import { Cleaning, CreateCleaningPayload } from '@/types/entityTypes';
+import {
+  Cleaning,
+  CleaningChecklistItem,
+  CreateCleaningPayload,
+} from '@/types/entityTypes';
 
 export function getUpcomingCleanings(userId: number): Promise<Cleaning[]> {
   return request<Cleaning[]>({
@@ -64,5 +68,26 @@ export function deleteCleaning(cleaningId: number): Promise<void> {
   return request<void>({
     method: 'DELETE',
     url: `/cleanings/${cleaningId}`,
+  });
+}
+
+export function addCleaningChecklistItem(
+  cleaningId: number,
+  description: string,
+): Promise<CleaningChecklistItem> {
+  return request<CleaningChecklistItem>({
+    method: 'POST',
+    url: `/cleanings/${cleaningId}/checklist-items`,
+    data: { description },
+  });
+}
+
+export function deleteCleaningChecklistItem(
+  cleaningId: number,
+  itemId: number,
+): Promise<void> {
+  return request<void>({
+    method: 'DELETE',
+    url: `/cleanings/${cleaningId}/checklist-items/${itemId}`,
   });
 }

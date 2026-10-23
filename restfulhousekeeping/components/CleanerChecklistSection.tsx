@@ -3,10 +3,10 @@ import { Pressable, Text, View } from 'react-native';
 import { Circle, CircleCheck } from 'lucide-react-native';
 import { Heading } from '@/components/ui/heading';
 import { Icon } from '@/components/ui/icon';
-import { ChecklistItem } from '@/types/entityTypes';
+import { CleaningChecklistItem } from '@/types/entityTypes';
 
 type CleanerChecklistItemProps = {
-  item: ChecklistItem;
+  item: CleaningChecklistItem;
 };
 
 function CleanerChecklistItem({ item }: CleanerChecklistItemProps) {
@@ -30,7 +30,7 @@ function CleanerChecklistItem({ item }: CleanerChecklistItemProps) {
 }
 
 type CleanerChecklistSectionProps = {
-  items: ChecklistItem[];
+  items: CleaningChecklistItem[];
 };
 
 export function CleanerChecklistSection({

@@ -1,9 +1,9 @@
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { ChecklistItem, Role } from '@/types/entityTypes';
+import { Cleaning, CleaningChecklistItem, Role } from '@/types/entityTypes';
 import { toFriendlyDate } from '@/utils/helpers';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useCleaners } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
@@ -41,8 +41,11 @@ import {
 } from '@/components/ui/select';
 
 import {
+  useAddCleaningChecklistItem,
+  useCleaningById,
   useCompleteCleaning,
   useDeleteCleaning,
+  useDeleteCleaningChecklistItem,
   useUpdateCleaningCleaner,
 } from '@/hooks/useCleanings';
 
@@ -64,7 +67,14 @@ const UNASSIGNED_CLEANER_VALUE = 'unassigned';
 
 export default function CleaningDetailsScreen({ route, navigation }: any) {
   const { user } = useContext(AuthContext);
-  const { cleaning } = route.params;
+  const initialCleaning = route.params.cleaning as Cleaning;
+  const {
+    data: fetchedCleaning,
+    isPending: isCleaningPending,
+    isError: isCleaningError,
+    error: cleaningError,
+  } = useCleaningById(initialCleaning.id);
+  const cleaning = fetchedCleaning ?? initialCleaning;
   const property = cleaning.property;
 
   const [notes, setNotes] = useState('');
@@ -74,13 +84,22 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     cleaning?.cleanerId?.toString() ?? UNASSIGNED_CLEANER_VALUE,
   );
 
-  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(
+  const [checklistItems, setChecklistItems] = useState<CleaningChecklistItem[]>(
     cleaning?.cleaningChecklistItems ?? [],
   );
 
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [issueType, setIssueType] = useState('');
   const [issueDescription, setIssueDescription] = useState('');
+
+  useEffect(() => {
+    if (!fetchedCleaning) return;
+
+    setChecklistItems(fetchedCleaning.cleaningChecklistItems);
+    setCleanerSelected(
+      fetchedCleaning.cleanerId?.toString() ?? UNASSIGNED_CLEANER_VALUE,
+    );
+  }, [fetchedCleaning]);
 
   const {
     data: cleaners,
@@ -91,6 +110,8 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
   const completeCleaningMutation = useCompleteCleaning();
   const deleteCleaningMutation = useDeleteCleaning();
+  const addChecklistItemMutation = useAddCleaningChecklistItem();
+  const deleteChecklistItemMutation = useDeleteCleaningChecklistItem();
   const updateCleanerMutation = useUpdateCleaningCleaner();
   const createIssueMutation = useCreateIssue();
 
@@ -105,12 +126,13 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         ? `${selectedCleaner.firstName} ${selectedCleaner.lastName}`
         : undefined;
 
-  if (isCleanersPending) {
+  if (isCleanersPending || isCleaningPending) {
     return <LoadingSpinner label='Loading cleaning details...' />;
   }
 
-  if (isCleanersError) {
+  if (isCleanersError || isCleaningError) {
     console.error('Cleaners error:', cleanersError);
+    console.error('Cleaning error:', cleaningError);
 
     return <ErrorState />;
   }
@@ -192,6 +214,22 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     );
   }
 
+  function handleAddChecklistItem(description: string) {
+    return addChecklistItemMutation.mutateAsync({
+      cleaningId: cleaning.id,
+      propertyId: cleaning.property.id,
+      description,
+    });
+  }
+
+  function handleDeleteChecklistItem(item: CleaningChecklistItem) {
+    return deleteChecklistItemMutation.mutateAsync({
+      cleaningId: cleaning.id,
+      propertyId: cleaning.property.id,
+      itemId: item.id,
+    });
+  }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -201,7 +239,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
       <View style={styles.modalHeader}>
         <Heading size='2xl'>Cleaning Details</Heading>
 
-        {user?.role === Role.MANAGER ? (
+        {user?.role === Role.MANAGER && !cleaning.isComplete ? (
           <Button
             className='rounded-full'
             size='lg'
@@ -214,7 +252,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
               {deleteCleaningMutation.isPending ? 'Deleting...' : 'Delete'}
             </ButtonText>
           </Button>
-        ) : (
+        ) : user?.role !== Role.MANAGER ? (
           <Button
             className='rounded-full'
             size='lg'
@@ -229,7 +267,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
               {completeCleaningMutation.isPending ? 'Completing...' : 'Done'}
             </ButtonText>
           </Button>
-        )}
+        ) : null}
       </View>
 
       {/* Content */}
@@ -262,39 +300,43 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                 <View className='flex-row items-center gap-2'>
                   <Text>Cleaner:</Text>
 
-                  <Select
-                    selectedValue={cleanerSelected}
-                    initialLabel={selectedCleanerLabel}
-                    onValueChange={handleCleanerChange}
-                  >
-                    <SelectTrigger size='md' variant='rounded'>
-                      <SelectInput placeholder='Unassigned' />
-                      <SelectIcon className='mr-3' as={ChevronDown} />
-                    </SelectTrigger>
+                  {cleaning.isComplete ? (
+                    <Text>{selectedCleanerLabel ?? 'Unassigned'}</Text>
+                  ) : (
+                    <Select
+                      selectedValue={cleanerSelected}
+                      initialLabel={selectedCleanerLabel}
+                      onValueChange={handleCleanerChange}
+                    >
+                      <SelectTrigger size='md' variant='rounded'>
+                        <SelectInput placeholder='Unassigned' />
+                        <SelectIcon className='mr-3' as={ChevronDown} />
+                      </SelectTrigger>
 
-                    <SelectPortal useRNModal>
-                      <SelectBackdrop />
+                      <SelectPortal useRNModal>
+                        <SelectBackdrop />
 
-                      <SelectContent>
-                        <SelectDragIndicatorWrapper>
-                          <SelectDragIndicator />
-                        </SelectDragIndicatorWrapper>
+                        <SelectContent>
+                          <SelectDragIndicatorWrapper>
+                            <SelectDragIndicator />
+                          </SelectDragIndicatorWrapper>
 
-                        <SelectItem
-                          label='Unassigned'
-                          value={UNASSIGNED_CLEANER_VALUE}
-                        />
-
-                        {cleaners?.map((cleanerItem) => (
                           <SelectItem
-                            key={cleanerItem.id}
-                            label={`${cleanerItem.firstName} ${cleanerItem.lastName}`}
-                            value={cleanerItem.id.toString()}
+                            label='Unassigned'
+                            value={UNASSIGNED_CLEANER_VALUE}
                           />
-                        ))}
-                      </SelectContent>
-                    </SelectPortal>
-                  </Select>
+
+                          {cleaners?.map((cleanerItem) => (
+                            <SelectItem
+                              key={cleanerItem.id}
+                              label={`${cleanerItem.firstName} ${cleanerItem.lastName}`}
+                              value={cleanerItem.id.toString()}
+                            />
+                          ))}
+                        </SelectContent>
+                      </SelectPortal>
+                    </Select>
+                  )}
                 </View>
               )}
             </View>
@@ -338,6 +380,9 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
             <ChecklistSection
               items={checklistItems}
               onItemsChange={setChecklistItems}
+              onAddItem={handleAddChecklistItem}
+              onDeleteItem={handleDeleteChecklistItem}
+              isReadOnly={cleaning.isComplete}
             />
           )}
 

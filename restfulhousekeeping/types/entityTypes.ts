@@ -43,7 +43,7 @@ export interface Cleaning {
   dateTimeStarted: string | null;
   dateTimeCompleted: string | null;
   notes: string | null;
-  cleaningChecklistItems: ChecklistItem[];
+  cleaningChecklistItems: CleaningChecklistItem[];
   isComplete: boolean;
 }
 
@@ -54,8 +54,13 @@ export interface ChecklistItem {
   description: string;
   frequencyDays: number | null;
   lastCompleted: string | null;
-  // Only present after the item has been attached to a cleaning.
-  isComplete?: boolean;
+}
+
+// an item attached to one specific cleaning
+export interface CleaningChecklistItem {
+  id: number;
+  description: string;
+  isComplete: boolean;
 }
 
 export interface Property {

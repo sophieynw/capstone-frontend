@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import { Heading } from '@/components/ui/heading';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { Circle, CircleCheck, Plus, Trash } from 'lucide-react-native';
-import { ChecklistItem } from '@/types/entityTypes';
+type ChecklistSectionItem = {
+  id: number;
+  description: string;
+  isComplete?: boolean;
+};
 
 // region ChecklistItemInput
 
@@ -15,15 +19,19 @@ import { ChecklistItem } from '@/types/entityTypes';
  */
 
 type ChecklistItemInputProps = {
-  item: ChecklistItem;
+  item: ChecklistSectionItem;
   onDelete: () => void;
   onChangeDescription: (description: string) => void;
+  isDeleting?: boolean;
+  isReadOnly?: boolean;
 };
 
 function ChecklistItemInput({
   item,
   onDelete,
   onChangeDescription,
+  isDeleting = false,
+  isReadOnly = false,
 }: ChecklistItemInputProps) {
   const isPreloadedItem = item.id > 0;
 
@@ -41,57 +49,108 @@ function ChecklistItemInput({
         placeholder='Checklist item'
       />
 
-      <InputSlot className='pl-3'>
-        <Pressable onPress={onDelete} className='ml-3'>
-          <InputIcon as={Trash} />
-        </Pressable>
-      </InputSlot>
+      {!isReadOnly && (
+        <InputSlot className='pl-3'>
+          <Pressable onPress={onDelete} disabled={isDeleting} className='ml-3'>
+            <InputIcon as={Trash} />
+          </Pressable>
+        </InputSlot>
+      )}
     </Input>
   );
 }
 
 // endregion ChecklistItemInput
 
-type ChecklistSectionProps = {
-  items: ChecklistItem[];
-  onItemsChange: (items: ChecklistItem[]) => void;
+type ChecklistSectionProps<T extends ChecklistSectionItem> = {
+  items: T[];
+  onItemsChange: (items: T[]) => void;
+  onAddItem?: (description: string) => Promise<T>;
+  onDeleteItem?: (item: T) => Promise<void>;
+  isReadOnly?: boolean;
 };
 
-export function ChecklistSection({
+export function ChecklistSection<T extends ChecklistSectionItem>({
   items,
   onItemsChange,
-}: ChecklistSectionProps) {
-  const [editableItems, setEditableItems] = useState<ChecklistItem[]>([]);
+  onAddItem,
+  onDeleteItem,
+  isReadOnly = false,
+}: ChecklistSectionProps<T>) {
+  const [editableItems, setEditableItems] = useState<T[]>([]);
   const [newItemDescription, setNewItemDescription] = useState<string>('');
+  const [isAdding, setIsAdding] = useState(false);
+  const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
+  const isPersisting = isAdding || deletingItemId !== null;
 
   useEffect(() => {
     setEditableItems(items);
   }, [items]);
 
-  function commitItems(nextItems: ChecklistItem[]) {
+  function commitItems(nextItems: T[]) {
     setEditableItems(nextItems);
     onItemsChange(nextItems);
   }
 
-  function addItem() {
+  async function addItem() {
     const description = newItemDescription.trim();
 
-    if (!description) return;
+    if (!description || isPersisting) return;
 
-    const newItem: ChecklistItem = {
+    if (onAddItem) {
+      setIsAdding(true);
+
+      try {
+        const createdItem = await onAddItem(description);
+        commitItems([...editableItems, createdItem]);
+        setNewItemDescription('');
+      } catch (error) {
+        console.error('Add cleaning checklist item error:', error);
+        Alert.alert(
+          'Unable to add item',
+          'The checklist item could not be added.',
+        );
+      } finally {
+        setIsAdding(false);
+      }
+
+      return;
+    }
+
+    const newItem = {
       // Temporary client-side ID.
       id: -Date.now(),
       description,
       frequencyDays: 1,
       lastCompleted: null,
-    };
+    } as unknown as T;
 
     commitItems([...editableItems, newItem]);
     setNewItemDescription('');
   }
 
-  function deleteItem(id: number) {
-    commitItems(editableItems.filter((item) => item.id !== id));
+  async function deleteItem(item: T) {
+    if (!onDeleteItem) {
+      commitItems(editableItems.filter(({ id }) => id !== item.id));
+      return;
+    }
+
+    if (isPersisting) return;
+
+    setDeletingItemId(item.id);
+
+    try {
+      await onDeleteItem(item);
+      commitItems(editableItems.filter(({ id }) => id !== item.id));
+    } catch (error) {
+      console.error('Delete cleaning checklist item error:', error);
+      Alert.alert(
+        'Unable to delete item',
+        'The checklist item could not be deleted.',
+      );
+    } finally {
+      setDeletingItemId(null);
+    }
   }
 
   function updateItemDescription(id: number, description: string) {
@@ -111,28 +170,37 @@ export function ChecklistSection({
           <ChecklistItemInput
             key={item.id}
             item={item}
-            onDelete={() => deleteItem(item.id)}
+            onDelete={() => deleteItem(item)}
+            isDeleting={isPersisting}
+            isReadOnly={isReadOnly}
             onChangeDescription={(description) =>
               updateItemDescription(item.id, description)
             }
           />
         ))}
 
-        <Input className='w-full rounded-full'>
-          <InputField
-            value={newItemDescription}
-            onChangeText={setNewItemDescription}
-            onSubmitEditing={addItem}
-            placeholder='Add checklist item'
-            returnKeyType='done'
-          />
+        {!isReadOnly && (
+          <Input className='w-full rounded-full'>
+            <InputField
+              value={newItemDescription}
+              onChangeText={setNewItemDescription}
+              onSubmitEditing={addItem}
+              placeholder='Add checklist item'
+              returnKeyType='done'
+              editable={!isPersisting}
+            />
 
-          <InputSlot>
-            <Pressable onPress={addItem} className='ml-3'>
-              <InputIcon as={Plus} />
-            </Pressable>
-          </InputSlot>
-        </Input>
+            <InputSlot>
+              <Pressable
+                onPress={addItem}
+                disabled={isPersisting}
+                className='ml-3'
+              >
+                <InputIcon as={Plus} />
+              </Pressable>
+            </InputSlot>
+          </Input>
+        )}
       </View>
     </View>
   );
