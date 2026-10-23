@@ -54,6 +54,7 @@ import {
 
 import { CloseIcon, Icon } from '@/components/ui/icon';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import { useCreateIssue } from '@/hooks/useIssues';
 
 const UNASSIGNED_CLEANER_VALUE = 'unassigned';
 
@@ -86,6 +87,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
   const completeCleaningMutation = useCompleteCleaning();
   const deleteCleaningMutation = useDeleteCleaning();
+  const createIssueMutation = useCreateIssue();
 
   const selectedCleaner = cleaners?.find(
     (cleaner) => cleaner.id.toString() === cleanerSelected,
@@ -418,6 +420,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
             <Button
               className='rounded-full'
+              isDisabled={createIssueMutation.isPending}
               onPress={() => {
                 if (!issueType) {
                   Alert.alert(
@@ -435,11 +438,20 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                   return;
                 }
 
-                Alert.alert('Issue submitted', 'The issue was recorded.');
-
-                setIssueType('');
-                setIssueDescription('');
-                setShowIssueModal(false);
+                  createIssueMutation.mutate(
+                  {
+                    cleaningId: cleaning.id,
+                    issueType,
+                    description: issueDescription.trim(),
+                  },
+                  {
+                    onSuccess: () => {
+                      setIssueType('');
+                      setIssueDescription('');
+                      setShowIssueModal(false);
+                    },
+                  },
+                );
               }}
             >
               <ButtonText>Submit</ButtonText>
