@@ -10,6 +10,7 @@ import {
   getCompletedCleanings,
   getNextCleaningByProperty,
   getUpcomingCleanings,
+  updateCleaningCleaner,
 } from '@/api/cleaningsApi';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -126,6 +127,38 @@ export function useCompleteCleaning() {
         queryKey: ['completed-cleanings'],
         refetchType: 'all',
       });
+    },
+  });
+}
+
+export function useUpdateCleaningCleaner() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      cleaningId,
+      cleanerId,
+    }: {
+      cleaningId: number;
+      cleanerId: number | null;
+    }) => updateCleaningCleaner(cleaningId, cleanerId),
+
+    onSuccess: async (updatedCleaning) => {
+      queryClient.setQueryData(
+        ['cleaning-id', updatedCleaning.id],
+        updatedCleaning,
+      );
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['upcoming-cleanings'],
+          refetchType: 'all',
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['next-property-cleaning', updatedCleaning.property.id],
+          refetchType: 'all',
+        }),
+      ]);
     },
   });
 }

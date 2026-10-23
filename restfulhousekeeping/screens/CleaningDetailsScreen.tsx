@@ -40,7 +40,11 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 
-import { useCompleteCleaning, useDeleteCleaning } from '@/hooks/useCleanings';
+import {
+  useCompleteCleaning,
+  useDeleteCleaning,
+  useUpdateCleaningCleaner,
+} from '@/hooks/useCleanings';
 
 import {
   Modal,
@@ -87,6 +91,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
 
   const completeCleaningMutation = useCompleteCleaning();
   const deleteCleaningMutation = useDeleteCleaning();
+  const updateCleanerMutation = useUpdateCleaningCleaner();
   const createIssueMutation = useCreateIssue();
 
   const selectedCleaner = cleaners?.find(
@@ -159,6 +164,31 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           },
         },
       ],
+    );
+  }
+
+  function handleCleanerChange(value: string) {
+    if (value === cleanerSelected || updateCleanerMutation.isPending) {
+      return;
+    }
+
+    const previousValue = cleanerSelected;
+    const cleanerId = value === UNASSIGNED_CLEANER_VALUE ? null : Number(value);
+
+    setCleanerSelected(value);
+
+    updateCleanerMutation.mutate(
+      { cleaningId: cleaning.id, cleanerId },
+      {
+        onError: (error) => {
+          console.error('Update cleaning cleaner error:', error);
+          setCleanerSelected(previousValue);
+          Alert.alert(
+            'Unable to assign cleaner',
+            'The cleaner assignment could not be updated.',
+          );
+        },
+      },
     );
   }
 
@@ -235,7 +265,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                   <Select
                     selectedValue={cleanerSelected}
                     initialLabel={selectedCleanerLabel}
-                    onValueChange={setCleanerSelected}
+                    onValueChange={handleCleanerChange}
                   >
                     <SelectTrigger size='md' variant='rounded'>
                       <SelectInput placeholder='Unassigned' />
@@ -438,7 +468,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                   return;
                 }
 
-                  createIssueMutation.mutate(
+                createIssueMutation.mutate(
                   {
                     cleaningId: cleaning.id,
                     issueType,

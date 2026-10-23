@@ -42,9 +42,18 @@ export function completeCleaning(cleaningId: number): Promise<Cleaning> {
   });
 }
 
-export function getCompletedCleanings(
-  userId: number,
-): Promise<Cleaning[]> {
+export function updateCleaningCleaner(
+  cleaningId: number,
+  cleanerId: number | null,
+): Promise<Cleaning> {
+  return request<Cleaning>({
+    method: 'PATCH',
+    url: `/cleanings/${cleaningId}/cleaner`,
+    data: { cleanerId },
+  });
+}
+
+export function getCompletedCleanings(userId: number): Promise<Cleaning[]> {
   return request<Cleaning[]>({
     method: 'GET',
     url: `/cleanings/completed/${userId}`,
