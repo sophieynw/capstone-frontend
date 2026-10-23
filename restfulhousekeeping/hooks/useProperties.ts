@@ -98,6 +98,7 @@ export function useDeleteProperty() {
         queryClient.invalidateQueries({ queryKey: ['properties', user?.id] }),
         queryClient.invalidateQueries({ queryKey: ['upcoming-cleanings'] }),
         queryClient.invalidateQueries({ queryKey: ['cleaning-id'] }),
+        queryClient.invalidateQueries({ queryKey: ['completed-cleanings'] }),
       ]);
 
       Alert.alert('Success', 'The property was deleted.');
@@ -109,7 +110,6 @@ export function useDeleteProperty() {
     },
   });
 }
-
 
 export function useUpdateProperty() {
   const queryClient = useQueryClient();

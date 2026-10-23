@@ -53,6 +53,8 @@ export default function PropertyDetailsScreen({ route }: any) {
   const deletePropertyMutation = useDeleteProperty();
   const updatePropertyMutation = useUpdateProperty();
   const importAirbnbCalendarMutation = useImportAirbnbCalendar();
+  const isPropertyMutationPending =
+    deletePropertyMutation.isPending || updatePropertyMutation.isPending;
   const [showAirbnbModal, setShowAirbnbModal] = useState(false);
   const [icalUrl, setIcalUrl] = useState('');
   const [propertyForm, setPropertyForm] = useState<EditableProperty>(() =>
@@ -87,6 +89,8 @@ export default function PropertyDetailsScreen({ route }: any) {
     return <ErrorState />;
   }
   function handleDelete() {
+    if (isPropertyMutationPending) return;
+
     Alert.alert(
       'Delete property?',
       `Are you sure you want to delete ${propertyForm.name}? This action cannot be undone.`,
@@ -101,6 +105,8 @@ export default function PropertyDetailsScreen({ route }: any) {
     );
   }
   function handleUpdate() {
+    if (isPropertyMutationPending) return;
+
     if (propertyForm.checkinTime <= propertyForm.checkoutTime) {
       Alert.alert(
         'Invalid times',
@@ -158,13 +164,27 @@ export default function PropertyDetailsScreen({ route }: any) {
       </View>
 
       <View style={styles.hStack}>
-        <Button className='rounded-full' size='lg' onPress={handleDelete}>
+        <Button
+          className='rounded-full'
+          size='lg'
+          onPress={handleDelete}
+          isDisabled={isPropertyMutationPending}
+        >
           <ButtonIcon as={Trash} />
-          <ButtonText>Delete</ButtonText>
+          <ButtonText>
+            {deletePropertyMutation.isPending ? 'Deleting...' : 'Delete'}
+          </ButtonText>
         </Button>
-        <Button className='rounded-full' size='lg' onPress={handleUpdate}>
+        <Button
+          className='rounded-full'
+          size='lg'
+          onPress={handleUpdate}
+          isDisabled={isPropertyMutationPending}
+        >
           <ButtonIcon as={Save} />
-          <ButtonText>Update</ButtonText>
+          <ButtonText>
+            {updatePropertyMutation.isPending ? 'Updating...' : 'Update'}
+          </ButtonText>
         </Button>
       </View>
 

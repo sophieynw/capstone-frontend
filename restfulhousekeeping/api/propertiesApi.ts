@@ -31,8 +31,8 @@ export function createProperty(
   });
 }
 
-export function deletePropertyById(propertyId: number): Promise<Property> {
-  return request<Property>({
+export function deletePropertyById(propertyId: number): Promise<void> {
+  return request<void>({
     method: 'DELETE',
     url: `/properties/${propertyId}`,
   });

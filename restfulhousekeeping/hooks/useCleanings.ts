@@ -19,7 +19,7 @@ export function useUpcomingCleanings() {
   const { user } = useContext(AuthContext);
 
   return useQuery({
-    queryKey: ['upcoming-cleanings'],
+    queryKey: ['upcoming-cleanings', user?.id],
     queryFn: () => getUpcomingCleanings(user!.id),
     enabled: !!user?.id,
 
@@ -147,7 +147,6 @@ export function useDeleteCleaning() {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: ['upcoming-cleanings'],
-          exact: true,
           refetchType: 'all',
         }),
 
