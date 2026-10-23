@@ -17,10 +17,10 @@ export function findOrCreateConversation(
   });
 }
 
-export function getConversations(): Promise<Conversation[]> {
-  return request({
-    method: 'GET',
-    url: '/chat/conversations',
+export function findOrCreateManagerConversation(): Promise<Conversation> {
+  return request<Conversation>({
+    method: 'POST',
+    url: '/chat/conversations/manager',
   });
 }
 

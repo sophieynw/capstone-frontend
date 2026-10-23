@@ -22,7 +22,7 @@ import { styles } from '@/styles/styles';
 import { MessageCircle, Plus, UsersRound } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from '@/components/ui/icon';
-import { findOrCreateConversation } from '@/api/chatApi';
+import { findOrCreateManagerConversation } from '@/api/chatApi';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
 
@@ -50,13 +50,11 @@ function getCleaningStatus(cleaning: Cleaning): CleaningStatus {
 type CleaningCardProps = {
   readonly cleaning: Cleaning;
   readonly status: CleaningStatus;
-  //readonly property: Property;
   navigation: any;
 };
 
 function CleaningCard({ cleaning, status, navigation }: CleaningCardProps) {
   const { data: cleaner } = useCleanerById(cleaning.cleanerId);
-  //const { data: cleaning } = useCleaningById(cleaning.cleaningId);
 
   return (
     <Pressable
@@ -131,25 +129,6 @@ function ManagerActions({ navigation }: any) {
 
 // endregion Manager Actions
 
-// region Cleaner Actions
-
-// function CleanerActions({ navigation }: any) {
-//   return (
-//     <>
-//       <Button
-//         className='rounded-full w-40'
-//         size='lg'
-//         onPress={() => navigation.navigate('CleanerAvailabilityScreen')}
-//       >
-//         <ButtonIcon as={EditIcon} />
-//         <ButtonText>My Availability</ButtonText>
-//       </Button>
-//     </>
-//   );
-// }
-
-// endregion Cleaner Actions
-
 // region Manager Info
 
 type ManagerInfoProps = {
@@ -211,9 +190,8 @@ function CleanerInfo({
         accessibilityRole='button'
         accessibilityLabel='Open manager chat'
       >
-        <Card className='flex-1 items-center justify-center gap-1 rounded-3xl'>
-          <Icon as={MessageCircle} size='xl' />
-          <Text>{isOpeningChat ? 'Opening...' : 'Chat'}</Text>
+        <Card className='flex-1 items-center justify-center rounded-3xl'>
+          <Icon as={MessageCircle} size='2xl' />
         </Card>
       </Pressable>
     </>
@@ -265,19 +243,7 @@ function InvitationCard({
 export default function HomeScreen({ navigation }: any) {
   const { user } = useContext(AuthContext);
   const [isOpeningChat, setIsOpeningChat] = useState(false);
-  const {
-    data: cleanings,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useUpcomingCleanings();
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
+  const { data: cleanings, isLoading, isError, error } = useUpcomingCleanings();
 
   const isCleaner = user?.role === Role.CLEANER;
 
@@ -299,29 +265,17 @@ export default function HomeScreen({ navigation }: any) {
 
   // cleanings info
   const upcoming = cleanings?.length ?? 0;
-  const issues = 1; // hardcoded value
+  const issues = 1; // TODO: hardcoded value
   const unassigned =
     cleanings?.filter((cleaning) => cleaning.cleanerId == null).length ?? 0;
   const completed =
     cleanings?.filter((cleaning) => cleaning.isComplete).length ?? 0;
 
   async function handleOpenCleanerChat() {
-    const managerId = cleanings?.find(
-      (cleaning) => cleaning.managerId != null,
-    )?.managerId;
-
-    if (!managerId) {
-      Alert.alert(
-        'Chat unavailable',
-        'A manager could not be found for this cleaner.',
-      );
-      return;
-    }
-
     setIsOpeningChat(true);
 
     try {
-      const conversation = await findOrCreateConversation(managerId);
+      const conversation = await findOrCreateManagerConversation();
 
       navigation.navigate('ChatScreen', {
         conversationId: conversation.id,
