@@ -29,6 +29,12 @@ export function getAllCleaners(organizationId: number): Promise<User[]> {
   });
 }
 
+export function getAllAvailableCleaners(): Promise<User[]> {
+  return request<User[]>({
+    method: 'GET',
+    url: `/cleaners/available`,
+  });
+}
 // info we need from the image picker
 type PickedImage = {
   uri: string;

@@ -1,11 +1,17 @@
-import { Alert, Pressable, ScrollView, Text } from 'react-native';
+import { Alert, Pressable, ScrollView, View, Text } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
 import { AvailabilitySlot, DaysOfTheWeek } from '@/types/entityTypes';
-import {dateToTimeString,formatTime, timeStringToDate, toTitleCase } from '@/utils/helpers';
+import {
+  dateToTimeString,
+  formatTime,
+  sortAvailabilitySlots,
+  timeStringToDate,
+  toTitleCase,
+} from '@/utils/helpers';
 import { useContext, useState } from 'react';
-import { CloseIcon, Icon } from '@/components/ui/icon';
+import { CloseIcon, Icon, TrashIcon, EditIcon, ChevronDownIcon } from '@/components/ui/icon';
 import {
   DateTimePicker,
   DateTimePickerIcon,
@@ -23,21 +29,55 @@ import {
 } from '@/components/ui/modal';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Clock } from 'lucide-react-native';
-import { useAvailabilities,useUpdateAvailability } from '@/hooks/useAvailabilities';
+import { Select, SelectTrigger, SelectBackdrop, SelectIcon, SelectInput, SelectPortal, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem } from '@/components/ui/select';
+import { useAvailabilities,useUpdateAvailability, useCreateAvailability, useDeleteAvailability } from '@/hooks/useAvailabilities';
 import { AuthContext } from '@/auth/AuthContext';
+
+function minutesSinceMidnight(date: Date): number {
+  return date.getHours() * 60 + date.getMinutes();
+}
+
+function hasOverlappingAvailability(
+  slots: AvailabilitySlot[] | undefined,
+  dayOfWeek: DaysOfTheWeek,
+  startTime: Date,
+  endTime: Date,
+  excludedSlotId?: number,
+): boolean {
+  const candidateStart = minutesSinceMidnight(startTime);
+  const candidateEnd = minutesSinceMidnight(endTime);
+
+  return (slots ?? []).some((slot) => {
+    if (slot.id === excludedSlotId || slot.dayOfWeek !== dayOfWeek) {
+      return false;
+    }
+
+    const existingStart = minutesSinceMidnight(
+      timeStringToDate(slot.startTime),
+    );
+    const existingEnd = minutesSinceMidnight(timeStringToDate(slot.endTime));
+
+    return candidateStart < existingEnd && candidateEnd > existingStart;
+  });
+}
 
 export default function CleaningAvailabilityScreen() {
   const { user } = useContext(AuthContext);
   const { data: availabilitySlots } = useAvailabilities(user?.id);
   const [showModal, setShowModal] = useState(false);
 
-  const [selectedDay, setSelectedDay] = useState<DaysOfTheWeek | null>(null);
+  const [selectedDay, setSelectedDay] = useState<DaysOfTheWeek>(
+    DaysOfTheWeek.MONDAY,
+  );
 
   const [startTime, setStartTime] = useState<Date>(new Date());
   const [endTime, setEndTime] = useState<Date>(new Date());
   const [editingSlot, setEditingSlot] = useState<AvailabilitySlot | null>(null);
 
   const updateAvailability = useUpdateAvailability(user?.id);
+  const createAvailability = useCreateAvailability(user?.id);
+  const deleteAvailability = useDeleteAvailability(user?.id);
+  const sortedAvailabilitySlots = sortAvailabilitySlots(availabilitySlots);
   // TODO: implement functionality for getting and updating cleaner availability
 
   function openEditor(slot: AvailabilitySlot) {
@@ -45,6 +85,25 @@ export default function CleaningAvailabilityScreen() {
     setStartTime(timeStringToDate(slot.startTime));
     setEndTime(timeStringToDate(slot.endTime));
     setShowModal(true);
+  }
+
+  function openCreator() {
+    setEditingSlot(null);
+    setSelectedDay(DaysOfTheWeek.MONDAY);
+    setStartTime(new Date(new Date().setHours(9, 0, 0, 0)));
+    setEndTime(new Date(new Date().setHours(17, 0, 0, 0)));
+    setShowModal(true);
+  }
+
+  function handleDelete(slot: AvailabilitySlot) {
+    Alert.alert('Delete availability', 'Remove this time slot?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => deleteAvailability.mutate(slot.id),
+      },
+    ]);
   }
 
   function TimeField({label, value, onChange}: {
@@ -61,7 +120,8 @@ export default function CleaningAvailabilityScreen() {
             if (date) onChange(date);
           }}
           mode='time'
-          format='HH:mm'
+          format='hh:mm A'
+          is24Hour={false}
         >
           <DateTimePickerTrigger className='m-2 rounded-full'>
             <DateTimePickerInput />
@@ -77,22 +137,51 @@ return (
     style={styles.screen}
     contentContainerStyle={styles.screenContent}
   >
-    {availabilitySlots?.map((slot) => (
-      <Pressable key={slot.id} onPress={() => openEditor(slot)}>
-        <Card className='rounded-3xl gap-1'>
+    {sortedAvailabilitySlots.map((slot) => (
+      <Card
+        key={slot.id}
+        className='rounded-3xl flex-row items-center justify-between'
+      >
+        <View className='gap-1'>
           <Heading size='md'>{toTitleCase(slot?.dayOfWeek.toString())}</Heading>
           <Text>
             {formatTime(slot.startTime)} to {formatTime(slot.endTime)}
           </Text>
-        </Card>
-      </Pressable>
+        </View>
+
+        <View className='flex-row items-center gap-4'>
+          <Pressable
+            onPress={() => openEditor(slot)}
+            hitSlop={12}
+            accessibilityRole='button'
+            accessibilityLabel='Edit availability slot'
+          >
+            <Icon as={EditIcon} size='xl' />
+          </Pressable>
+
+          <Pressable
+            onPress={() => handleDelete(slot)}
+            hitSlop={12}
+            accessibilityRole='button'
+            accessibilityLabel='Delete availability slot'
+          >
+            <Icon as={TrashIcon} size='xl' />
+          </Pressable>
+        </View>
+      </Card>
     ))}
+
+    <Button className='rounded-full' size='lg' onPress={openCreator}>
+      <ButtonText>Add New Availability</ButtonText>
+    </Button>
 
     <Modal isOpen={showModal} onClose={() => setShowModal(false)} size='md'>
       <ModalBackdrop />
       <ModalContent className='rounded-4xl'>
         <ModalHeader>
-          <Heading size='lg'>Select a time</Heading>
+          <Heading size='lg'>
+            {editingSlot ? 'Edit Time' : 'New Availability'}
+          </Heading>
 
           <ModalCloseButton>
             <Icon as={CloseIcon} />
@@ -100,25 +189,66 @@ return (
         </ModalHeader>
 
         <ModalBody>
+          {!editingSlot && (
+            <>
+              <Text className='m-2'>Day of Week</Text>
+              <Select
+                selectedValue={selectedDay ?? undefined}
+                onValueChange={(value) =>
+                  setSelectedDay(value as DaysOfTheWeek)
+                }
+              >
+                <SelectTrigger
+                  variant='outline'
+                  size='md'
+                  className='m-2 rounded-full'
+                >
+                  <SelectInput
+                    placeholder='Select Day'
+                    value={selectedDay ? toTitleCase(selectedDay) : ''}
+                  />
+                  <SelectIcon className='mr-3' as={ChevronDownIcon} />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    {Object.values(DaysOfTheWeek).map((day) => (
+                      <SelectItem
+                        key={day}
+                        label={toTitleCase(day)}
+                        value={day}
+                      />
+                    ))}
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+            </>
+          )}
+
           <TimeField
             label='Start Time'
             value={startTime}
             onChange={setStartTime}
-          ></TimeField>
-          <TimeField
-            label='End Time'
-            value={endTime}
-            onChange={setEndTime}
-          ></TimeField>
+          />
+          <TimeField label='End Time' value={endTime} onChange={setEndTime} />
         </ModalBody>
 
         <ModalFooter>
           <Button
             className='rounded-full'
             onPress={() => {
-              if (!editingSlot) return;
-              // @ts-ignore
-              if (endTime <= startTime) {
+              if (!availabilitySlots) {
+                Alert.alert(
+                  'Availability unavailable',
+                  'Wait for your availability to load before saving.',
+                );
+                return;
+              }
+
+              if (endTime.getTime() <= startTime.getTime()) {
                 Alert.alert(
                   'Invalid time',
                   'End time must be later than start time.',
@@ -126,14 +256,42 @@ return (
                 return;
               }
 
-              updateAvailability.mutate(
-                {
-                  id: editingSlot.id,
-                  startTime: dateToTimeString(startTime),
-                  endTime: dateToTimeString(endTime),
-                },
-                { onSuccess: () => setShowModal(false) },
-              );
+              const dayOfWeek = editingSlot?.dayOfWeek ?? selectedDay;
+              if (
+                hasOverlappingAvailability(
+                  availabilitySlots,
+                  dayOfWeek,
+                  startTime,
+                  endTime,
+                  editingSlot?.id,
+                )
+              ) {
+                Alert.alert(
+                  'Overlapping availability',
+                  `This time overlaps with an existing availability period on ${toTitleCase(dayOfWeek)}.`,
+                );
+                return;
+              }
+
+              if (editingSlot) {
+                updateAvailability.mutate(
+                  {
+                    id: editingSlot.id,
+                    startTime: dateToTimeString(startTime),
+                    endTime: dateToTimeString(endTime),
+                  },
+                  { onSuccess: () => setShowModal(false) },
+                );
+              } else {
+                createAvailability.mutate(
+                  {
+                    dayOfWeek: selectedDay,
+                    startTime: dateToTimeString(startTime),
+                    endTime: dateToTimeString(endTime),
+                  },
+                  { onSuccess: () => setShowModal(false) },
+                );
+              }
             }}
           >
             <ButtonText>Done</ButtonText>

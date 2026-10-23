@@ -1,5 +1,34 @@
 // utils/helpers.ts
-import type { Cleaning } from '@/types/entityTypes';
+import {
+  DaysOfTheWeek,
+  type AvailabilitySlot,
+  type Cleaning,
+} from '@/types/entityTypes';
+
+const DAY_ORDER: Record<DaysOfTheWeek, number> = {
+  [DaysOfTheWeek.MONDAY]: 0,
+  [DaysOfTheWeek.TUESDAY]: 1,
+  [DaysOfTheWeek.WEDNESDAY]: 2,
+  [DaysOfTheWeek.THURSDAY]: 3,
+  [DaysOfTheWeek.FRIDAY]: 4,
+  [DaysOfTheWeek.SATURDAY]: 5,
+  [DaysOfTheWeek.SUNDAY]: 6,
+};
+
+function timeToMinutes(time: string): number {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+export function sortAvailabilitySlots(
+  slots: AvailabilitySlot[] | null | undefined,
+): AvailabilitySlot[] {
+  return [...(slots ?? [])].sort(
+    (first, second) =>
+      DAY_ORDER[first.dayOfWeek] - DAY_ORDER[second.dayOfWeek] ||
+      timeToMinutes(first.startTime) - timeToMinutes(second.startTime),
+  );
+}
 
 export function toTitleCase(value: string): string {
   return value.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
@@ -82,7 +111,7 @@ export function dateToTimeString(date: Date): string {
 
 export function formatTime(time: string) {
   const [hours, minutes] = time.split(':').map(Number);
-  const period = hours >= 12 ? 'P.M' : 'A.M';
+  const period = hours >= 12 ? 'PM' : 'AM';
   const hour12 = hours % 12 || 12;
   return `${hour12}:${String(minutes).padStart(2, '0')} ${period}`;
 }

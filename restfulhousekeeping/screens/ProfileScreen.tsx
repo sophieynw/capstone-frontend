@@ -15,11 +15,12 @@ import { Heading } from '@/components/ui/heading';
 import { useUpcomingCleanings,  useCompletedCleanings,} from '@/hooks/useCleanings';
 import {
   useProfilePicture,
+  useUpdateUser,
   useUploadProfilePicture,
 } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
 import { Role } from '@/types/entityTypes';
-import { toTitleCase } from '@/utils/helpers';
+import { sortAvailabilitySlots, toTitleCase } from '@/utils/helpers';
 import { usePropertyAll } from '@/hooks/useProperties';
 import { useCleaners } from '@/hooks/useUsers';
 import { useAvailabilities } from '@/hooks/useAvailabilities';
@@ -34,6 +35,7 @@ export default function ProfileScreen({ navigation }: any) {
   const { data: availabilities } = useAvailabilities(
   user?.role === Role.CLEANER ? user.id : undefined,
 );
+  const sortedAvailabilities = sortAvailabilitySlots(availabilities);
 
   // load profile picture from the backend
   const { data: profilePicture } = useProfilePicture(user?.id);
@@ -153,7 +155,7 @@ export default function ProfileScreen({ navigation }: any) {
             </Text>
             <Text>Availability:</Text>
 
-            {availabilities?.map((availability) => (
+            {sortedAvailabilities.map((availability) => (
               <Text key={availability.id}>
                 {toTitleCase(availability.dayOfWeek)}:{' '}
                 {formatTime(availability.startTime)} -{' '}

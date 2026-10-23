@@ -11,6 +11,7 @@ import NewCleaningScreen from '@/screens/manager/NewCleaningScreen';
 import PropertyDetailsScreen from '@/screens/manager/PropertyDetailsScreen';
 import NewPropertyScreen from '@/screens/manager/NewPropertyScreen';
 import ProfileEditScreen from '@/screens/ProfileEditScreen';
+import InviteCleanerScreen from '@/screens/manager/InviteCleanerScreen';
 import ChatScreen from '@/screens/ChatScreen';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
@@ -58,11 +59,16 @@ export default function Navigation() {
               options={{ presentation: 'modal' }}
             />
             <Stack.Screen
+              name='InviteCleanerScreen'
+              component={InviteCleanerScreen}
+              options={{ presentation: 'modal' }}
+            />
+            <Stack.Screen
               name='ChatScreen'
               component={ChatScreen}
               options={{ presentation: 'modal' }}
             />
-          </Stack.Group>
+        </Stack.Group>
         ) : (
           <Stack.Group navigationKey='guest'>
             <Stack.Screen name='LoginPage' component={LoginPage} />
@@ -77,3 +83,4 @@ export default function Navigation() {
     </NavigationContainer>
   );
 }
+

@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/avatar';
 import { styles } from '@/styles/styles';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
-import { useCleaners } from '@/hooks/useUsers';
+import { useCleaners, useGetAllAvailableCleaners } from '@/hooks/useUsers';
 import { findOrCreateConversation } from '@/api/chatApi';
 import { User } from '@/types/entityTypes';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -102,7 +102,7 @@ export default function ManageTeamScreen({ navigation }: any) {
         <Button
           className='rounded-full'
           size='lg'
-          onPress={showComingSoonAlert}
+          onPress={() => {navigation.navigate('InviteCleanerScreen')}}
         >
           <ButtonIcon as={MailIcon} />
           <ButtonText>Invite</ButtonText>
