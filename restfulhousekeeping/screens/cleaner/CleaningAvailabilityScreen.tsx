@@ -3,7 +3,13 @@ import { Card } from '@/components/ui/card';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
 import { AvailabilitySlot, DaysOfTheWeek } from '@/types/entityTypes';
-import {dateToTimeString,formatTime, timeStringToDate, toTitleCase } from '@/utils/helpers';
+import {
+  dateToTimeString,
+  formatTime,
+  sortAvailabilitySlots,
+  timeStringToDate,
+  toTitleCase,
+} from '@/utils/helpers';
 import { useContext, useState } from 'react';
 import { CloseIcon, Icon, TrashIcon, EditIcon, ChevronDownIcon } from '@/components/ui/icon';
 import {
@@ -27,21 +33,6 @@ import { Select, SelectTrigger, SelectBackdrop, SelectIcon, SelectInput, SelectP
 import { useAvailabilities,useUpdateAvailability, useCreateAvailability, useDeleteAvailability } from '@/hooks/useAvailabilities';
 import { AuthContext } from '@/auth/AuthContext';
 
-const DAY_ORDER: Record<DaysOfTheWeek, number> = {
-  [DaysOfTheWeek.MONDAY]: 0,
-  [DaysOfTheWeek.TUESDAY]: 1,
-  [DaysOfTheWeek.WEDNESDAY]: 2,
-  [DaysOfTheWeek.THURSDAY]: 3,
-  [DaysOfTheWeek.FRIDAY]: 4,
-  [DaysOfTheWeek.SATURDAY]: 5,
-  [DaysOfTheWeek.SUNDAY]: 6,
-};
-
-function timeToMinutes(time: string): number {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-}
-
 export default function CleaningAvailabilityScreen() {
   const { user } = useContext(AuthContext);
   const { data: availabilitySlots } = useAvailabilities(user?.id);
@@ -58,11 +49,7 @@ export default function CleaningAvailabilityScreen() {
   const updateAvailability = useUpdateAvailability(user?.id);
   const createAvailability = useCreateAvailability(user?.id);
   const deleteAvailability = useDeleteAvailability(user?.id);
-  const sortedAvailabilitySlots = [...(availabilitySlots ?? [])].sort(
-    (first, second) =>
-      DAY_ORDER[first.dayOfWeek] - DAY_ORDER[second.dayOfWeek] ||
-      timeToMinutes(first.startTime) - timeToMinutes(second.startTime),
-  );
+  const sortedAvailabilitySlots = sortAvailabilitySlots(availabilitySlots);
   // TODO: implement functionality for getting and updating cleaner availability
 
   function openEditor(slot: AvailabilitySlot) {
