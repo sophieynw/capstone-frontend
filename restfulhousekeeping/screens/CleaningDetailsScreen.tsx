@@ -319,6 +319,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
             <Icon
               as={cleaning?.isComplete ? CircleCheckBig : LoaderCircle}
               size='lg'
+              className={
                 cleaning?.isComplete
                   ? 'text-success-shadow'
                   : 'text-neutral-shadow'
