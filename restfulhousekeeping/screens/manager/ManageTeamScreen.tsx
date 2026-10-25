@@ -17,8 +17,7 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar';
 import { styles } from '@/styles/styles';
-import { showComingSoonAlert } from '@/components/ComingSoonAlert';
-import { useCleaners, useGetAllAvailableCleaners } from '@/hooks/useUsers';
+import { useCleaners, useRemoveCleanerFromTeam } from '@/hooks/useUsers';
 import { findOrCreateConversation } from '@/api/chatApi';
 import { User } from '@/types/entityTypes';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -27,9 +26,16 @@ import { ErrorState } from '@/components/ErrorState';
 type CleanerCardProps = {
   cleaner: User;
   onMessagePress: () => void;
+  onRemovePress: () => void;
+  isRemoving: boolean;
 };
 
-function CleanerCard({ cleaner, onMessagePress }: CleanerCardProps) {
+function CleanerCard({
+  cleaner,
+  onMessagePress,
+  onRemovePress,
+  isRemoving,
+}: CleanerCardProps) {
   const fullName = `${cleaner.firstName} ${cleaner.lastName}`;
 
   return (
@@ -69,7 +75,12 @@ function CleanerCard({ cleaner, onMessagePress }: CleanerCardProps) {
             <Icon as={MessageCircleIcon} />
           </Pressable>
 
-          <Pressable onPress={showComingSoonAlert}>
+          <Pressable
+            onPress={onRemovePress}
+            disabled={isRemoving}
+            accessibilityRole='button'
+            accessibilityLabel={`Remove ${fullName} from the team`}
+          >
             <Icon as={TrashIcon} style={styles.buttonTextWarn} />
           </Pressable>
         </View>
@@ -80,6 +91,40 @@ function CleanerCard({ cleaner, onMessagePress }: CleanerCardProps) {
 
 export default function ManageTeamScreen({ navigation }: any) {
   const { data: cleaners = [], isPending, isError, error } = useCleaners();
+  const removeCleaner = useRemoveCleanerFromTeam();
+
+  function handleRemoveCleaner(cleaner: User) {
+    const fullName = `${cleaner.firstName} ${cleaner.lastName}`;
+
+    Alert.alert(
+      'Remove team member?',
+      `${fullName} will be removed from your team and unassigned from all upcoming cleanings. Their account will remain active.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () => {
+            removeCleaner.mutate(cleaner.id, {
+              onSuccess: () => {
+                Alert.alert(
+                  'Team member removed',
+                  `${fullName} was removed from your team.`,
+                );
+              },
+              onError: (removeError) => {
+                console.error('Remove cleaner error:', removeError);
+                Alert.alert(
+                  'Unable to remove team member',
+                  'The cleaner could not be removed. Please try again.',
+                );
+              },
+            });
+          },
+        },
+      ],
+    );
+  }
 
   if (isPending) {
     return <LoadingSpinner label='Loading cleaners...' />;
@@ -103,7 +148,9 @@ export default function ManageTeamScreen({ navigation }: any) {
           className='rounded-full'
           style={[styles.button, styles.modalHeaderButton]}
           size='lg'
-          onPress={() => {navigation.navigate('InviteCleanerScreen')}}
+          onPress={() => {
+            navigation.navigate('InviteCleanerScreen');
+          }}
         >
           <ButtonIcon style={styles.buttonText} as={MailIcon} />
           <ButtonText style={styles.buttonText}>Invite</ButtonText>
@@ -117,6 +164,11 @@ export default function ManageTeamScreen({ navigation }: any) {
             <CleanerCard
               key={cleaner.id}
               cleaner={cleaner}
+              isRemoving={
+                removeCleaner.isPending &&
+                removeCleaner.variables === cleaner.id
+              }
+              onRemovePress={() => handleRemoveCleaner(cleaner)}
               onMessagePress={async () => {
                 try {
                   const conversation = await findOrCreateConversation(

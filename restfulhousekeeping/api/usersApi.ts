@@ -1,7 +1,4 @@
-import {
-  UpdateUserPayload,
-  User,
-} from '@/types/entityTypes';
+import { UpdateUserPayload, User } from '@/types/entityTypes';
 import { request } from '@/api/apiClient';
 
 export function getUserById(userId: number | null): Promise<User> {
@@ -18,7 +15,7 @@ export function updateUserById(
   return request<User>({
     method: 'PATCH',
     url: `/cleaners/${userId}`,
-    data: user
+    data: user,
   });
 }
 
@@ -33,6 +30,13 @@ export function getAllAvailableCleaners(): Promise<User[]> {
   return request<User[]>({
     method: 'GET',
     url: `/cleaners/available`,
+  });
+}
+
+export function removeCleanerFromTeam(cleanerId: number): Promise<void> {
+  return request<void>({
+    method: 'DELETE',
+    url: `/cleaners/${cleanerId}`,
   });
 }
 // info we need from the image picker

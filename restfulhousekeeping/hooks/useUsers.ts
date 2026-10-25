@@ -5,6 +5,7 @@ import {
   getProfilePicturePath,
   getProfilePictureDataUri,
   getUserById,
+  removeCleanerFromTeam,
   updateUserById,
   uploadProfilePicture,
 } from '@/api/usersApi';
@@ -61,7 +62,33 @@ export function useGetAllAvailableCleaners() {
   return useQuery({
     queryKey: ['available-cleaners', user?.id],
     queryFn: () => getAllAvailableCleaners(),
-    enabled: user?.id !== undefined
+    enabled: user?.id !== undefined,
+  });
+}
+
+export function useRemoveCleanerFromTeam() {
+  const queryClient = useQueryClient();
+  const { user } = useContext(AuthContext);
+
+  return useMutation({
+    mutationFn: removeCleanerFromTeam,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['cleaners', user?.organization?.id],
+          exact: true,
+          refetchType: 'all',
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['available-cleaners'],
+          refetchType: 'all',
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['upcoming-cleanings'],
+          refetchType: 'all',
+        }),
+      ]);
+    },
   });
 }
 
@@ -153,7 +180,10 @@ export function useUploadProfilePicture() {
 
     onError: (error) => {
       console.error('Upload profile picture error:', error);
-      Alert.alert('Upload failed', 'Your profile picture could not be uploaded.');
+      Alert.alert(
+        'Upload failed',
+        'Your profile picture could not be uploaded.',
+      );
     },
   });
 }

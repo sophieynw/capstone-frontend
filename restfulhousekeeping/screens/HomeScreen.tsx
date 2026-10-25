@@ -232,30 +232,32 @@ function InvitationCard({
   isProcessing,
 }: InvitationCardProps) {
   return (
-    <Card className='gap-3 rounded-2xl'>
-      <Text>You've been invited to join {invitation.organizationName}.</Text>
+    <Card style={styles.mediumCard}>
+      <View style={styles.vStack}>
+        <Text>You've been invited to join {invitation.organizationName}!</Text>
 
-      <View className='flex-row gap-3'>
-        <Button
-          className='flex-1'
-          style={styles.button}
-          onPress={() => onAccept(invitation.id)}
-          disabled={isProcessing}
-        >
-          <ButtonText style={styles.buttonText}>
-            {isProcessing ? 'Processing...' : 'Accept'}
-          </ButtonText>
-        </Button>
+        <View style={styles.hStack}>
+          <Button
+            className='flex-1'
+            style={styles.button}
+            onPress={() => onAccept(invitation.id)}
+            disabled={isProcessing}
+          >
+            <ButtonText style={styles.buttonText}>
+              {isProcessing ? 'Processing...' : 'Accept'}
+            </ButtonText>
+          </Button>
 
-        <Button
-          className='flex-1'
-          style={styles.button}
-          variant='outline'
-          onPress={() => onDecline(invitation.id)}
-          disabled={isProcessing}
-        >
-          <ButtonText style={styles.buttonText}>Decline</ButtonText>
-        </Button>
+          <Button
+            className='flex-1'
+            style={styles.button}
+            variant='outline'
+            onPress={() => onDecline(invitation.id)}
+            disabled={isProcessing}
+          >
+            <ButtonText style={styles.buttonText}>Decline</ButtonText>
+          </Button>
+        </View>
       </View>
     </Card>
   );
@@ -350,31 +352,29 @@ export default function HomeScreen({ navigation }: any) {
 
       {/* Organization Invitations */}
       {isCleaner && (
-        <View className='gap-3'>
+        <>
           {invitationsLoading && <Text>Checking for invitations...</Text>}
 
           {invitationsError && (
             <Text>Could not load organization invitations.</Text>
           )}
 
-          {!invitationsLoading &&
-            !invitationsError &&
-            pendingInvitations.length > 0 && (
-              <>
-                <Heading size='xl'>Organization Invitations</Heading>
+          {pendingInvitations.length > 0 && (
+            <View className='gap-3'>
+              <Heading size='xl'>Organization Invitations</Heading>
 
-                {pendingInvitations.map((invitation) => (
-                  <InvitationCard
-                    key={invitation.id}
-                    invitation={invitation}
-                    onAccept={(id) => acceptMutation.mutate(id)}
-                    onDecline={(id) => declineMutation.mutate(id)}
-                    isProcessing={isProcessingInvitation}
-                  />
-                ))}
-              </>
-            )}
-        </View>
+              {pendingInvitations.map((invitation) => (
+                <InvitationCard
+                  key={invitation.id}
+                  invitation={invitation}
+                  onAccept={(id) => acceptMutation.mutate(id)}
+                  onDecline={(id) => declineMutation.mutate(id)}
+                  isProcessing={isProcessingInvitation}
+                />
+              ))}
+            </View>
+          )}
+        </>
       )}
 
       {/* Info */}
