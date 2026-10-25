@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { UpdateUserPayload } from '@/types/entityTypes';
 import { Alert } from 'react-native';
 import { register } from '@/api/auth';
+import { getApiErrorMessage } from '@/api/apiClient';
 
 export function useCleanerById(userId: number | null) {
   return useQuery({
@@ -45,9 +46,12 @@ export function useCreateUser() {
       Alert.alert('Account created', 'Your account was created successfully.');
     },
 
-    onError: (error) => {
+    onError: (error: unknown) => {
       console.error('Create user error:', error);
-      Alert.alert('Unable to register', error.message);
+      Alert.alert(
+        'Unable to register',
+        getApiErrorMessage(error, 'Your account could not be created.'),
+      );
     },
   });
 }

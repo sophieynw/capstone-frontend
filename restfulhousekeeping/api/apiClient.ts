@@ -70,3 +70,23 @@ export async function request<T>(config: AxiosRequestConfig): Promise<T> {
   console.log('✅ API response:', response.data);
   return response.data;
 }
+
+export function getApiErrorMessage(
+  error: unknown,
+  fallback = 'Something went wrong. Please try again.',
+) {
+  if (!axios.isAxiosError(error)) {
+    return error instanceof Error ? error.message : fallback;
+  }
+
+  const data = error.response?.data;
+  if (data && typeof data === 'object') {
+    const responseMessage =
+      ('detail' in data && data.detail) || ('message' in data && data.message);
+    if (typeof responseMessage === 'string' && responseMessage.trim()) {
+      return responseMessage;
+    }
+  }
+
+  return fallback;
+}

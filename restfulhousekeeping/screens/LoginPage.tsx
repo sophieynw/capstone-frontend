@@ -9,6 +9,7 @@ import { useContext } from 'react';
 import { AuthContext } from '@/auth/AuthContext';
 import { authenticate } from '@/api/auth';
 import { showComingSoonAlert } from '@/components/ComingSoonAlert';
+import { getUsernameValidationError } from '@/utils/username';
 
 export default function LoginPage({ navigation }: any) {
   const [username, setUsername] = useState('');
@@ -16,6 +17,12 @@ export default function LoginPage({ navigation }: any) {
   const { login } = useContext(AuthContext);
 
   const handleLogin = async () => {
+    const usernameError = getUsernameValidationError(username);
+    if (usernameError) {
+      Alert.alert('Check your username', usernameError);
+      return;
+    }
+
     try {
       const { token, user } = await authenticate(username, password);
       await login(token, user);
@@ -45,6 +52,9 @@ export default function LoginPage({ navigation }: any) {
           placeholder='Enter your username'
           value={username}
           onChangeText={setUsername}
+          autoCapitalize='none'
+          autoCorrect={false}
+          textContentType='username'
         />
 
         <Text>Password</Text>

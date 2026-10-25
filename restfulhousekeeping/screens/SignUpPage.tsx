@@ -22,6 +22,10 @@ import { checkUsernameAvailability } from '@/api/auth';
 import { Heading } from '@/components/ui/heading';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
+import {
+  getUsernameValidationError,
+  normalizeUsername,
+} from '@/utils/username';
 
 type SignUpForm = {
   firstName: string;
@@ -153,16 +157,13 @@ export default function SignUpPage() {
           control={control}
           name='username'
           rules={{
-            required: 'Username is required',
-            minLength: {
-              value: 3,
-              message: 'Username must be at least 3 characters',
-            },
             validate: async (value) => {
-              const username = value.trim();
-              if (username.length < 3) {
-                return true;
+              const validationError = getUsernameValidationError(value);
+              if (validationError) {
+                return validationError;
               }
+
+              const username = normalizeUsername(value);
               try {
                 const result = await checkUsernameAvailability(username);
 
