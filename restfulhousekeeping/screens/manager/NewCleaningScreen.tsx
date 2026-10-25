@@ -18,18 +18,7 @@ import { DetailsSection } from '@/components/DetailsSection';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
-
-function formatLocalDateTime(date: Date): string {
-  const pad = (value: number) => value.toString().padStart(2, '0');
-
-  return (
-    `${date.getFullYear()}-` +
-    `${pad(date.getMonth() + 1)}-` +
-    `${pad(date.getDate())}T` +
-    `${pad(date.getHours())}:` +
-    `${pad(date.getMinutes())}:00`
-  );
-}
+import { formatLocalDateTime } from '@/utils/helpers';
 
 function startOfDay(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());

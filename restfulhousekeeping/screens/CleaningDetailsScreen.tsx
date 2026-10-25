@@ -2,7 +2,7 @@ import { Alert, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Cleaning, CleaningChecklistItem, Role } from '@/types/entityTypes';
-import { toFriendlyDate } from '@/utils/helpers';
+import { formatLocalDateTime, toFriendlyDate } from '@/utils/helpers';
 import { useContext, useEffect, useState } from 'react';
 import { useCleaners } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
@@ -10,14 +10,11 @@ import { Heading } from '@/components/ui/heading';
 import {
   ChevronDown,
   CircleAlert,
+  CircleCheckBig,
+  LoaderCircle,
   SquareCheckBig,
   Trash,
 } from 'lucide-react-native';
-import {
-  Avatar,
-  AvatarFallbackText,
-  AvatarImage,
-} from '@/components/ui/avatar';
 import { AuthContext } from '@/auth/AuthContext';
 import { NotesSection } from '@/components/NotesSection';
 import { ChecklistSection } from '@/components/ChecklistSection';
@@ -26,6 +23,7 @@ import { PhotosSection } from '@/components/PhotosSection';
 import type { ImagePickerAsset } from 'expo-image-picker';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
+import { CleaningDateTimeFields } from '@/components/CleaningDateTimeFields';
 
 import {
   Select,
@@ -47,6 +45,7 @@ import {
   useDeleteCleaning,
   useDeleteCleaningChecklistItem,
   useUpdateCleaningCleaner,
+  useUpdateCleaningSchedule,
 } from '@/hooks/useCleanings';
 
 import {
@@ -87,6 +86,12 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
   const [checklistItems, setChecklistItems] = useState<CleaningChecklistItem[]>(
     cleaning?.cleaningChecklistItems ?? [],
   );
+  const [startDateSelected, setStartDateSelected] = useState(
+    new Date(cleaning.dateTimeStart),
+  );
+  const [endDateSelected, setEndDateSelected] = useState(
+    new Date(cleaning.dateTimeEnd),
+  );
 
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [issueType, setIssueType] = useState('');
@@ -99,6 +104,8 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     setCleanerSelected(
       fetchedCleaning.cleanerId?.toString() ?? UNASSIGNED_CLEANER_VALUE,
     );
+    setStartDateSelected(new Date(fetchedCleaning.dateTimeStart));
+    setEndDateSelected(new Date(fetchedCleaning.dateTimeEnd));
   }, [fetchedCleaning]);
 
   const {
@@ -113,6 +120,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
   const addChecklistItemMutation = useAddCleaningChecklistItem();
   const deleteChecklistItemMutation = useDeleteCleaningChecklistItem();
   const updateCleanerMutation = useUpdateCleaningCleaner();
+  const updateScheduleMutation = useUpdateCleaningSchedule();
   const createIssueMutation = useCreateIssue();
 
   const selectedCleaner = cleaners?.find(
@@ -230,6 +238,38 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
     });
   }
 
+  function handleScheduleChange(nextStart: Date, nextEnd: Date) {
+    if (nextEnd <= nextStart) {
+      Alert.alert('Invalid time', 'The end time must be after the start time.');
+      return;
+    }
+
+    const previousStart = startDateSelected;
+    const previousEnd = endDateSelected;
+
+    setStartDateSelected(nextStart);
+    setEndDateSelected(nextEnd);
+
+    updateScheduleMutation.mutate(
+      {
+        cleaningId: cleaning.id,
+        dateTimeStart: formatLocalDateTime(nextStart),
+        dateTimeEnd: formatLocalDateTime(nextEnd),
+      },
+      {
+        onError: (error) => {
+          console.error('Update cleaning schedule error:', error);
+          setStartDateSelected(previousStart);
+          setEndDateSelected(previousEnd);
+          Alert.alert(
+            'Unable to update time',
+            'The cleaning time could not be updated.',
+          );
+        },
+      },
+    );
+  }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -273,88 +313,102 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
       {/* Content */}
       <View style={styles.modalMain}>
         {/* Cleaning Info & Status Card */}
-        <Card style={styles.mediumCardWithAvatar}>
-          <View style={styles.mediumCardWithAvatarLeft}>
+        <Card style={styles.mediumCard}>
+          <View className='flex-row items-center justify-between'>
             <Heading size='md'>Cleaning Info</Heading>
-
-            <View className='gap-1'>
-              <Text>
-                Starts:{' '}
-                {cleaning?.dateTimeStart
-                  ? toFriendlyDate(cleaning.dateTimeStart)
-                  : 'Loading...'}
-              </Text>
-
-              <Text>
-                Ends:{' '}
-                {cleaning?.dateTimeEnd
-                  ? toFriendlyDate(cleaning.dateTimeEnd)
-                  : 'Loading...'}
-              </Text>
-
-              <Text>
-                Status: {cleaning?.isComplete ? 'Complete' : 'Not Started'}
-              </Text>
-
-              {user?.role == Role.MANAGER && (
-                <View className='flex-row items-center gap-2'>
-                  <Text>Cleaner:</Text>
-
-                  {cleaning.isComplete ? (
-                    <Text>{selectedCleanerLabel ?? 'Unassigned'}</Text>
-                  ) : (
-                    <Select
-                      selectedValue={cleanerSelected}
-                      initialLabel={selectedCleanerLabel}
-                      onValueChange={handleCleanerChange}
-                    >
-                      <SelectTrigger size='md' variant='rounded'>
-                        <SelectInput placeholder='Unassigned' />
-                        <SelectIcon className='mr-3' as={ChevronDown} />
-                      </SelectTrigger>
-
-                      <SelectPortal useRNModal>
-                        <SelectBackdrop />
-
-                        <SelectContent>
-                          <SelectDragIndicatorWrapper>
-                            <SelectDragIndicator />
-                          </SelectDragIndicatorWrapper>
-
-                          <SelectItem
-                            label='Unassigned'
-                            value={UNASSIGNED_CLEANER_VALUE}
-                          />
-
-                          {cleaners?.map((cleanerItem) => (
-                            <SelectItem
-                              key={cleanerItem.id}
-                              label={`${cleanerItem.firstName} ${cleanerItem.lastName}`}
-                              value={cleanerItem.id.toString()}
-                            />
-                          ))}
-                        </SelectContent>
-                      </SelectPortal>
-                    </Select>
-                  )}
-                </View>
-              )}
-            </View>
+            <Icon
+              as={cleaning?.isComplete ? CircleCheckBig : LoaderCircle}
+              size='lg'
+                cleaning?.isComplete
+                  ? 'text-success-shadow'
+                  : 'text-neutral-shadow'
+              }
+            />
           </View>
 
-          <Avatar style={styles.mediumCardWithAvatarRight}>
-            <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
-
-            {cleanerSelected !== UNASSIGNED_CLEANER_VALUE ? (
-              <AvatarImage
-                source={{
-                  uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
-                }}
+          <View className='gap-2'>
+            {cleaning.isComplete ? (
+              <>
+                <View className='flex-row items-center gap-2'>
+                  <Text className='w-24'>Started:</Text>
+                  <Text>
+                    {toFriendlyDate(
+                      cleaning.dateTimeStarted ?? cleaning.dateTimeStart,
+                    )}
+                  </Text>
+                </View>
+                <View className='flex-row items-center gap-2'>
+                  <Text className='w-24'>Completed:</Text>
+                  <Text>
+                    {toFriendlyDate(
+                      cleaning.dateTimeCompleted ?? cleaning.dateTimeEnd,
+                    )}
+                  </Text>
+                </View>
+              </>
+            ) : user?.role === Role.MANAGER ? (
+              <CleaningDateTimeFields
+                startDate={startDateSelected}
+                endDate={endDateSelected}
+                onStartDateChange={(date) =>
+                  handleScheduleChange(date, endDateSelected)
+                }
+                onEndDateChange={(date) =>
+                  handleScheduleChange(startDateSelected, date)
+                }
+                disabled={updateScheduleMutation.isPending}
               />
             ) : (
-              <AvatarImage source={require('../assets/unassigned.png')} />
+              <>
+                <Text>Starts: {toFriendlyDate(cleaning.dateTimeStart)}</Text>
+                <Text>Ends: {toFriendlyDate(cleaning.dateTimeEnd)}</Text>
+              </>
             )}
-          </Avatar>
+
+            {user?.role == Role.MANAGER && (
+              <View className='flex-row items-center gap-2'>
+                <Text className='w-24'>Cleaner:</Text>
+
+                {cleaning.isComplete ? (
+                  <Text>{selectedCleanerLabel ?? 'Unassigned'}</Text>
+                ) : (
+                  <Select
+                    selectedValue={cleanerSelected}
+                    initialLabel={selectedCleanerLabel}
+                    onValueChange={handleCleanerChange}
+                  >
+                    <SelectTrigger size='md' variant='rounded'>
+                      <SelectInput placeholder='Unassigned' />
+                      <SelectIcon className='mr-3' as={ChevronDown} />
+                    </SelectTrigger>
+
+                    <SelectPortal useRNModal>
+                      <SelectBackdrop />
+
+                      <SelectContent>
+                        <SelectDragIndicatorWrapper>
+                          <SelectDragIndicator />
+                        </SelectDragIndicatorWrapper>
+
+                        <SelectItem
+                          label='Unassigned'
+                          value={UNASSIGNED_CLEANER_VALUE}
+                        />
+
+                        {cleaners?.map((cleanerItem) => (
+                          <SelectItem
+                            key={cleanerItem.id}
+                            label={`${cleanerItem.firstName} ${cleanerItem.lastName}`}
+                            value={cleanerItem.id.toString()}
+                          />
+                        ))}
+                      </SelectContent>
+                    </SelectPortal>
+                  </Select>
+                )}
+              </View>
+            )}
+          </View>
         </Card>
 
         {/* Property Info Card */}

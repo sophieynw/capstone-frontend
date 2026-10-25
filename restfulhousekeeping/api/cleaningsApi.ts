@@ -57,6 +57,18 @@ export function updateCleaningCleaner(
   });
 }
 
+export function updateCleaningSchedule(
+  cleaningId: number,
+  dateTimeStart: string,
+  dateTimeEnd: string,
+): Promise<Cleaning> {
+  return request<Cleaning>({
+    method: 'PATCH',
+    url: `/cleanings/${cleaningId}/schedule`,
+    data: { dateTimeStart, dateTimeEnd },
+  });
+}
+
 export function getCompletedCleanings(userId: number): Promise<Cleaning[]> {
   return request<Cleaning[]>({
     method: 'GET',

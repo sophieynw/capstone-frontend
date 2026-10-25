@@ -37,9 +37,9 @@ import {
 type CleaningStatus = 'unassigned' | 'assigned' | 'complete';
 
 const cleaningCardColors: Record<CleaningStatus, string> = {
-  unassigned: 'bg-red-50',
-  assigned: 'bg-amber-50',
-  complete: 'bg-lime-50',
+  unassigned: 'border-error bg-error/25',
+  assigned: 'border-neutral bg-neutral/5',
+  complete: 'border-success bg-success/20',
 };
 
 function getCleaningStatus(cleaning: Cleaning): CleaningStatus {
@@ -242,7 +242,19 @@ function InvitationCard({
 export default function HomeScreen({ navigation }: any) {
   const { user } = useContext(AuthContext);
   const [isOpeningChat, setIsOpeningChat] = useState(false);
-  const { data: cleanings, isLoading, isError, error } = useUpcomingCleanings();
+  const {
+    data: cleanings,
+    isLoading,
+    isError,
+    error,
+    refetch: refetchCleanings,
+  } = useUpcomingCleanings();
+
+  useFocusEffect(
+    useCallback(() => {
+      void refetchCleanings();
+    }, [refetchCleanings]),
+  );
 
   const isCleaner = user?.role === Role.CLEANER;
 

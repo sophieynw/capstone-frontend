@@ -13,6 +13,7 @@ import {
   getNextCleaningByProperty,
   getUpcomingCleanings,
   updateCleaningCleaner,
+  updateCleaningSchedule,
 } from '@/api/cleaningsApi';
 import { Cleaning } from '@/types/entityTypes';
 import { Alert } from 'react-native';
@@ -145,6 +146,48 @@ export function useUpdateCleaningCleaner() {
       cleaningId: number;
       cleanerId: number | null;
     }) => updateCleaningCleaner(cleaningId, cleanerId),
+
+    onSuccess: async (updatedCleaning) => {
+      queryClient.setQueryData(
+        ['cleaning-id', updatedCleaning.id],
+        updatedCleaning,
+      );
+
+      queryClient.setQueriesData<Cleaning[]>(
+        { queryKey: ['upcoming-cleanings'] },
+        (cleanings) =>
+          cleanings?.map((cleaning) =>
+            cleaning.id === updatedCleaning.id ? updatedCleaning : cleaning,
+          ),
+      );
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['upcoming-cleanings'],
+          refetchType: 'all',
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['next-property-cleaning', updatedCleaning.property.id],
+          refetchType: 'all',
+        }),
+      ]);
+    },
+  });
+}
+
+export function useUpdateCleaningSchedule() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      cleaningId,
+      dateTimeStart,
+      dateTimeEnd,
+    }: {
+      cleaningId: number;
+      dateTimeStart: string;
+      dateTimeEnd: string;
+    }) => updateCleaningSchedule(cleaningId, dateTimeStart, dateTimeEnd),
 
     onSuccess: async (updatedCleaning) => {
       queryClient.setQueryData(

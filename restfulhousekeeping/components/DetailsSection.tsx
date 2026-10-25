@@ -12,15 +12,9 @@ import {
   SelectPortal,
   SelectTrigger,
 } from '@/components/ui/select';
-import { Calendar, ChevronDown } from 'lucide-react-native';
-import { Text } from '@/components/ui/text';
-import {
-  DateTimePicker,
-  DateTimePickerIcon,
-  DateTimePickerInput,
-  DateTimePickerTrigger,
-} from '@/components/ui/date-time-picker';
+import { ChevronDown } from 'lucide-react-native';
 import { Property, User } from '@/types/entityTypes';
+import { CleaningDateTimeFields } from '@/components/CleaningDateTimeFields';
 
 type DetailsSectionProps = {
   properties: Property[] | undefined;
@@ -102,50 +96,12 @@ export function DetailsSection({
           </SelectPortal>
         </Select>
       </View>
-      <View className='flex-col justify-center gap-4'>
-        {/*Starts*/}
-        <View className='w-full flex-row gap-4 justify-center items-center'>
-          <Text>Starts</Text>
-          <DateTimePicker
-            value={startDateSelected}
-            onChange={(date) => {
-              if (date) {
-                setStartDateSelected(date);
-              }
-            }}
-            mode='datetime'
-            placeholder='Select date and time'
-            format='YYYY-MM-DD hh:mm A'
-            is24Hour={false}
-          >
-            <DateTimePickerTrigger variant='rounded'>
-              <DateTimePickerInput />
-              <DateTimePickerIcon as={Calendar} className='mr-3' />
-            </DateTimePickerTrigger>
-          </DateTimePicker>
-        </View>
-        {/*Ends*/}
-        <View className='w-full flex-row gap-4 justify-center items-center'>
-          <Text>Ends</Text>
-          <DateTimePicker
-            value={endDateSelected}
-            onChange={(date) => {
-              if (date) {
-                setEndDateSelected(date);
-              }
-            }}
-            mode='datetime'
-            placeholder='Select date and time'
-            format='YYYY-MM-DD hh:mm A'
-            is24Hour={false}
-          >
-            <DateTimePickerTrigger variant='rounded'>
-              <DateTimePickerInput />
-              <DateTimePickerIcon as={Calendar} className='mr-3' />
-            </DateTimePickerTrigger>
-          </DateTimePicker>
-        </View>
-      </View>
+      <CleaningDateTimeFields
+        startDate={startDateSelected}
+        endDate={endDateSelected}
+        onStartDateChange={setStartDateSelected}
+        onEndDateChange={setEndDateSelected}
+      />
     </>
   );
 }

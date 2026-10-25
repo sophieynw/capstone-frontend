@@ -56,6 +56,20 @@ export function toFriendlyDate(
     .replaceAll(',', '');
 }
 
+// Example output: "2026-10-24T19:28:00"
+// Used for API calls
+export function formatLocalDateTime(date: Date): string {
+  const pad = (value: number) => value.toString().padStart(2, '0');
+
+  return (
+    `${date.getFullYear()}-` +
+    `${pad(date.getMonth() + 1)}-` +
+    `${pad(date.getDate())}T` +
+    `${pad(date.getHours())}:` +
+    `${pad(date.getMinutes())}:00`
+  );
+}
+
 // groups cleanings by date
 export function groupCleaningsByDate(
   cleanings: Cleaning[] | null | undefined,
