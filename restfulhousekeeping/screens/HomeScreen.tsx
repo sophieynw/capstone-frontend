@@ -17,7 +17,7 @@ import {
   Role,
 } from '@/types/entityTypes';
 import { useUpcomingCleanings } from '@/hooks/useCleanings';
-import { useCleanerById } from '@/hooks/useUsers';
+import { useCleanerById, useProfilePicture } from '@/hooks/useUsers';
 import { styles } from '@/styles/styles';
 import { MessageCircle, Plus, UsersRound } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -61,6 +61,21 @@ function CleaningCard({
   navigation,
 }: CleaningCardProps) {
   const { data: cleaner } = useCleanerById(cleaning.cleanerId);
+  const { data: profilePicture } = useProfilePicture(
+    showPropertyImage ? undefined : (cleaning.cleanerId ?? undefined),
+  );
+  const propertyPicture = showPropertyImage
+    ? cleaning.property.propertyPicturePath
+    : null;
+  const [failedImage, setFailedImage] = useState<string | null>(null);
+  const [failedPropertyImage, setFailedPropertyImage] = useState<string | null>(
+    null,
+  );
+  const cleanerName = cleaner
+    ? `${cleaner.firstName} ${cleaner.lastName}`
+    : 'Cleaner';
+  const profilePictureUri =
+    profilePicture && profilePicture !== failedImage ? profilePicture : null;
 
   return (
     <Pressable
@@ -82,7 +97,7 @@ function CleaningCard({
             <Text>{toFriendlyDate(cleaning.dateTimeStart)}</Text>
             <Text>
               {cleaning.cleanerId !== null
-                ? `Assigned to ${cleaner?.firstName} ${cleaner?.lastName}`
+                ? `Assigned to ${cleanerName}`
                 : 'Unassigned'}
             </Text>
           </View>
@@ -90,19 +105,33 @@ function CleaningCard({
 
         <Avatar style={styles.mediumCardWithAvatarRight}>
           <AvatarFallbackText>
-            {showPropertyImage ? 'Property' : 'Cleaner'}
+            {showPropertyImage
+              ? cleaning.property.name
+              : cleaning.cleanerId === null
+                ? 'Unassigned'
+                : cleanerName}
           </AvatarFallbackText>
           {showPropertyImage ? (
-            <AvatarImage source={require('../assets/p1.webp')} />
-          ) : cleaning.cleanerId !== null ? (
             <AvatarImage
-              source={{
-                uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
+              source={
+                propertyPicture && propertyPicture !== failedPropertyImage
+                  ? { uri: propertyPicture }
+                  : require('../assets/house.jpg')
+              }
+              onError={() => {
+                if (propertyPicture) {
+                  setFailedPropertyImage(propertyPicture);
+                }
               }}
             />
-          ) : (
+          ) : profilePictureUri ? (
+            <AvatarImage
+              source={{ uri: profilePictureUri }}
+              onError={() => setFailedImage(profilePictureUri)}
+            />
+          ) : cleaning.cleanerId === null ? (
             <AvatarImage source={require('../assets/unassigned.png')} />
-          )}
+          ) : null}
         </Avatar>
       </Card>
     </Pressable>

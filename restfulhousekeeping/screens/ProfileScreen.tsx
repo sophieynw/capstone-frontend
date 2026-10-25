@@ -31,6 +31,7 @@ import { useAvailabilities } from '@/hooks/useAvailabilities';
 
 export default function ProfileScreen({ navigation }: any) {
   const { user, logout } = useContext(AuthContext);
+  const [isOpeningPicturePicker, setIsOpeningPicturePicker] = useState(false);
   const { data: cleanings } = useUpcomingCleanings();
   const { data: completedCleanings } = useCompletedCleanings();
   const { data: properties } = usePropertyAll();
@@ -63,26 +64,34 @@ export default function ProfileScreen({ navigation }: any) {
 
   // pick an image and upload it
   const handlePickProfilePicture = async () => {
-    if (!user) return;
+    if (!user || isOpeningPicturePicker || uploadMutation.isPending) return;
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
+    setIsOpeningPicturePicker(true);
 
-    if (result.canceled) return;
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
 
-    const asset = result.assets[0];
-    uploadMutation.mutate({
-      userId: user.id,
-      image: {
-        uri: asset.uri,
-        mimeType: asset.mimeType,
-        fileName: asset.fileName,
-      },
-    });
+      if (result.canceled) return;
+
+      const asset = result.assets[0];
+      uploadMutation.mutate({
+        userId: user.id,
+        image: {
+          uri: asset.uri,
+          mimeType: asset.mimeType,
+          fileName: asset.fileName,
+        },
+      });
+    } catch {
+      Alert.alert('Could not open photos', 'Please try again.');
+    } finally {
+      setIsOpeningPicturePicker(false);
+    }
   };
 
   function formatTime(time: string) {
@@ -104,7 +113,7 @@ export default function ProfileScreen({ navigation }: any) {
         {/* profile picture, tap to change */}
         <Pressable
           onPress={handlePickProfilePicture}
-          disabled={uploadMutation.isPending}
+          disabled={isOpeningPicturePicker || uploadMutation.isPending}
           accessibilityRole='button'
           accessibilityLabel='Change profile picture'
           style={{ alignSelf: 'center', alignItems: 'center', gap: 4 }}
@@ -121,7 +130,11 @@ export default function ProfileScreen({ navigation }: any) {
             )}
           </Avatar>
           <Text style={{ fontSize: 12, color: '#888' }}>
-            {uploadMutation.isPending ? 'Uploading...' : 'Tap to change'}
+            {isOpeningPicturePicker
+              ? 'Opening photos...'
+              : uploadMutation.isPending
+                ? 'Uploading...'
+                : 'Tap to change'}
           </Text>
         </Pressable>
 

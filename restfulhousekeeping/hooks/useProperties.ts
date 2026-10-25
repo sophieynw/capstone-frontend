@@ -8,6 +8,7 @@ import {
   getAllProperties,
   getPropertyById,
   importAirbnbCalendar,
+  uploadPropertyPicture,
   updatePropertyById,
 } from '@/api/propertiesApi';
 import { useNavigation } from '@react-navigation/native';
@@ -29,6 +30,42 @@ export function usePropertyAll() {
     queryKey: ['properties', user?.id],
     queryFn: () => getAllProperties(),
     enabled: user?.role === Role.MANAGER,
+  });
+}
+
+export function useUploadPropertyPicture() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      propertyId,
+      image,
+    }: {
+      propertyId: number;
+      image: Parameters<typeof uploadPropertyPicture>[1];
+    }) => uploadPropertyPicture(propertyId, image),
+
+    onSuccess: async (updatedProperty) => {
+      queryClient.setQueryData(
+        ['property', updatedProperty.id],
+        updatedProperty,
+      );
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['properties'] }),
+        queryClient.invalidateQueries({ queryKey: ['upcoming-cleanings'] }),
+        queryClient.invalidateQueries({ queryKey: ['cleaning-id'] }),
+        queryClient.invalidateQueries({ queryKey: ['completed-cleanings'] }),
+      ]);
+    },
+
+    onError: (error) => {
+      console.error('Upload property picture error:', error);
+      Alert.alert(
+        'Upload failed',
+        'The property picture could not be uploaded.',
+      );
+    },
   });
 }
 

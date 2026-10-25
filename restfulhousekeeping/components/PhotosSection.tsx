@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { ImagePlus, X } from 'lucide-react-native';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
+import { useState } from 'react';
 
 const MAX_PHOTOS = 10;
 
@@ -12,7 +13,11 @@ type PhotosSectionProps = {
 };
 
 export function PhotosSection({ photos, onPhotosChange }: PhotosSectionProps) {
+  const [isOpeningPicker, setIsOpeningPicker] = useState(false);
+
   async function pickPhotos() {
+    if (isOpeningPicker) return;
+
     if (photos.length >= MAX_PHOTOS) {
       Alert.alert(
         'Photo limit reached',
@@ -22,6 +27,7 @@ export function PhotosSection({ photos, onPhotosChange }: PhotosSectionProps) {
     }
 
     try {
+      setIsOpeningPicker(true);
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsMultipleSelection: true,
@@ -42,6 +48,8 @@ export function PhotosSection({ photos, onPhotosChange }: PhotosSectionProps) {
         'Could not open photos',
         'Please try selecting photos again.',
       );
+    } finally {
+      setIsOpeningPicker(false);
     }
   }
 
@@ -56,12 +64,15 @@ export function PhotosSection({ photos, onPhotosChange }: PhotosSectionProps) {
       <View className='py-2 gap-3'>
         <Pressable
           onPress={pickPhotos}
+          disabled={isOpeningPicker}
           className='min-h-32 items-center justify-center gap-2 rounded-3xl border border-dashed border-gray-300 bg-gray-50 px-4 py-6'
           accessibilityRole='button'
           accessibilityLabel='Upload photos'
         >
           <ImagePlus size={28} />
-          <Text className='font-medium'>Upload photos</Text>
+          <Text className='font-medium'>
+            {isOpeningPicker ? 'Opening photos...' : 'Upload photos'}
+          </Text>
           <Text className='text-center text-sm text-gray-500'>
             Choose up to {MAX_PHOTOS} photos from your library
           </Text>

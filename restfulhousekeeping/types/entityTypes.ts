@@ -75,6 +75,7 @@ export interface Property {
   checkoutTime: string | null;
   checkinTime: string | null;
   accessInstructions: string | null;
+  propertyPicturePath?: string | null;
   airbnbCalendarConnected?: boolean;
 }
 

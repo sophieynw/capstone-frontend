@@ -59,3 +59,30 @@ export function importAirbnbCalendar(
     data: { icalUrl },
   });
 }
+
+type PickedImage = {
+  uri: string;
+  mimeType?: string | null;
+  fileName?: string | null;
+};
+
+export function uploadPropertyPicture(
+  propertyId: number,
+  image: PickedImage,
+): Promise<Property> {
+  const formData = new FormData();
+  formData.append('file', {
+    uri: image.uri,
+    type: image.mimeType ?? 'image/jpeg',
+    name: image.fileName ?? `property-${Date.now()}.jpg`,
+  } as any);
+
+  return request<Property>({
+    method: 'POST',
+    url: `/properties/${propertyId}/picture`,
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}

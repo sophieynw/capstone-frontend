@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getAllCleaners,
   getProfilePicturePath,
-  getProfilePictureDataUri,
   getUserById,
   removeCleanerFromTeam,
   updateUserById,
@@ -124,20 +123,12 @@ export function useUpdateUser() {
   });
 }
 
-// gets the profile picture for a user
-// first gets the saved path, then downloads the image from that path
+// gets the ImageKit URL saved for a user
 export function useProfilePicture(userId?: number) {
-  const { data: path } = useQuery({
+  return useQuery({
     queryKey: ['profile-picture', userId],
     queryFn: () => getProfilePicturePath(userId!),
     enabled: userId !== undefined,
-  });
-
-  return useQuery({
-    queryKey: ['profile-picture-image', path],
-    queryFn: () => getProfilePictureDataUri(path!),
-    enabled: !!path,
-    staleTime: Infinity, // each upload gets a new file name so this never goes stale
   });
 }
 
@@ -161,6 +152,7 @@ export function useUploadProfilePicture() {
         ['profile-picture', updatedUser.id],
         updatedUser.profilePicturePath ?? null,
       );
+
       await update(updatedUser);
     },
 

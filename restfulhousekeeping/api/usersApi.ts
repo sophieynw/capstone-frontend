@@ -72,26 +72,3 @@ export async function getProfilePicturePath(
   });
   return path ? path : null;
 }
-
-// download the picture with our token and turn it into a data uri
-// so <Image> can show it (Image can't send the token on its own)
-// (split on both slashes since windows paths use \)
-export async function getProfilePictureDataUri(
-  path: string,
-): Promise<string | null> {
-  const fileName = path.split(/[\\/]/).pop();
-  if (!fileName) return null;
-
-  const blob = await request<Blob>({
-    method: 'GET',
-    url: `/cleaners/profile-pictures/${encodeURIComponent(fileName)}`,
-    responseType: 'blob',
-  });
-
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}

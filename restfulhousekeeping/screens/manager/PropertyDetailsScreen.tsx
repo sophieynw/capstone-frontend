@@ -1,5 +1,6 @@
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { styles } from '@/styles/styles';
@@ -9,6 +10,7 @@ import {
   useImportAirbnbCalendar,
   usePropertyById,
   useUpdateProperty,
+  useUploadPropertyPicture,
 } from '@/hooks/useProperties';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
 import { ChecklistEditingSection } from '@/components/ChecklistEditingSection';
@@ -53,10 +55,17 @@ export default function PropertyDetailsScreen({ route }: any) {
   const deletePropertyMutation = useDeleteProperty();
   const updatePropertyMutation = useUpdateProperty();
   const importAirbnbCalendarMutation = useImportAirbnbCalendar();
+  const uploadPropertyPictureMutation = useUploadPropertyPicture();
   const isPropertyMutationPending =
-    deletePropertyMutation.isPending || updatePropertyMutation.isPending;
+    deletePropertyMutation.isPending ||
+    updatePropertyMutation.isPending ||
+    uploadPropertyPictureMutation.isPending;
   const [showAirbnbModal, setShowAirbnbModal] = useState(false);
   const [icalUrl, setIcalUrl] = useState('');
+  const [isOpeningPicturePicker, setIsOpeningPicturePicker] = useState(false);
+  const [failedPropertyPicture, setFailedPropertyPicture] = useState<
+    string | null
+  >(null);
   const [propertyForm, setPropertyForm] = useState<EditableProperty>(() =>
     createEditableProperty(),
   );
@@ -66,6 +75,7 @@ export default function PropertyDetailsScreen({ route }: any) {
     isError: isPropertyError,
     error: propertyError,
   } = usePropertyById(propertyId);
+  const propertyPicture = property?.propertyPicturePath;
   const {
     data: checklistItems,
     isPending: isChecklistItemsPending,
@@ -80,7 +90,7 @@ export default function PropertyDetailsScreen({ route }: any) {
   }, [property]);
 
   if (isPropertyPending || isChecklistItemsPending) {
-    return <LoadingSpinner label="Loading property details..." />;
+    return <LoadingSpinner label='Loading property details...' />;
   }
 
   if (isPropertyError || isChecklistItemsError) {
@@ -123,6 +133,39 @@ export default function PropertyDetailsScreen({ route }: any) {
     });
   }
 
+  async function handlePickPropertyPicture() {
+    if (isOpeningPicturePicker || uploadPropertyPictureMutation.isPending) {
+      return;
+    }
+
+    setIsOpeningPicturePicker(true);
+
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (result.canceled) return;
+
+      const asset = result.assets[0];
+      uploadPropertyPictureMutation.mutate({
+        propertyId,
+        image: {
+          uri: asset.uri,
+          mimeType: asset.mimeType,
+          fileName: asset.fileName,
+        },
+      });
+    } catch {
+      Alert.alert('Could not open photos', 'Please try again.');
+    } finally {
+      setIsOpeningPicturePicker(false);
+    }
+  }
+
   function closeAirbnbModal() {
     if (importAirbnbCalendarMutation.isPending) return;
     setShowAirbnbModal(false);
@@ -163,13 +206,13 @@ export default function PropertyDetailsScreen({ route }: any) {
     >
       {/* Heading */}
       <View style={styles.modalHeader}>
-        <Heading size="2xl">Property Details</Heading>
+        <Heading size='2xl'>Property Details</Heading>
 
         <View style={styles.modalHeaderActions}>
           <Button
-            className="rounded-full"
+            className='rounded-full'
             style={[styles.button, styles.modalHeaderButton]}
-            size="lg"
+            size='lg'
             onPress={handleUpdate}
             isDisabled={isPropertyMutationPending}
           >
@@ -184,6 +227,50 @@ export default function PropertyDetailsScreen({ route }: any) {
       {/* Content */}
       <View style={styles.modalMain}>
         <Pressable
+          onPress={handlePickPropertyPicture}
+          disabled={
+            isOpeningPicturePicker || uploadPropertyPictureMutation.isPending
+          }
+          accessibilityRole='button'
+          accessibilityLabel={
+            property.propertyPicturePath
+              ? 'Edit property picture'
+              : 'Upload property picture'
+          }
+        >
+          <Card style={styles.mediumCardWithAvatar}>
+            <View style={styles.mediumCardWithAvatarLeft}>
+              <Avatar>
+                <AvatarFallbackText>Property</AvatarFallbackText>
+                <AvatarImage
+                  source={
+                    propertyPicture && propertyPicture !== failedPropertyPicture
+                      ? { uri: propertyPicture }
+                      : require('@/assets/house.jpg')
+                  }
+                  onError={() => {
+                    if (propertyPicture) {
+                      setFailedPropertyPicture(propertyPicture);
+                    }
+                  }}
+                />
+              </Avatar>
+            </View>
+            <View className='w-full'>
+              <Text>
+                {isOpeningPicturePicker
+                  ? 'Opening photos...'
+                  : uploadPropertyPictureMutation.isPending
+                    ? 'Uploading property picture...'
+                    : property.propertyPicturePath
+                      ? 'Edit property picture'
+                      : 'Upload property picture'}
+              </Text>
+            </View>
+          </Card>
+        </Pressable>
+
+        <Pressable
           onPress={() => setShowAirbnbModal(true)}
           disabled={property.airbnbCalendarConnected}
           accessibilityState={{
@@ -197,7 +284,7 @@ export default function PropertyDetailsScreen({ route }: any) {
                 <AvatarImage source={require('@/assets/airbnb.png')} />
               </Avatar>
             </View>
-            <View className="w-full">
+            <View className='w-full'>
               <Text>
                 {property.airbnbCalendarConnected
                   ? 'Your Airbnb calendar is connected!'
@@ -224,9 +311,9 @@ export default function PropertyDetailsScreen({ route }: any) {
 
         {/* Delete Button */}
         <Button
-          className="rounded-full"
+          className='rounded-full'
           style={[styles.buttonWarn, styles.modalHeaderButton]}
-          size="lg"
+          size='lg'
           onPress={handleDelete}
           isDisabled={isPropertyMutationPending}
         >
@@ -242,29 +329,29 @@ export default function PropertyDetailsScreen({ route }: any) {
       <Modal
         isOpen={showAirbnbModal}
         onClose={closeAirbnbModal}
-        size="md"
+        size='md'
         useRNModal
       >
         <ModalBackdrop />
-        <ModalContent className="rounded-4xl">
+        <ModalContent className='rounded-4xl'>
           <ModalHeader>
-            <Heading size="lg">Import Airbnb calendar</Heading>
+            <Heading size='lg'>Import Airbnb calendar</Heading>
             <ModalCloseButton onPress={closeAirbnbModal}>
               <Icon as={CloseIcon} />
             </ModalCloseButton>
           </ModalHeader>
 
           <ModalBody>
-            <View className="gap-2">
+            <View className='gap-2'>
               <Text>Paste the Airbnb calendar link for this property.</Text>
-              <Input className="rounded-2xl">
+              <Input className='rounded-2xl'>
                 <InputField
                   value={icalUrl}
                   onChangeText={setIcalUrl}
-                  placeholder="https://www.airbnb.com/calendar/ical/...ics"
-                  autoCapitalize="none"
+                  placeholder='https://www.airbnb.com/calendar/ical/...ics'
+                  autoCapitalize='none'
                   autoCorrect={false}
-                  keyboardType="url"
+                  keyboardType='url'
                 />
               </Input>
             </View>
@@ -272,7 +359,7 @@ export default function PropertyDetailsScreen({ route }: any) {
 
           <ModalFooter>
             <Button
-              variant="outline"
+              variant='outline'
               style={styles.button}
               onPress={closeAirbnbModal}
               isDisabled={importAirbnbCalendarMutation.isPending}
