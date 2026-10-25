@@ -34,11 +34,19 @@ export const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   modalHeader: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    width: '100%',
     padding: 8,
+  },
+  modalHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  modalHeaderButton: {
+    marginTop: 0,
   },
   modalMain: {
     flexDirection: 'column',
@@ -70,21 +78,39 @@ export const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
+  summaryCard: {
+    flex: 1,
+    minWidth: 0,
+    borderRadius: 28,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  summaryCardVisual: {
+    height: 30,
+    justifyContent: 'center',
+  },
+  summaryCardAction: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
 
   // TODO: remove margins
   formCard: {
     width: '100%',
     backgroundColor: '#ffffff',
     padding: 16,
-    borderRadius: 24,
+    borderRadius: 28,
+    gap: 10,
   },
   input: {
     borderWidth: 1,
     borderColor: '#cccccc',
-    borderRadius: 16,
+    borderRadius: 9999,
     padding: 12,
-    marginTop: 6,
-    marginBottom: 12,
   },
   inputError: {
     borderColor: '#d32f2f',
@@ -127,22 +153,33 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
   },
   button: {
-    backgroundColor: '#32cbb6',
-    padding: 12,
+    backgroundColor: '#D8E7DD',
+    padding: 10,
     alignItems: 'center',
-    marginTop: 8,
-    borderRadius: 16,
+    borderRadius: 9999,
+    borderColor: '#74A985',
+    borderWidth: 1,
   },
   buttonText: {
-    color: '#ffffff',
-    fontWeight: '700',
+    color: '#365841',
+  },
+  buttonWarn: {
+    backgroundColor: '#FBB6B6',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 9999,
+    borderColor: '#C96F6F',
+    borderWidth: 1,
+  },
+  buttonTextWarn: {
+    color: '#7A2E2E',
   },
   disabledButton: {
     opacity: 0.6,
   },
   link: {
     textAlign: 'center',
-    marginTop: 12,
     textDecorationLine: 'underline',
+    color: '#365841',
   },
 });

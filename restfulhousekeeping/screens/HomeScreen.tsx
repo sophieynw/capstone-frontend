@@ -108,20 +108,22 @@ function ManagerActions({ navigation }: any) {
   return (
     <>
       <Button
-        className='rounded-full w-40'
+        className='w-40'
+        style={styles.button}
         size='lg'
         onPress={() => navigation.navigate('ManageTeamScreen')}
       >
-        <ButtonIcon as={UsersRound} />
-        <ButtonText>My Team</ButtonText>
+        <ButtonIcon style={styles.buttonText} as={UsersRound} />
+        <ButtonText style={styles.buttonText}>My Team</ButtonText>
       </Button>
       <Button
-        className='rounded-full w-40'
+        className='w-40'
+        style={styles.button}
         size='lg'
         onPress={() => navigation.navigate('NewCleaningScreen')}
       >
-        <ButtonIcon as={Plus} />
-        <ButtonText>New Cleaning</ButtonText>
+        <ButtonIcon style={styles.buttonText} as={Plus} />
+        <ButtonText style={styles.buttonText}>New Cleaning</ButtonText>
       </Button>
     </>
   );
@@ -140,17 +142,26 @@ type ManagerInfoProps = {
 function ManagerInfo({ upcoming, issues, unassigned }: ManagerInfoProps) {
   return (
     <>
-      <Card className='flex-1 gap-1 rounded-3xl'>
-        <Heading size='2xl'>{upcoming}</Heading>
+      <Card style={styles.summaryCard} className={cleaningCardColors.assigned}>
+        <View style={styles.summaryCardVisual}>
+          <Heading size='2xl'>{upcoming}</Heading>
+        </View>
         <Text>Upcoming</Text>
       </Card>
-      <Card className='flex-1 gap-1 rounded-3xl'>
-        <Heading size='2xl'>{issues}</Heading>
-        <Text>Issues</Text>
-      </Card>
-      <Card className='flex-1 gap-1 rounded-3xl'>
-        <Heading size='2xl'>{unassigned}</Heading>
+      <Card
+        style={styles.summaryCard}
+        className={cleaningCardColors.unassigned}
+      >
+        <View style={styles.summaryCardVisual}>
+          <Heading size='2xl'>{unassigned}</Heading>
+        </View>
         <Text>Unassigned</Text>
+      </Card>
+      <Card style={styles.summaryCard}>
+        <View style={styles.summaryCardVisual}>
+          <Heading size='2xl'>{issues}</Heading>
+        </View>
+        <Text>Issues</Text>
       </Card>
     </>
   );
@@ -175,25 +186,34 @@ function CleanerInfo({
 }: CleaningInfoProps) {
   return (
     <>
-      <Card className='flex-1 gap-1 rounded-3xl'>
-        <Heading size='2xl'>{upcoming}</Heading>
+      <Card style={styles.summaryCard} className={cleaningCardColors.assigned}>
+        <View style={styles.summaryCardVisual}>
+          <Heading size='2xl'>{upcoming}</Heading>
+        </View>
         <Text>Assigned</Text>
       </Card>
-      <Card className='flex-1 gap-1 rounded-3xl'>
-        <Heading size='2xl'>{completed}</Heading>
+
+      <Card style={styles.summaryCard} className={cleaningCardColors.complete}>
+        <View style={styles.summaryCardVisual}>
+          <Heading size='2xl'>{completed}</Heading>
+        </View>
         <Text>Completed</Text>
       </Card>
-      <Pressable
-        className='flex-1'
-        onPress={onChatPress}
-        disabled={isOpeningChat}
-        accessibilityRole='button'
-        accessibilityLabel='Open manager chat'
-      >
-        <Card className='flex-1 items-center justify-center rounded-3xl'>
-          <Icon as={MessageCircle} size='2xl' />
-        </Card>
-      </Pressable>
+
+      <Card style={styles.summaryCard}>
+        <Pressable
+          style={styles.summaryCardAction}
+          onPress={onChatPress}
+          disabled={isOpeningChat}
+          accessibilityRole='button'
+          accessibilityLabel='Open manager chat'
+        >
+          <View style={styles.summaryCardVisual}>
+            <Icon as={MessageCircle} size='2xl' />
+          </View>
+          <Text>Chat</Text>
+        </Pressable>
+      </Card>
     </>
   );
 }
@@ -218,19 +238,23 @@ function InvitationCard({
       <View className='flex-row gap-3'>
         <Button
           className='flex-1'
+          style={styles.button}
           onPress={() => onAccept(invitation.id)}
           disabled={isProcessing}
         >
-          <ButtonText>{isProcessing ? 'Processing...' : 'Accept'}</ButtonText>
+          <ButtonText style={styles.buttonText}>
+            {isProcessing ? 'Processing...' : 'Accept'}
+          </ButtonText>
         </Button>
 
         <Button
           className='flex-1'
+          style={styles.button}
           variant='outline'
           onPress={() => onDecline(invitation.id)}
           disabled={isProcessing}
         >
-          <ButtonText>Decline</ButtonText>
+          <ButtonText style={styles.buttonText}>Decline</ButtonText>
         </Button>
       </View>
     </Card>
@@ -354,7 +378,7 @@ export default function HomeScreen({ navigation }: any) {
       )}
 
       {/* Info */}
-      <ScrollView horizontal contentContainerStyle={styles.hStack}>
+      <View style={styles.hStack}>
         {user?.role == Role.MANAGER && (
           <ManagerInfo
             upcoming={upcoming}
@@ -370,7 +394,7 @@ export default function HomeScreen({ navigation }: any) {
             onChatPress={handleOpenCleanerChat}
           />
         )}
-      </ScrollView>
+      </View>
       {/* Today's Cleanings */}
       <View style={styles.vStack}>
         <Heading size='xl'>Today</Heading>

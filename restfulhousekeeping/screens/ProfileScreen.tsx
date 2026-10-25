@@ -12,7 +12,10 @@ import {
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
-import { useUpcomingCleanings,  useCompletedCleanings,} from '@/hooks/useCleanings';
+import {
+  useUpcomingCleanings,
+  useCompletedCleanings,
+} from '@/hooks/useCleanings';
 import {
   useProfilePicture,
   useUpdateUser,
@@ -33,8 +36,8 @@ export default function ProfileScreen({ navigation }: any) {
   const { data: properties } = usePropertyAll();
   const { data: cleaners } = useCleaners();
   const { data: availabilities } = useAvailabilities(
-  user?.role === Role.CLEANER ? user.id : undefined,
-);
+    user?.role === Role.CLEANER ? user.id : undefined,
+  );
   const sortedAvailabilities = sortAvailabilitySlots(availabilities);
 
   // load profile picture from the backend
@@ -48,7 +51,10 @@ export default function ProfileScreen({ navigation }: any) {
   const handleLogout = async () => {
     try {
       await logout();
-      Alert.alert('Logout successful', 'You have been logged out successfully.');
+      Alert.alert(
+        'Logout successful',
+        'You have been logged out successfully.',
+      );
     } catch (error) {
       console.error('Logout error', error);
       Alert.alert('Logout failed', 'Something went wrong while logging out.');
@@ -94,7 +100,7 @@ export default function ProfileScreen({ navigation }: any) {
       style={styles.screen}
       contentContainerStyle={styles.screenContent}
     >
-      <Card className='rounded-3xl gap-3'>
+      <Card style={styles.mediumCard}>
         {/* profile picture, tap to change */}
         <Pressable
           onPress={handlePickProfilePicture}
@@ -135,7 +141,7 @@ export default function ProfileScreen({ navigation }: any) {
       </Card>
 
       {user?.role === Role.MANAGER && (
-        <Card className='rounded-3xl gap-3'>
+        <Card style={styles.mediumCard}>
           <Heading size='lg'>Account Summary</Heading>
           <View className='gap-2'>
             <Text>Upcoming Cleanings: {cleanings?.length ?? 0}</Text>
@@ -146,13 +152,11 @@ export default function ProfileScreen({ navigation }: any) {
       )}
 
       {user?.role === Role.CLEANER && (
-        <Card className='w-full gap-3 rounded-3xl'>
+        <Card style={styles.mediumCard}>
           <Heading size='lg'>Cleaner Summary</Heading>
           <View className='gap-2'>
             <Text>Assigned Cleanings: {cleanings?.length ?? 0}</Text>
-            <Text>
-              Completed Cleanings: {completedCleanings?.length ?? 0}
-            </Text>
+            <Text>Completed Cleanings: {completedCleanings?.length ?? 0}</Text>
             <Text>Availability:</Text>
 
             {sortedAvailabilities.map((availability) => (
@@ -161,7 +165,7 @@ export default function ProfileScreen({ navigation }: any) {
                 {formatTime(availability.startTime)} -{' '}
                 {formatTime(availability.endTime)}
               </Text>
-          ))}
+            ))}
           </View>
         </Card>
       )}
@@ -171,15 +175,21 @@ export default function ProfileScreen({ navigation }: any) {
           size='lg'
           variant='outline'
           className='rounded-full'
+          style={styles.button}
           onPress={() => navigation.navigate('ProfileEditScreen')}
         >
-          <ButtonIcon as={UserPen} />
-          <ButtonText>Edit Profile</ButtonText>
+          <ButtonIcon style={styles.buttonText} as={UserPen} />
+          <ButtonText style={styles.buttonText}>Edit Profile</ButtonText>
         </Button>
 
-        <Button size='lg' className='rounded-full' onPress={handleLogout}>
-          <ButtonIcon as={LogOut} />
-          <ButtonText>Log Out</ButtonText>
+        <Button
+          size='lg'
+          className='rounded-full'
+          style={styles.buttonWarn}
+          onPress={handleLogout}
+        >
+          <ButtonIcon style={styles.buttonTextWarn} as={LogOut} />
+          <ButtonText style={styles.buttonTextWarn}>Log Out</ButtonText>
         </Button>
       </View>
     </ScrollView>

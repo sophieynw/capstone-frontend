@@ -41,7 +41,7 @@ export default function LoginPage({ navigation }: any) {
       </Text>
 
       <Image
-        source={require('../assets/logo.jpg')}
+        source={require('../assets/logonewest.png')}
         style={globalStyles.logoImage}
       />
 
@@ -66,7 +66,11 @@ export default function LoginPage({ navigation }: any) {
           onChangeText={setPassword}
         />
 
-        <Pressable style={styles.button} onPress={handleLogin}>
+        <Pressable
+          style={styles.button}
+          className='mt-3 p-3'
+          onPress={handleLogin}
+        >
           <Text style={styles.buttonText}>Log In</Text>
         </Pressable>
 

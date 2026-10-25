@@ -11,7 +11,13 @@ import {
   toTitleCase,
 } from '@/utils/helpers';
 import { useContext, useState } from 'react';
-import { CloseIcon, Icon, TrashIcon, EditIcon, ChevronDownIcon } from '@/components/ui/icon';
+import {
+  CloseIcon,
+  Icon,
+  TrashIcon,
+  EditIcon,
+  ChevronDownIcon,
+} from '@/components/ui/icon';
 import {
   DateTimePicker,
   DateTimePickerIcon,
@@ -29,8 +35,24 @@ import {
 } from '@/components/ui/modal';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Clock } from 'lucide-react-native';
-import { Select, SelectTrigger, SelectBackdrop, SelectIcon, SelectInput, SelectPortal, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem } from '@/components/ui/select';
-import { useAvailabilities,useUpdateAvailability, useCreateAvailability, useDeleteAvailability } from '@/hooks/useAvailabilities';
+import {
+  Select,
+  SelectTrigger,
+  SelectBackdrop,
+  SelectIcon,
+  SelectInput,
+  SelectPortal,
+  SelectContent,
+  SelectDragIndicatorWrapper,
+  SelectDragIndicator,
+  SelectItem,
+} from '@/components/ui/select';
+import {
+  useAvailabilities,
+  useUpdateAvailability,
+  useCreateAvailability,
+  useDeleteAvailability,
+} from '@/hooks/useAvailabilities';
 import { AuthContext } from '@/auth/AuthContext';
 
 function minutesSinceMidnight(date: Date): number {
@@ -106,11 +128,15 @@ export default function CleaningAvailabilityScreen() {
     ]);
   }
 
-  function TimeField({label, value, onChange}: {
+  function TimeField({
+    label,
+    value,
+    onChange,
+  }: {
     label: string;
     value: Date;
     onChange: (date: Date) => void;
-    }) {
+  }) {
     return (
       <>
         <Text className='m-2'>{label}</Text>
@@ -132,173 +158,184 @@ export default function CleaningAvailabilityScreen() {
     );
   }
 
-return (
-  <ScrollView
-    style={styles.screen}
-    contentContainerStyle={styles.screenContent}
-  >
-    {sortedAvailabilitySlots.map((slot) => (
-      <Card
-        key={slot.id}
-        className='rounded-3xl flex-row items-center justify-between'
-      >
-        <View className='gap-1'>
-          <Heading size='md'>{toTitleCase(slot?.dayOfWeek.toString())}</Heading>
-          <Text>
-            {formatTime(slot.startTime)} to {formatTime(slot.endTime)}
-          </Text>
-        </View>
-
-        <View className='flex-row items-center gap-4'>
-          <Pressable
-            onPress={() => openEditor(slot)}
-            hitSlop={12}
-            accessibilityRole='button'
-            accessibilityLabel='Edit availability slot'
+  return (
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.screenContent}
+    >
+      <View style={styles.vStack}>
+        {sortedAvailabilitySlots.map((slot) => (
+          <Card
+            key={slot.id}
+            style={styles.mediumCardWithAvatar}
+            // className='rounded-3xl flex-row items-center justify-between'
           >
-            <Icon as={EditIcon} size='xl' />
-          </Pressable>
+            <View className='gap-1'>
+              <Heading size='md'>
+                {toTitleCase(slot?.dayOfWeek.toString())}
+              </Heading>
+              <Text>
+                {formatTime(slot.startTime)} to {formatTime(slot.endTime)}
+              </Text>
+            </View>
 
-          <Pressable
-            onPress={() => handleDelete(slot)}
-            hitSlop={12}
-            accessibilityRole='button'
-            accessibilityLabel='Delete availability slot'
-          >
-            <Icon as={TrashIcon} size='xl' />
-          </Pressable>
-        </View>
-      </Card>
-    ))}
-
-    <Button className='rounded-full' size='lg' onPress={openCreator}>
-      <ButtonText>Add New Availability</ButtonText>
-    </Button>
-
-    <Modal isOpen={showModal} onClose={() => setShowModal(false)} size='md'>
-      <ModalBackdrop />
-      <ModalContent className='rounded-4xl'>
-        <ModalHeader>
-          <Heading size='lg'>
-            {editingSlot ? 'Edit Time' : 'New Availability'}
-          </Heading>
-
-          <ModalCloseButton>
-            <Icon as={CloseIcon} />
-          </ModalCloseButton>
-        </ModalHeader>
-
-        <ModalBody>
-          {!editingSlot && (
-            <>
-              <Text className='m-2'>Day of Week</Text>
-              <Select
-                selectedValue={selectedDay ?? undefined}
-                onValueChange={(value) =>
-                  setSelectedDay(value as DaysOfTheWeek)
-                }
+            <View className='flex-row items-center gap-4'>
+              <Pressable
+                onPress={() => openEditor(slot)}
+                hitSlop={12}
+                accessibilityRole='button'
+                accessibilityLabel='Edit availability slot'
               >
-                <SelectTrigger
-                  variant='outline'
-                  size='md'
-                  className='m-2 rounded-full'
+                <Icon as={EditIcon} size='xl' />
+              </Pressable>
+
+              <Pressable
+                onPress={() => handleDelete(slot)}
+                hitSlop={12}
+                accessibilityRole='button'
+                accessibilityLabel='Delete availability slot'
+              >
+                <Icon as={TrashIcon} size='xl' />
+              </Pressable>
+            </View>
+          </Card>
+        ))}
+      </View>
+
+      <Button
+        className='rounded-full'
+        style={styles.button}
+        size='lg'
+        onPress={openCreator}
+      >
+        <ButtonText style={styles.buttonText}>Add New Availability</ButtonText>
+      </Button>
+
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} size='md'>
+        <ModalBackdrop />
+        <ModalContent className='rounded-4xl'>
+          <ModalHeader>
+            <Heading size='lg'>
+              {editingSlot ? 'Edit Time' : 'New Availability'}
+            </Heading>
+
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+
+          <ModalBody>
+            {!editingSlot && (
+              <>
+                <Text className='m-2'>Day of Week</Text>
+                <Select
+                  selectedValue={selectedDay ?? undefined}
+                  onValueChange={(value) =>
+                    setSelectedDay(value as DaysOfTheWeek)
+                  }
                 >
-                  <SelectInput
-                    placeholder='Select Day'
-                    value={selectedDay ? toTitleCase(selectedDay) : ''}
-                  />
-                  <SelectIcon className='mr-3' as={ChevronDownIcon} />
-                </SelectTrigger>
-                <SelectPortal>
-                  <SelectBackdrop />
-                  <SelectContent>
-                    <SelectDragIndicatorWrapper>
-                      <SelectDragIndicator />
-                    </SelectDragIndicatorWrapper>
-                    {Object.values(DaysOfTheWeek).map((day) => (
-                      <SelectItem
-                        key={day}
-                        label={toTitleCase(day)}
-                        value={day}
-                      />
-                    ))}
-                  </SelectContent>
-                </SelectPortal>
-              </Select>
-            </>
-          )}
+                  <SelectTrigger
+                    variant='outline'
+                    size='md'
+                    className='m-2 rounded-full'
+                  >
+                    <SelectInput
+                      placeholder='Select Day'
+                      value={selectedDay ? toTitleCase(selectedDay) : ''}
+                    />
+                    <SelectIcon className='mr-3' as={ChevronDownIcon} />
+                  </SelectTrigger>
+                  <SelectPortal>
+                    <SelectBackdrop />
+                    <SelectContent>
+                      <SelectDragIndicatorWrapper>
+                        <SelectDragIndicator />
+                      </SelectDragIndicatorWrapper>
+                      {Object.values(DaysOfTheWeek).map((day) => (
+                        <SelectItem
+                          key={day}
+                          label={toTitleCase(day)}
+                          value={day}
+                        />
+                      ))}
+                    </SelectContent>
+                  </SelectPortal>
+                </Select>
+              </>
+            )}
 
-          <TimeField
-            label='Start Time'
-            value={startTime}
-            onChange={setStartTime}
-          />
-          <TimeField label='End Time' value={endTime} onChange={setEndTime} />
-        </ModalBody>
+            <TimeField
+              label='Start Time'
+              value={startTime}
+              onChange={setStartTime}
+            />
+            <TimeField label='End Time' value={endTime} onChange={setEndTime} />
+          </ModalBody>
 
-        <ModalFooter>
-          <Button
-            className='rounded-full'
-            onPress={() => {
-              if (!availabilitySlots) {
-                Alert.alert(
-                  'Availability unavailable',
-                  'Wait for your availability to load before saving.',
-                );
-                return;
-              }
+          <ModalFooter>
+            <Button
+              className='rounded-full'
+              style={styles.button}
+              onPress={() => {
+                if (!availabilitySlots) {
+                  Alert.alert(
+                    'Availability unavailable',
+                    'Wait for your availability to load before saving.',
+                  );
+                  return;
+                }
 
-              if (endTime.getTime() <= startTime.getTime()) {
-                Alert.alert(
-                  'Invalid time',
-                  'End time must be later than start time.',
-                );
-                return;
-              }
+                if (endTime.getTime() <= startTime.getTime()) {
+                  Alert.alert(
+                    'Invalid time',
+                    'End time must be later than start time.',
+                  );
+                  return;
+                }
 
-              const dayOfWeek = editingSlot?.dayOfWeek ?? selectedDay;
-              if (
-                hasOverlappingAvailability(
-                  availabilitySlots,
-                  dayOfWeek,
-                  startTime,
-                  endTime,
-                  editingSlot?.id,
-                )
-              ) {
-                Alert.alert(
-                  'Overlapping availability',
-                  `This time overlaps with an existing availability period on ${toTitleCase(dayOfWeek)}.`,
-                );
-                return;
-              }
+                const dayOfWeek = editingSlot?.dayOfWeek ?? selectedDay;
+                if (
+                  hasOverlappingAvailability(
+                    availabilitySlots,
+                    dayOfWeek,
+                    startTime,
+                    endTime,
+                    editingSlot?.id,
+                  )
+                ) {
+                  Alert.alert(
+                    'Overlapping availability',
+                    `This time overlaps with an existing availability period on ${toTitleCase(dayOfWeek)}.`,
+                  );
+                  return;
+                }
 
-              if (editingSlot) {
-                updateAvailability.mutate(
-                  {
-                    id: editingSlot.id,
-                    startTime: dateToTimeString(startTime),
-                    endTime: dateToTimeString(endTime),
-                  },
-                  { onSuccess: () => setShowModal(false) },
-                );
-              } else {
-                createAvailability.mutate(
-                  {
-                    dayOfWeek: selectedDay,
-                    startTime: dateToTimeString(startTime),
-                    endTime: dateToTimeString(endTime),
-                  },
-                  { onSuccess: () => setShowModal(false) },
-                );
-              }
-            }}
-          >
-            <ButtonText>Done</ButtonText>
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  </ScrollView>
-);
+                if (editingSlot) {
+                  updateAvailability.mutate(
+                    {
+                      id: editingSlot.id,
+                      startTime: dateToTimeString(startTime),
+                      endTime: dateToTimeString(endTime),
+                    },
+                    { onSuccess: () => setShowModal(false) },
+                  );
+                } else {
+                  createAvailability.mutate(
+                    {
+                      dayOfWeek: selectedDay,
+                      startTime: dateToTimeString(startTime),
+                      endTime: dateToTimeString(endTime),
+                    },
+                    { onSuccess: () => setShowModal(false) },
+                  );
+                }
+              }}
+            >
+              <ButtonText style={styles.buttonText}>Done</ButtonText>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </ScrollView>
+  );
 }

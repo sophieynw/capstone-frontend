@@ -80,7 +80,7 @@ export default function PropertyDetailsScreen({ route }: any) {
   }, [property]);
 
   if (isPropertyPending || isChecklistItemsPending) {
-    return <LoadingSpinner label='Loading property details...' />;
+    return <LoadingSpinner label="Loading property details..." />;
   }
 
   if (isPropertyError || isChecklistItemsError) {
@@ -88,6 +88,7 @@ export default function PropertyDetailsScreen({ route }: any) {
     console.error('ChecklistItems error:', checklistItemsError);
     return <ErrorState />;
   }
+
   function handleDelete() {
     if (isPropertyMutationPending) return;
 
@@ -104,6 +105,7 @@ export default function PropertyDetailsScreen({ route }: any) {
       ],
     );
   }
+
   function handleUpdate() {
     if (isPropertyMutationPending) return;
 
@@ -153,6 +155,7 @@ export default function PropertyDetailsScreen({ route }: any) {
       },
     );
   }
+
   return (
     <ScrollView
       style={styles.modalScreen}
@@ -160,32 +163,22 @@ export default function PropertyDetailsScreen({ route }: any) {
     >
       {/* Heading */}
       <View style={styles.modalHeader}>
-        <Heading size='2xl'>Property Details</Heading>
-      </View>
+        <Heading size="2xl">Property Details</Heading>
 
-      <View style={styles.hStack}>
-        <Button
-          className='rounded-full'
-          size='lg'
-          onPress={handleDelete}
-          isDisabled={isPropertyMutationPending}
-        >
-          <ButtonIcon as={Trash} />
-          <ButtonText>
-            {deletePropertyMutation.isPending ? 'Deleting...' : 'Delete'}
-          </ButtonText>
-        </Button>
-        <Button
-          className='rounded-full'
-          size='lg'
-          onPress={handleUpdate}
-          isDisabled={isPropertyMutationPending}
-        >
-          <ButtonIcon as={Save} />
-          <ButtonText>
-            {updatePropertyMutation.isPending ? 'Updating...' : 'Update'}
-          </ButtonText>
-        </Button>
+        <View style={styles.modalHeaderActions}>
+          <Button
+            className="rounded-full"
+            style={[styles.button, styles.modalHeaderButton]}
+            size="lg"
+            onPress={handleUpdate}
+            isDisabled={isPropertyMutationPending}
+          >
+            <ButtonIcon style={styles.buttonText} as={Save} />
+            <ButtonText style={styles.buttonText}>
+              {updatePropertyMutation.isPending ? 'Saving...' : 'Save'}
+            </ButtonText>
+          </Button>
+        </View>
       </View>
 
       {/* Content */}
@@ -204,7 +197,7 @@ export default function PropertyDetailsScreen({ route }: any) {
                 <AvatarImage source={require('@/assets/airbnb.png')} />
               </Avatar>
             </View>
-            <View className='w-full'>
+            <View className="w-full">
               <Text>
                 {property.airbnbCalendarConnected
                   ? 'Your Airbnb calendar is connected!'
@@ -228,34 +221,50 @@ export default function PropertyDetailsScreen({ route }: any) {
 
         {/* Issues */}
         <ReportedIssuesSection issues={reportedIssues} />
+
+        {/* Delete Button */}
+        <Button
+          className="rounded-full"
+          style={[styles.buttonWarn, styles.modalHeaderButton]}
+          size="lg"
+          onPress={handleDelete}
+          isDisabled={isPropertyMutationPending}
+        >
+          <ButtonIcon style={styles.buttonTextWarn} as={Trash} />
+          <ButtonText style={styles.buttonTextWarn}>
+            {deletePropertyMutation.isPending
+              ? 'Deleting Property...'
+              : 'Delete Property'}
+          </ButtonText>
+        </Button>
       </View>
 
       <Modal
         isOpen={showAirbnbModal}
         onClose={closeAirbnbModal}
-        size='md'
+        size="md"
         useRNModal
       >
         <ModalBackdrop />
-        <ModalContent className='rounded-4xl'>
+        <ModalContent className="rounded-4xl">
           <ModalHeader>
-            <Heading size='lg'>Import Airbnb calendar</Heading>
+            <Heading size="lg">Import Airbnb calendar</Heading>
             <ModalCloseButton onPress={closeAirbnbModal}>
               <Icon as={CloseIcon} />
             </ModalCloseButton>
           </ModalHeader>
 
           <ModalBody>
-            <View className='gap-2'>
+            <View className="gap-2">
               <Text>Paste the Airbnb calendar link for this property.</Text>
-              <Input className='rounded-2xl'>
+              <Input className="rounded-2xl">
                 <InputField
                   value={icalUrl}
                   onChangeText={setIcalUrl}
-                  placeholder='https://www.airbnb.com/calendar/ical/...ics'
-                  autoCapitalize='none'
+                  placeholder="https://www.airbnb.com/calendar/ical/...ics"
+                  autoCapitalize="none"
                   autoCorrect={false}
-                  keyboardType='url'
+                  keyboardType="url"
                 />
               </Input>
             </View>
@@ -263,17 +272,19 @@ export default function PropertyDetailsScreen({ route }: any) {
 
           <ModalFooter>
             <Button
-              variant='outline'
+              variant="outline"
+              style={styles.button}
               onPress={closeAirbnbModal}
               isDisabled={importAirbnbCalendarMutation.isPending}
             >
-              <ButtonText>Cancel</ButtonText>
+              <ButtonText style={styles.buttonText}>Cancel</ButtonText>
             </Button>
             <Button
+              style={styles.button}
               onPress={handleAirbnbImport}
               isDisabled={importAirbnbCalendarMutation.isPending}
             >
-              <ButtonText>
+              <ButtonText style={styles.buttonText}>
                 {importAirbnbCalendarMutation.isPending
                   ? 'Importing...'
                   : 'Confirm'}

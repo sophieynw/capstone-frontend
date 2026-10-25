@@ -282,28 +282,30 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
         {user?.role === Role.MANAGER && !cleaning.isComplete ? (
           <Button
             className='rounded-full'
+            style={[styles.buttonWarn, styles.modalHeaderButton]}
             size='lg'
             onPress={handleDeleteCleaning}
             isDisabled={deleteCleaningMutation.isPending}
           >
-            <ButtonIcon as={Trash} />
+            <ButtonIcon style={styles.buttonTextWarn} as={Trash} />
 
-            <ButtonText>
+            <ButtonText style={styles.buttonTextWarn}>
               {deleteCleaningMutation.isPending ? 'Deleting...' : 'Delete'}
             </ButtonText>
           </Button>
         ) : user?.role !== Role.MANAGER ? (
           <Button
             className='rounded-full'
+            style={[styles.button, styles.modalHeaderButton]}
             size='lg'
             onPress={handleCompleteCleaning}
             isDisabled={
               completeCleaningMutation.isPending || cleaning.isComplete
             }
           >
-            <ButtonIcon as={SquareCheckBig} />
+            <ButtonIcon style={styles.buttonText} as={SquareCheckBig} />
 
-            <ButtonText>
+            <ButtonText style={styles.buttonText}>
               {completeCleaningMutation.isPending ? 'Completing...' : 'Done'}
             </ButtonText>
           </Button>
@@ -468,11 +470,18 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           size='lg'
           variant='outline'
           className='rounded-full'
+          style={styles.buttonWarn}
           onPress={() => setShowIssueModal(true)}
         >
-          <ButtonIcon className='text-red-500' as={CircleAlert} />
+          <ButtonIcon
+            className='text-red-500'
+            style={styles.buttonTextWarn}
+            as={CircleAlert}
+          />
 
-          <ButtonText className='text-red-500'>Report an Issue</ButtonText>
+          <ButtonText className='text-red-500' style={styles.buttonTextWarn}>
+            Report an Issue
+          </ButtonText>
         </Button>
       )}
 
@@ -543,13 +552,15 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
             <Button
               variant='outline'
               className='rounded-full'
+              style={styles.button}
               onPress={() => setShowIssueModal(false)}
             >
-              <ButtonText>Cancel</ButtonText>
+              <ButtonText style={styles.buttonText}>Cancel</ButtonText>
             </Button>
 
             <Button
               className='rounded-full'
+              style={styles.button}
               isDisabled={createIssueMutation.isPending}
               onPress={() => {
                 if (!issueType) {
@@ -584,7 +595,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                 );
               }}
             >
-              <ButtonText>Submit</ButtonText>
+              <ButtonText style={styles.buttonText}>Submit</ButtonText>
             </Button>
           </ModalFooter>
         </ModalContent>

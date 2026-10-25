@@ -101,11 +101,12 @@ export default function ManageTeamScreen({ navigation }: any) {
 
         <Button
           className='rounded-full'
+          style={[styles.button, styles.modalHeaderButton]}
           size='lg'
           onPress={() => {navigation.navigate('InviteCleanerScreen')}}
         >
-          <ButtonIcon as={MailIcon} />
-          <ButtonText>Invite</ButtonText>
+          <ButtonIcon style={styles.buttonText} as={MailIcon} />
+          <ButtonText style={styles.buttonText}>Invite</ButtonText>
         </Button>
       </View>
 

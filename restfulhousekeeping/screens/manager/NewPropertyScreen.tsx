@@ -102,12 +102,13 @@ export default function NewPropertyScreen() {
         <Heading size='2xl'>Add Property</Heading>
         <Button
           className='rounded-full'
+          style={[styles.button, styles.modalHeaderButton]}
           size='lg'
           onPress={handleSubmit}
           isDisabled={createPropertyMutation.isPending}
         >
-          <ButtonIcon as={Save} />
-          <ButtonText>
+          <ButtonIcon style={styles.buttonText} as={Save} />
+          <ButtonText style={styles.buttonText}>
             {createPropertyMutation.isPending ? 'Saving...' : 'Save'}
           </ButtonText>
         </Button>

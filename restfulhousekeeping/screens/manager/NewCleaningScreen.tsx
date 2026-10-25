@@ -142,12 +142,13 @@ export default function NewCleaningScreen() {
         <Heading size='2xl'>New Cleaning</Heading>
         <Button
           className='rounded-full'
+          style={[styles.button, styles.modalHeaderButton]}
           size='lg'
           onPress={handleSubmit}
           isDisabled={createCleaningMutation.isPending}
         >
-          <ButtonIcon as={SaveIcon} />
-          <ButtonText>
+          <ButtonIcon style={styles.buttonText} as={SaveIcon} />
+          <ButtonText style={styles.buttonText}>
             {createCleaningMutation.isPending ? 'Saving...' : 'Save'}
           </ButtonText>
         </Button>
