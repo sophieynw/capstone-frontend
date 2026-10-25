@@ -1,6 +1,6 @@
 import { Alert } from 'react-native';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createIssue } from '@/api/issuesApi';
+import { useMutation,useQuery, useQueryClient } from '@tanstack/react-query';
+import { createIssue,getIssuesByProperty,  getIssuesForManager, } from '@/api/issuesApi';
 
 // saves a reported issue
 export function useCreateIssue() {
@@ -11,7 +11,7 @@ export function useCreateIssue() {
 
     onSuccess: (createdIssue) => {
       queryClient.invalidateQueries({
-        queryKey: ['issues', createdIssue.cleaningId],
+        queryKey: ['issues'],
       });
 
       Alert.alert('Issue submitted', 'The issue was recorded.');
@@ -22,5 +22,22 @@ export function useCreateIssue() {
 
       Alert.alert('Unable to submit', 'The issue could not be saved.');
     },
+  }); 
+}
+
+export function useIssuesByProperty(propertyId: number) {
+  return useQuery({
+    queryKey: ['issues', 'property', propertyId],
+    queryFn: () => getIssuesByProperty(propertyId),
+    enabled: !!propertyId,
+  });
+}
+
+// every issue on the logged-in manager's properties, newest first
+export function useManagerIssues(enabled: boolean) {
+  return useQuery({
+    queryKey: ['issues', 'manager'],
+    queryFn: getIssuesForManager,
+    enabled,
   });
 }

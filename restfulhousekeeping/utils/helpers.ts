@@ -129,3 +129,8 @@ export function formatTime(time: string) {
   const hour12 = hours % 12 || 12;
   return `${hour12}:${String(minutes).padStart(2, '0')} ${period}`;
 }
+
+// Example output: missing-supplies -> Missing Supplies
+export function formatIssueType(issueType: string): string {
+  return toTitleCase(issueType.replace(/-/g, ' '));
+}
