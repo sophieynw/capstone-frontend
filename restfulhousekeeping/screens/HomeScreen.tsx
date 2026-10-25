@@ -50,10 +50,16 @@ function getCleaningStatus(cleaning: Cleaning): CleaningStatus {
 type CleaningCardProps = {
   readonly cleaning: Cleaning;
   readonly status: CleaningStatus;
+  readonly showPropertyImage: boolean;
   navigation: any;
 };
 
-function CleaningCard({ cleaning, status, navigation }: CleaningCardProps) {
+function CleaningCard({
+  cleaning,
+  status,
+  showPropertyImage,
+  navigation,
+}: CleaningCardProps) {
   const { data: cleaner } = useCleanerById(cleaning.cleanerId);
 
   return (
@@ -82,10 +88,13 @@ function CleaningCard({ cleaning, status, navigation }: CleaningCardProps) {
           </View>
         </View>
 
-        {/* Right Side (Image) */}
         <Avatar style={styles.mediumCardWithAvatarRight}>
-          <AvatarFallbackText>Example Profile Picture</AvatarFallbackText>
-          {cleaning.cleanerId !== null ? (
+          <AvatarFallbackText>
+            {showPropertyImage ? 'Property' : 'Cleaner'}
+          </AvatarFallbackText>
+          {showPropertyImage ? (
+            <AvatarImage source={require('../assets/p1.webp')} />
+          ) : cleaning.cleanerId !== null ? (
             <AvatarImage
               source={{
                 uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
@@ -372,6 +381,10 @@ export default function HomeScreen({ navigation }: any) {
                   isProcessing={isProcessingInvitation}
                 />
               ))}
+
+              <Text className='text-sm text-gray-500'>
+                You may only join one organization at this time.
+              </Text>
             </View>
           )}
         </>
@@ -403,6 +416,7 @@ export default function HomeScreen({ navigation }: any) {
             key={cleaning.id}
             cleaning={cleaning}
             status={getCleaningStatus(cleaning)}
+            showPropertyImage={isCleaner}
             navigation={navigation}
           />
         ))}
@@ -417,6 +431,7 @@ export default function HomeScreen({ navigation }: any) {
             key={cleaning.id}
             cleaning={cleaning}
             status={getCleaningStatus(cleaning)}
+            showPropertyImage={isCleaner}
             navigation={navigation}
           />
         ))}

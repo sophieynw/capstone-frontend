@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getAllCleaners,
-  getAllAvailableCleaners,
   getProfilePicturePath,
   getProfilePictureDataUri,
   getUserById,
@@ -57,15 +56,6 @@ export function useCreateUser() {
   });
 }
 
-export function useGetAllAvailableCleaners() {
-  const { user } = useContext(AuthContext);
-  return useQuery({
-    queryKey: ['available-cleaners', user?.id],
-    queryFn: () => getAllAvailableCleaners(),
-    enabled: user?.id !== undefined,
-  });
-}
-
 export function useRemoveCleanerFromTeam() {
   const queryClient = useQueryClient();
   const { user } = useContext(AuthContext);
@@ -77,10 +67,6 @@ export function useRemoveCleanerFromTeam() {
         queryClient.invalidateQueries({
           queryKey: ['cleaners', user?.organization?.id],
           exact: true,
-          refetchType: 'all',
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ['available-cleaners'],
           refetchType: 'all',
         }),
         queryClient.invalidateQueries({

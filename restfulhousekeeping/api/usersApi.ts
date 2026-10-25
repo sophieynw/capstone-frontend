@@ -26,13 +26,6 @@ export function getAllCleaners(organizationId: number): Promise<User[]> {
   });
 }
 
-export function getAllAvailableCleaners(): Promise<User[]> {
-  return request<User[]>({
-    method: 'GET',
-    url: `/cleaners/available`,
-  });
-}
-
 export function removeCleanerFromTeam(cleanerId: number): Promise<void> {
   return request<void>({
     method: 'DELETE',

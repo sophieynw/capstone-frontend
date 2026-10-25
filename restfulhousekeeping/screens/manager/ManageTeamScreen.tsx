@@ -1,4 +1,5 @@
 // screens/home/ManageTeamScreen.tsx
+import { useState } from 'react';
 import { Text } from '@/components/ui/text';
 import { Alert, Linking, Pressable, ScrollView, View } from 'react-native';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import { findOrCreateConversation } from '@/api/chatApi';
 import { User } from '@/types/entityTypes';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
+import { InviteTeamMemberModal } from '@/components/InviteTeamMemberModal';
 
 type CleanerCardProps = {
   cleaner: User;
@@ -92,6 +94,7 @@ function CleanerCard({
 export default function ManageTeamScreen({ navigation }: any) {
   const { data: cleaners = [], isPending, isError, error } = useCleaners();
   const removeCleaner = useRemoveCleanerFromTeam();
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   function handleRemoveCleaner(cleaner: User) {
     const fullName = `${cleaner.firstName} ${cleaner.lastName}`;
@@ -148,9 +151,7 @@ export default function ManageTeamScreen({ navigation }: any) {
           className='rounded-full'
           style={[styles.button, styles.modalHeaderButton]}
           size='lg'
-          onPress={() => {
-            navigation.navigate('InviteCleanerScreen');
-          }}
+          onPress={() => setShowInviteModal(true)}
         >
           <ButtonIcon style={styles.buttonText} as={MailIcon} />
           <ButtonText style={styles.buttonText}>Invite</ButtonText>
@@ -193,6 +194,11 @@ export default function ManageTeamScreen({ navigation }: any) {
           <Text className='text-center text-gray-500'>No cleaners found.</Text>
         )}
       </View>
+
+      <InviteTeamMemberModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+      />
     </ScrollView>
   );
 }

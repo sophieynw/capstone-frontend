@@ -1,31 +1,16 @@
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { ChevronDown } from 'lucide-react-native';
 import '../global.css';
 import { styles } from '@/styles/styles';
 import { Role } from '@/types/entityTypes';
-import { useOrganizations } from '@/hooks/useOrganizations';
-import {
-  Select,
-  SelectBackdrop,
-  SelectContent,
-  SelectDragIndicator,
-  SelectDragIndicatorWrapper,
-  SelectIcon,
-  SelectInput,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-} from '@/components/ui/select';
 import { useCreateUser } from '@/hooks/useUsers';
 import { checkUsernameAvailability } from '@/api/auth';
 import { Heading } from '@/components/ui/heading';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { ErrorState } from '@/components/ErrorState';
 import {
   getUsernameValidationError,
   normalizeUsername,
 } from '@/utils/username';
+import { getEmailValidationError, normalizeEmail } from '@/utils/email';
 
 type SignUpForm = {
   firstName: string;
@@ -33,7 +18,6 @@ type SignUpForm = {
   username: string;
   email: string;
   phoneNumber: string;
-  organizationId: string;
   organizationName: string;
   role: Role;
   password: string;
@@ -41,11 +25,6 @@ type SignUpForm = {
 };
 
 export default function SignUpPage() {
-  const {
-    data: organizations,
-    isPending: isOrganizationsPending,
-    isError: isOrganizationsError,
-  } = useOrganizations();
   const createUser = useCreateUser();
 
   const {
@@ -64,7 +43,6 @@ export default function SignUpPage() {
       username: '',
       email: '',
       phoneNumber: '',
-      organizationId: '',
       organizationName: '',
       role: Role.CLEANER,
       password: '',
@@ -77,7 +55,6 @@ export default function SignUpPage() {
   const handleSignUp = async (form: SignUpForm) => {
     const {
       confirmPassword: _confirmPassword,
-      organizationId,
       organizationName,
       ...accountData
     } = form;
@@ -87,11 +64,11 @@ export default function SignUpPage() {
       firstName: accountData.firstName.trim(),
       lastName: accountData.lastName.trim(),
       username: accountData.username.trim(),
-      email: accountData.email.trim().toLowerCase(),
+      email: normalizeEmail(accountData.email),
       phoneNumber: accountData.phoneNumber.trim(),
-      ...(accountData.role === Role.CLEANER
-        ? { organizationId: Number(organizationId) }
-        : { organizationName: organizationName.trim() }),
+      ...(accountData.role === Role.MANAGER
+        ? { organizationName: organizationName.trim() }
+        : {}),
     };
 
     await createUser.mutateAsync(registrationPayload);
@@ -196,10 +173,7 @@ export default function SignUpPage() {
           name='email'
           rules={{
             required: 'Email is required',
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: 'Enter a valid email address',
-            },
+            validate: (value) => getEmailValidationError(value) ?? true,
           }}
           render={({ field: { value, onChange, onBlur } }) => (
             <TextInput
@@ -275,11 +249,7 @@ export default function SignUpPage() {
                   styles.roleButton,
                   value === Role.MANAGER && styles.button,
                 ]}
-                onPress={() => {
-                  onChange(Role.MANAGER);
-                  setValue('organizationId', '');
-                  clearErrors('organizationId');
-                }}
+                onPress={() => onChange(Role.MANAGER)}
               >
                 <Text style={styles.buttonText}>Manager</Text>
               </Pressable>
@@ -287,70 +257,13 @@ export default function SignUpPage() {
           )}
         />
 
-        <Text>Organization</Text>
         {selectedRole === Role.CLEANER ? (
-          <>
-            {isOrganizationsPending ? (
-              <LoadingSpinner inline label='Loading organizations...' />
-            ) : isOrganizationsError ? (
-              <ErrorState inline />
-            ) : (
-              <Controller
-                control={control}
-                name='organizationId'
-                rules={{ required: 'Please select an organization' }}
-                render={({ field: { value, onChange } }) => (
-                  <View>
-                    <Select
-                      selectedValue={value}
-                      initialLabel={
-                        organizations?.find(
-                          (organization) =>
-                            organization.id.toString() === value,
-                        )?.name
-                      }
-                      onValueChange={onChange}
-                    >
-                      <SelectTrigger
-                        size='md'
-                        variant='rounded'
-                        style={[
-                          styles.select,
-                          errors.organizationId && styles.inputError,
-                        ]}
-                      >
-                        <SelectInput placeholder='Select an organization' />
-                        <SelectIcon as={ChevronDown} />
-                      </SelectTrigger>
-                      <SelectPortal useRNModal>
-                        <SelectBackdrop />
-                        <SelectContent>
-                          <SelectDragIndicatorWrapper>
-                            <SelectDragIndicator />
-                          </SelectDragIndicatorWrapper>
-                          {organizations?.map((organization) => (
-                            <SelectItem
-                              key={organization.id}
-                              label={organization.name}
-                              value={organization.id.toString()}
-                            />
-                          ))}
-                        </SelectContent>
-                      </SelectPortal>
-                    </Select>
-                  </View>
-                )}
-              />
-            )}
-
-            {errors.organizationId && (
-              <Text style={styles.errorText}>
-                {errors.organizationId.message}
-              </Text>
-            )}
-          </>
+          <Text className='text-sm text-gray-500'>
+            A manager can invite you to their organization after signup.
+          </Text>
         ) : (
           <>
+            <Text>Organization</Text>
             <Controller
               control={control}
               name='organizationName'
