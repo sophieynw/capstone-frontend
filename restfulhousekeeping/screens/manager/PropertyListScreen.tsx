@@ -1,13 +1,12 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { usePropertyAll } from '@/hooks/useProperties';
 import { Property } from '@/types/entityTypes';
 import { useNextCleaningByProperty } from '@/hooks/useCleanings';
 import { toFriendlyDate } from '@/utils/helpers';
 import { styles } from '@/styles/styles';
 import { Heading } from '@/components/ui/heading';
-import { Avatar } from '@/components/ui/avatar';
-import { Icon } from '@/components/ui/icon';
 import { HousePlus } from 'lucide-react-native';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
@@ -69,6 +68,7 @@ export default function PropertyListScreen({ navigation }: any) {
       contentContainerStyle={styles.screenContent}
     >
       <View style={styles.vStack}>
+        {/* Properties */}
         {properties?.map((property) => (
           <PropertyCard
             key={property.id}
@@ -76,34 +76,16 @@ export default function PropertyListScreen({ navigation }: any) {
             navigation={navigation}
           />
         ))}
-
-        {/* Connect Accounts Cards */}
-        <Pressable onPress={() => navigation.navigate('NewPropertyScreen')}>
-          <Card style={styles.mediumCardWithAvatar}>
-            <View style={styles.mediumCardWithAvatarLeft}>
-              <Avatar>
-                <Icon as={HousePlus} size='xl' />
-              </Avatar>
-            </View>
-            <View className='w-full'>
-              <Text>Add a property</Text>
-            </View>
-          </Card>
-        </Pressable>
-
-        {/*<Pressable onPress={showComingSoonAlert}>*/}
-        {/*  <Card style={styles.mediumCardWithAvatar}>*/}
-        {/*    <View style={styles.mediumCardWithAvatarLeft}>*/}
-        {/*      <Avatar>*/}
-        {/*        <AvatarFallbackText>VRBO Logo</AvatarFallbackText>*/}
-        {/*        <AvatarImage source={require('@/assets/vrbo.webp')} />*/}
-        {/*      </Avatar>*/}
-        {/*    </View>*/}
-        {/*    <View className='w-full'>*/}
-        {/*      <Text>Connect your VRBO account</Text>*/}
-        {/*    </View>*/}
-        {/*  </Card>*/}
-        {/*</Pressable>*/}
+        {/* Add a property */}
+        <Button
+          className='w-full'
+          style={styles.button}
+          size='lg'
+          onPress={() => navigation.navigate('NewPropertyScreen')}
+        >
+          <ButtonIcon style={styles.buttonText} as={HousePlus} />
+          <ButtonText style={styles.buttonText}>Add a property</ButtonText>
+        </Button>
       </View>
     </ScrollView>
   );

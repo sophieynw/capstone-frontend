@@ -49,7 +49,7 @@ function ChecklistItemInput({
         accessibilityRole='button'
         accessibilityLabel={`Delete ${item.description}`}
       >
-        <Icon as={Trash} size='sm' className='text-destructive' />
+        <Icon as={Trash} size='sm' style={styles.buttonTextWarn} />
       </Pressable>
     </View>
   );
@@ -174,7 +174,7 @@ export function ChecklistEditingSection({
               accessibilityRole='button'
               accessibilityLabel='Add checklist item'
             >
-              <Icon as={Plus} size='sm' />
+              <Icon as={Plus} size='sm' style={styles.buttonText} />
             </Pressable>
           </View>
         </View>

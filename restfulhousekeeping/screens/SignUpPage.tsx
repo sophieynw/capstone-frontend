@@ -257,7 +257,7 @@ export default function SignUpPage() {
                 accessibilityState={{ checked: value === Role.CLEANER }}
                 style={[
                   styles.roleButton,
-                  value === Role.CLEANER && styles.selectedRole,
+                  value === Role.CLEANER && styles.button,
                 ]}
                 onPress={() => {
                   onChange(Role.CLEANER);
@@ -265,9 +265,7 @@ export default function SignUpPage() {
                   clearErrors('organizationName');
                 }}
               >
-                <Text style={value === Role.CLEANER && styles.selectedRoleText}>
-                  Cleaner
-                </Text>
+                <Text style={styles.buttonText}>Cleaner</Text>
               </Pressable>
 
               <Pressable
@@ -275,7 +273,7 @@ export default function SignUpPage() {
                 accessibilityState={{ checked: value === Role.MANAGER }}
                 style={[
                   styles.roleButton,
-                  value === Role.MANAGER && styles.selectedRole,
+                  value === Role.MANAGER && styles.button,
                 ]}
                 onPress={() => {
                   onChange(Role.MANAGER);
@@ -283,9 +281,7 @@ export default function SignUpPage() {
                   clearErrors('organizationId');
                 }}
               >
-                <Text style={value === Role.MANAGER && styles.selectedRoleText}>
-                  Manager
-                </Text>
+                <Text style={styles.buttonText}>Manager</Text>
               </Pressable>
             </View>
           )}
@@ -442,6 +438,7 @@ export default function SignUpPage() {
 
         <Pressable
           style={[styles.button, isSubmitting && styles.disabledButton]}
+          className='mt-2'
           onPress={() => void handleSubmit(handleSignUp)()}
           disabled={isSubmitting}
         >

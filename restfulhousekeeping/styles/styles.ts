@@ -102,7 +102,7 @@ export const styles = StyleSheet.create({
   formCard: {
     width: '100%',
     backgroundColor: '#ffffff',
-    padding: 16,
+    padding: 20,
     borderRadius: 28,
     gap: 10,
   },
@@ -110,7 +110,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#cccccc',
     borderRadius: 9999,
-    padding: 12,
+    padding: 10,
+    paddingLeft: 12,
   },
   inputError: {
     borderColor: '#d32f2f',
@@ -129,28 +130,21 @@ export const styles = StyleSheet.create({
   },
   roleButton: {
     flex: 1,
-    padding: 12,
+    backgroundColor: '#ffffff',
+    padding: 10,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#cccccc',
-    borderRadius: 16,
+    borderColor: '#74A985',
+    borderRadius: 9999,
   },
   select: {
     borderWidth: 1,
     borderColor: '#cccccc',
-    borderRadius: 16,
+    borderRadius: 9999,
     paddingTop: 12,
     paddingBottom: 12,
     marginTop: 6,
     marginBottom: 12,
-  },
-  selectedRole: {
-    backgroundColor: '#32cbb6',
-    borderColor: '#32cbb6',
-  },
-  selectedRoleText: {
-    color: '#ffffff',
-    fontWeight: '700',
   },
   button: {
     backgroundColor: '#D8E7DD',
@@ -164,7 +158,7 @@ export const styles = StyleSheet.create({
     color: '#365841',
   },
   buttonWarn: {
-    backgroundColor: '#FBB6B6',
+    backgroundColor: '#FCD0D0',
     padding: 10,
     alignItems: 'center',
     borderRadius: 9999,

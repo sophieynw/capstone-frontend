@@ -186,7 +186,11 @@ export default function CleaningAvailabilityScreen() {
                 accessibilityRole='button'
                 accessibilityLabel='Edit availability slot'
               >
-                <Icon as={EditIcon} size='xl' />
+                <Icon
+                  as={EditIcon}
+                  size='xl'
+                  style={styles.buttonText}
+                />
               </Pressable>
 
               <Pressable
@@ -195,7 +199,11 @@ export default function CleaningAvailabilityScreen() {
                 accessibilityRole='button'
                 accessibilityLabel='Delete availability slot'
               >
-                <Icon as={TrashIcon} size='xl' />
+                <Icon
+                  as={TrashIcon}
+                  size='xl'
+                  style={styles.buttonTextWarn}
+                />
               </Pressable>
             </View>
           </Card>

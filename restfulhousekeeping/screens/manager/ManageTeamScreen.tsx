@@ -70,7 +70,7 @@ function CleanerCard({ cleaner, onMessagePress }: CleanerCardProps) {
           </Pressable>
 
           <Pressable onPress={showComingSoonAlert}>
-            <Icon as={TrashIcon} />
+            <Icon as={TrashIcon} style={styles.buttonTextWarn} />
           </Pressable>
         </View>
       </View>

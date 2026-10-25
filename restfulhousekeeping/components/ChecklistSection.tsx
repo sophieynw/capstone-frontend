@@ -3,6 +3,7 @@ import { Alert, Pressable, View } from 'react-native';
 import { Heading } from '@/components/ui/heading';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { Circle, CircleCheck, Plus, Trash } from 'lucide-react-native';
+import { styles } from '@/styles/styles';
 type ChecklistSectionItem = {
   id: number;
   description: string;
@@ -52,7 +53,7 @@ function ChecklistItemInput({
       {!isReadOnly && (
         <InputSlot className='pl-3'>
           <Pressable onPress={onDelete} disabled={isDeleting} className='ml-3'>
-            <InputIcon as={Trash} />
+            <InputIcon as={Trash} style={styles.buttonTextWarn} />
           </Pressable>
         </InputSlot>
       )}
@@ -196,7 +197,7 @@ export function ChecklistSection<T extends ChecklistSectionItem>({
                 disabled={isPersisting}
                 className='ml-3'
               >
-                <InputIcon as={Plus} />
+                <InputIcon as={Plus} style={styles.buttonText} />
               </Pressable>
             </InputSlot>
           </Input>
