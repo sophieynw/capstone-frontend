@@ -32,6 +32,7 @@ import {
   useDeclineInvitation,
 } from '@/hooks/useInvitations';
 
+import { useManagerIssues } from '@/hooks/useIssues';
 // region Cleaning Card
 
 type CleaningStatus = 'unassigned' | 'assigned' | 'complete';
@@ -175,9 +176,16 @@ type ManagerInfoProps = {
   upcoming: number;
   issues: number;
   unassigned: number;
+  onIssuesPress: () => void;
 };
 
-function ManagerInfo({ upcoming, issues, unassigned }: ManagerInfoProps) {
+
+function ManagerInfo({
+  upcoming,
+  issues,
+  unassigned,
+  onIssuesPress,
+}: ManagerInfoProps) {
   return (
     <>
       <Card style={styles.summaryCard} className={cleaningCardColors.assigned}>
@@ -195,12 +203,19 @@ function ManagerInfo({ upcoming, issues, unassigned }: ManagerInfoProps) {
         </View>
         <Text>Unassigned</Text>
       </Card>
-      <Card style={styles.summaryCard}>
-        <View style={styles.summaryCardVisual}>
-          <Heading size='2xl'>{issues}</Heading>
-        </View>
-        <Text>Issues</Text>
-      </Card>
+      <Pressable
+        className='flex-1'
+        onPress={onIssuesPress}
+        accessibilityRole='button'
+        accessibilityLabel='View issues'
+      >
+        <Card style={styles.summaryCard}>
+          <View style={styles.summaryCardVisual}>
+            <Heading size='2xl'>{issues}</Heading>
+          </View>
+          <Text>Issues</Text>
+        </Card>
+      </Pressable>
     </>
   );
 }
@@ -314,10 +329,15 @@ export default function HomeScreen({ navigation }: any) {
     refetch: refetchCleanings,
   } = useUpcomingCleanings();
 
-  useFocusEffect(
+  const isManager = user?.role === Role.MANAGER;
+  const { data: managerIssues, refetch: refetchIssues } =
+    useManagerIssues(isManager);
+
+    useFocusEffect(
     useCallback(() => {
       void refetchCleanings();
-    }, [refetchCleanings]),
+      if (isManager) void refetchIssues();
+    }, [refetchCleanings, refetchIssues, isManager]),
   );
 
   const isCleaner = user?.role === Role.CLEANER;
@@ -340,7 +360,7 @@ export default function HomeScreen({ navigation }: any) {
 
   // cleanings info
   const upcoming = cleanings?.length ?? 0;
-  const issues = 1; // TODO: hardcoded value
+  const issues = managerIssues?.length ?? 0;
   const unassigned =
     cleanings?.filter((cleaning) => cleaning.cleanerId == null).length ?? 0;
   const completed =
@@ -426,6 +446,7 @@ export default function HomeScreen({ navigation }: any) {
             upcoming={upcoming}
             issues={issues}
             unassigned={unassigned}
+            onIssuesPress={() => navigation.navigate('IssuesScreen')}
           />
         )}
         {user?.role == Role.CLEANER && (

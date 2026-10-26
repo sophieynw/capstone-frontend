@@ -1,3 +1,4 @@
+
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
@@ -30,12 +31,14 @@ function PropertyCard({ property, navigation }: PropertyCardProps) {
       }}
     >
       <Card style={styles.mediumCard}>
-        <Heading size='md'>{property?.name}</Heading>
-        <View className='gap-1'>
+        <Heading size="md">{property?.name}</Heading>
+
+        <View className="gap-1">
           <Text>
             {property?.unit ? `${property.unit}-` : ''}
             {property?.street}, {property?.city}
           </Text>
+
           <Text>
             Next Cleaning:{' '}
             {cleaning?.dateTimeStart
@@ -51,10 +54,15 @@ function PropertyCard({ property, navigation }: PropertyCardProps) {
 // endregion Property Card
 
 export default function PropertyListScreen({ navigation }: any) {
-  const { data: properties, isLoading, isError, error } = usePropertyAll();
+  const {
+    data: properties,
+    isLoading,
+    isError,
+    error,
+  } = usePropertyAll();
 
   if (isLoading) {
-    return <LoadingSpinner label='Loading properties...' />;
+    return <LoadingSpinner label="Loading properties..." />;
   }
 
   if (isError) {
@@ -76,15 +84,41 @@ export default function PropertyListScreen({ navigation }: any) {
             navigation={navigation}
           />
         ))}
+
         {/* Add a property */}
         <Button
-          className='w-full'
-          style={styles.button}
-          size='lg'
+          className="w-full"
+          style={[
+            styles.button,
+            {
+              width: '100%',
+              minHeight: 48,
+              paddingHorizontal: 16,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+          ]}
+          size="lg"
           onPress={() => navigation.navigate('NewPropertyScreen')}
         >
-          <ButtonIcon style={styles.buttonText} as={HousePlus} />
-          <ButtonText style={styles.buttonText}>Add a property</ButtonText>
+          <ButtonIcon
+            as={HousePlus}
+            style={styles.buttonText}
+          />
+
+          <ButtonText
+            style={[
+              styles.buttonText,
+              {
+                flexShrink: 0,
+                flexWrap: 'nowrap',
+              },
+            ]}
+            numberOfLines={1}
+          >
+            Add a property
+          </ButtonText>
         </Button>
       </View>
     </ScrollView>

@@ -13,6 +13,10 @@ export interface Issue {
   reportedByName: string;
   issueType: string;
   description: string;
+  cleaningStart: string | null;
+  propertyName: string | null;
+  reportedAt: string | null;
+
 }
 
 export function createIssue(payload: CreateIssuePayload): Promise<Issue> {
@@ -27,5 +31,20 @@ export function getIssuesByCleaning(cleaningId: number): Promise<Issue[]> {
   return request<Issue[]>({
     method: 'GET',
     url: `/issues/cleaning/${cleaningId}`,
+  });
+
+}
+
+export function getIssuesByProperty(propertyId: number): Promise<Issue[]> {
+  return request<Issue[]>({
+    method: 'GET',
+    url: `/issues/property/${propertyId}`,
+  });
+}
+
+export function getIssuesForManager(): Promise<Issue[]> {
+  return request<Issue[]>({
+    method: 'GET',
+    url: '/issues/manager',
   });
 }
