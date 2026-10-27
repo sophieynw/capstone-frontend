@@ -31,11 +31,13 @@ function PropertyCard({ property, navigation }: PropertyCardProps) {
     >
       <Card style={styles.mediumCard}>
         <Heading size='md'>{property?.name}</Heading>
+
         <View className='gap-1'>
           <Text>
             {property?.unit ? `${property.unit}-` : ''}
             {property?.street}, {property?.city}
           </Text>
+
           <Text>
             Next Cleaning:{' '}
             {cleaning?.dateTimeStart
@@ -76,11 +78,13 @@ export default function PropertyListScreen({ navigation }: any) {
             navigation={navigation}
           />
         ))}
+
         {/* Add a property */}
         <Button
           className='w-full'
           style={styles.button}
           size='lg'
+
           onPress={() => navigation.navigate('NewPropertyScreen')}
         >
           <ButtonIcon style={styles.buttonText} as={HousePlus} />

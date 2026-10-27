@@ -12,11 +12,7 @@ import {
 } from '@/components/ui/icon';
 import { Heading } from '@/components/ui/heading';
 import { Card } from '@/components/ui/card';
-import {
-  Avatar,
-  AvatarFallbackText,
-  AvatarImage,
-} from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/UserAvatar';
 import { styles } from '@/styles/styles';
 import { useCleaners, useRemoveCleanerFromTeam } from '@/hooks/useUsers';
 import { findOrCreateConversation } from '@/api/chatApi';
@@ -44,14 +40,7 @@ function CleanerCard({
     <Card className='w-full gap-1.5 rounded-4xl'>
       <View className='flex-row items-center'>
         {/* Left (Image) */}
-        <Avatar className='h-10 w-10'>
-          <AvatarFallbackText>{fullName}</AvatarFallbackText>
-          <AvatarImage
-            source={{
-              uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=60',
-            }}
-          />
-        </Avatar>
+        <UserAvatar userId={cleaner.id} name={fullName} className='h-10 w-10' />
 
         {/* Middle (Text) */}
         <View className='ml-3 flex-1 gap-0'>

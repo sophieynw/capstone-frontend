@@ -32,6 +32,7 @@ import {
   useDeclineInvitation,
 } from '@/hooks/useInvitations';
 
+import { useIssues } from '@/hooks/useIssues';
 // region Cleaning Card
 
 type CleaningStatus = 'unassigned' | 'assigned' | 'complete';
@@ -175,9 +176,15 @@ type ManagerInfoProps = {
   upcoming: number;
   issues: number;
   unassigned: number;
+  onIssuesPress: () => void;
 };
 
-function ManagerInfo({ upcoming, issues, unassigned }: ManagerInfoProps) {
+function ManagerInfo({
+  upcoming,
+  issues,
+  unassigned,
+  onIssuesPress,
+}: ManagerInfoProps) {
   return (
     <>
       <Card style={styles.summaryCard} className={cleaningCardColors.assigned}>
@@ -196,10 +203,17 @@ function ManagerInfo({ upcoming, issues, unassigned }: ManagerInfoProps) {
         <Text>Unassigned</Text>
       </Card>
       <Card style={styles.summaryCard}>
-        <View style={styles.summaryCardVisual}>
-          <Heading size='2xl'>{issues}</Heading>
-        </View>
-        <Text>Issues</Text>
+        <Pressable
+          style={styles.summaryCardAction}
+          onPress={onIssuesPress}
+          accessibilityRole='button'
+          accessibilityLabel='View issues'
+        >
+          <View style={styles.summaryCardVisual}>
+            <Heading size='2xl'>{issues}</Heading>
+          </View>
+          <Text>Issues</Text>
+        </Pressable>
       </Card>
     </>
   );
@@ -314,10 +328,14 @@ export default function HomeScreen({ navigation }: any) {
     refetch: refetchCleanings,
   } = useUpcomingCleanings();
 
+  const isManager = user?.role === Role.MANAGER;
+  const { data: managerIssues, refetch: refetchIssues } = useIssues(isManager);
+
   useFocusEffect(
     useCallback(() => {
       void refetchCleanings();
-    }, [refetchCleanings]),
+      if (isManager) void refetchIssues();
+    }, [refetchCleanings, refetchIssues, isManager]),
   );
 
   const isCleaner = user?.role === Role.CLEANER;
@@ -340,7 +358,7 @@ export default function HomeScreen({ navigation }: any) {
 
   // cleanings info
   const upcoming = cleanings?.length ?? 0;
-  const issues = 1; // TODO: hardcoded value
+  const issues = managerIssues?.length ?? 0;
   const unassigned =
     cleanings?.filter((cleaning) => cleaning.cleanerId == null).length ?? 0;
   const completed =
@@ -426,6 +444,7 @@ export default function HomeScreen({ navigation }: any) {
             upcoming={upcoming}
             issues={issues}
             unassigned={unassigned}
+            onIssuesPress={() => navigation.navigate('IssuesScreen')}
           />
         )}
         {user?.role == Role.CLEANER && (

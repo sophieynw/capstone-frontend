@@ -13,6 +13,7 @@ import NewPropertyScreen from '@/screens/manager/NewPropertyScreen';
 import ProfileEditScreen from '@/screens/ProfileEditScreen';
 import ChatScreen from '@/screens/ChatScreen';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import IssuesScreen from '@/screens/manager/IssuesScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,11 @@ export default function Navigation() {
             <Stack.Screen
               name='ChatScreen'
               component={ChatScreen}
+              options={{ presentation: 'modal' }}
+            />
+            <Stack.Screen
+              name='IssuesScreen'
+              component={IssuesScreen}
               options={{ presentation: 'modal' }}
             />
           </Stack.Group>

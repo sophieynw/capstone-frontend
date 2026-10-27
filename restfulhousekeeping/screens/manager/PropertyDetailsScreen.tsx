@@ -12,6 +12,7 @@ import {
   useUpdateProperty,
   useUploadPropertyPicture,
 } from '@/hooks/useProperties';
+import { ReportedIssuesSection } from '@/components/ReportedIssuesSection';
 import { useChecklistItems } from '@/hooks/useChecklistItems';
 import { ChecklistEditingSection } from '@/components/ChecklistEditingSection';
 import {
@@ -19,10 +20,6 @@ import {
   EditableProperty,
   PropertyEditingSection,
 } from '@/components/PropertyEditingSection';
-import {
-  ReportedIssue,
-  ReportedIssuesSection,
-} from '@/components/ReportedIssuesSection';
 
 import { Card } from '@/components/ui/card';
 import {
@@ -43,12 +40,7 @@ import { CloseIcon, Icon } from '@/components/ui/icon';
 import { Input, InputField } from '@/components/ui/input';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
-
-const reportedIssues: ReportedIssue[] = [
-  { id: 1, description: 'One of the dining chairs has a loose leg' },
-  { id: 2, description: 'Garbage area needs to be cleaned' },
-  { id: 3, description: 'Need more replacement towels' },
-];
+import { useIssues } from '@/hooks/useIssues';
 
 export default function PropertyDetailsScreen({ route }: any) {
   const { propertyId } = route.params;
@@ -82,6 +74,12 @@ export default function PropertyDetailsScreen({ route }: any) {
     isError: isChecklistItemsError,
     error: checklistItemsError,
   } = useChecklistItems(propertyId);
+  const {
+    data: issues,
+    isPending: isIssuesPending,
+    isError: isIssuesError,
+    error: issuesError,
+  } = useIssues(true, propertyId);
 
   useEffect(() => {
     if (!property) return;
@@ -89,13 +87,14 @@ export default function PropertyDetailsScreen({ route }: any) {
     setPropertyForm(createEditableProperty(property));
   }, [property]);
 
-  if (isPropertyPending || isChecklistItemsPending) {
+  if (isPropertyPending || isChecklistItemsPending || isIssuesPending) {
     return <LoadingSpinner label='Loading property details...' />;
   }
 
-  if (isPropertyError || isChecklistItemsError) {
+  if (isPropertyError || isChecklistItemsError || isIssuesError) {
     console.error('Property error:', propertyError);
     console.error('ChecklistItems error:', checklistItemsError);
+    console.error('Issues error:', issuesError);
     return <ErrorState />;
   }
 
@@ -307,7 +306,7 @@ export default function PropertyDetailsScreen({ route }: any) {
         />
 
         {/* Issues */}
-        <ReportedIssuesSection issues={reportedIssues} />
+        <ReportedIssuesSection issues={issues ?? []} />
 
         {/* Delete Button */}
         <Button
