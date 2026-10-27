@@ -179,7 +179,6 @@ type ManagerInfoProps = {
   onIssuesPress: () => void;
 };
 
-
 function ManagerInfo({
   upcoming,
   issues,
@@ -203,19 +202,19 @@ function ManagerInfo({
         </View>
         <Text>Unassigned</Text>
       </Card>
-      <Pressable
-        className='flex-1'
-        onPress={onIssuesPress}
-        accessibilityRole='button'
-        accessibilityLabel='View issues'
-      >
-        <Card style={styles.summaryCard}>
+      <Card style={styles.summaryCard}>
+        <Pressable
+          style={styles.summaryCardAction}
+          onPress={onIssuesPress}
+          accessibilityRole='button'
+          accessibilityLabel='View issues'
+        >
           <View style={styles.summaryCardVisual}>
             <Heading size='2xl'>{issues}</Heading>
           </View>
           <Text>Issues</Text>
-        </Card>
-      </Pressable>
+        </Pressable>
+      </Card>
     </>
   );
 }
@@ -333,7 +332,7 @@ export default function HomeScreen({ navigation }: any) {
   const { data: managerIssues, refetch: refetchIssues } =
     useManagerIssues(isManager);
 
-    useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
       void refetchCleanings();
       if (isManager) void refetchIssues();

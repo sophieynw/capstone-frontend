@@ -5,6 +5,13 @@ export enum Role {
   CLEANER = 'CLEANER',
 }
 
+export enum IssueType {
+  DAMAGE = 'Damage',
+  MISSING_SUPPLIES = 'Missing Supplies',
+  ACCESS_PROBLEM = 'Access Problem',
+  OTHER = 'Other',
+}
+
 export enum DaysOfTheWeek {
   MONDAY = 'MONDAY',
   TUESDAY = 'TUESDAY',

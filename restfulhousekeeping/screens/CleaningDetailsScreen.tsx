@@ -1,7 +1,12 @@
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { Cleaning, CleaningChecklistItem, Role } from '@/types/entityTypes';
+import {
+  Cleaning,
+  CleaningChecklistItem,
+  IssueType,
+  Role,
+} from '@/types/entityTypes';
 import { formatLocalDateTime, toFriendlyDate } from '@/utils/helpers';
 import { useContext, useEffect, useState } from 'react';
 import { useCleaners } from '@/hooks/useUsers';
@@ -94,7 +99,7 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
   );
 
   const [showIssueModal, setShowIssueModal] = useState(false);
-  const [issueType, setIssueType] = useState('');
+  const [issueType, setIssueType] = useState<IssueType | ''>('');
   const [issueDescription, setIssueDescription] = useState('');
 
   useEffect(() => {
@@ -506,7 +511,10 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
           <ModalBody>
             <Text className='mb-2'>Issue Type</Text>
 
-            <Select selectedValue={issueType} onValueChange={setIssueType}>
+            <Select
+              selectedValue={issueType}
+              onValueChange={(value) => setIssueType(value as IssueType)}
+            >
               <SelectTrigger size='md' variant='rounded' className='mb-4'>
                 <SelectInput
                   className='flex-1'
@@ -523,16 +531,19 @@ export default function CleaningDetailsScreen({ route, navigation }: any) {
                     <SelectDragIndicator />
                   </SelectDragIndicatorWrapper>
 
-                  <SelectItem label='Damage' value='damage' />
+                  <SelectItem label='Damage' value={IssueType.DAMAGE} />
 
                   <SelectItem
                     label='Missing Supplies'
-                    value='missing-supplies'
+                    value={IssueType.MISSING_SUPPLIES}
                   />
 
-                  <SelectItem label='Access Problem' value='access-problem' />
+                  <SelectItem
+                    label='Access Problem'
+                    value={IssueType.ACCESS_PROBLEM}
+                  />
 
-                  <SelectItem label='Other' value='other' />
+                  <SelectItem label='Other' value={IssueType.OTHER} />
                 </SelectContent>
               </SelectPortal>
             </Select>
