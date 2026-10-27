@@ -2,7 +2,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
 import { styles } from '@/styles/styles';
-import { useManagerIssues, useResolveIssue } from '@/hooks/useIssues';
+import { useIssues, useResolveIssue } from '@/hooks/useIssues';
 import { toFriendlyDate } from '@/utils/helpers';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
@@ -10,7 +10,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { Button, ButtonText } from '@/components/ui/button';
 
 export default function IssuesScreen() {
-  const { data: issues, isPending, isError, error } = useManagerIssues(true);
+  const { data: issues, isPending, isError, error } = useIssues();
   const resolveIssueMutation = useResolveIssue();
 
   if (isPending) {

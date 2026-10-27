@@ -32,7 +32,7 @@ import {
   useDeclineInvitation,
 } from '@/hooks/useInvitations';
 
-import { useManagerIssues } from '@/hooks/useIssues';
+import { useIssues } from '@/hooks/useIssues';
 // region Cleaning Card
 
 type CleaningStatus = 'unassigned' | 'assigned' | 'complete';
@@ -329,8 +329,7 @@ export default function HomeScreen({ navigation }: any) {
   } = useUpcomingCleanings();
 
   const isManager = user?.role === Role.MANAGER;
-  const { data: managerIssues, refetch: refetchIssues } =
-    useManagerIssues(isManager);
+  const { data: managerIssues, refetch: refetchIssues } = useIssues(isManager);
 
   useFocusEffect(
     useCallback(() => {

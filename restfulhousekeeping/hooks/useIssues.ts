@@ -1,11 +1,6 @@
 import { Alert } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  createIssue,
-  getIssuesByProperty,
-  getIssuesForManager,
-  resolveIssue,
-} from '@/api/issuesApi';
+import { createIssue, getIssues, resolveIssue } from '@/api/issuesApi';
 
 // saves a reported issue
 export function useCreateIssue() {
@@ -30,20 +25,15 @@ export function useCreateIssue() {
   });
 }
 
-export function useIssuesByProperty(propertyId: number) {
+export function useIssues(enabled = true, propertyId?: number) {
   return useQuery({
-    queryKey: ['issues', 'property', propertyId],
-    queryFn: () => getIssuesByProperty(propertyId),
-    enabled: !!propertyId,
-  });
-}
-
-// every issue on the logged-in manager's properties, newest first
-export function useManagerIssues(enabled: boolean) {
-  return useQuery({
-    queryKey: ['issues', 'manager'],
-    queryFn: getIssuesForManager,
+    queryKey: ['issues'],
+    queryFn: getIssues,
     enabled,
+    select: (issues) =>
+      propertyId === undefined
+        ? issues
+        : issues.filter((issue) => issue.propertyId === propertyId),
   });
 }
 

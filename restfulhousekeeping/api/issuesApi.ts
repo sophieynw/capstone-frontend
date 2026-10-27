@@ -10,6 +10,7 @@ export interface CreateIssuePayload {
 export interface Issue {
   id: number;
   cleaningId: number;
+  propertyId: number;
   reportedById: number;
   reportedByName: string;
   issueType: IssueType;
@@ -27,24 +28,10 @@ export function createIssue(payload: CreateIssuePayload): Promise<Issue> {
   });
 }
 
-export function getIssuesByCleaning(cleaningId: number): Promise<Issue[]> {
+export function getIssues(): Promise<Issue[]> {
   return request<Issue[]>({
     method: 'GET',
-    url: `/issues/cleaning/${cleaningId}`,
-  });
-}
-
-export function getIssuesByProperty(propertyId: number): Promise<Issue[]> {
-  return request<Issue[]>({
-    method: 'GET',
-    url: `/issues/property/${propertyId}`,
-  });
-}
-
-export function getIssuesForManager(): Promise<Issue[]> {
-  return request<Issue[]>({
-    method: 'GET',
-    url: '/issues/manager',
+    url: '/issues',
   });
 }
 

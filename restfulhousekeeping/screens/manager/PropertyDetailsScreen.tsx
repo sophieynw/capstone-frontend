@@ -40,7 +40,7 @@ import { CloseIcon, Icon } from '@/components/ui/icon';
 import { Input, InputField } from '@/components/ui/input';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorState } from '@/components/ErrorState';
-import { useIssuesByProperty } from '@/hooks/useIssues';
+import { useIssues } from '@/hooks/useIssues';
 
 export default function PropertyDetailsScreen({ route }: any) {
   const { propertyId } = route.params;
@@ -79,7 +79,7 @@ export default function PropertyDetailsScreen({ route }: any) {
     isPending: isIssuesPending,
     isError: isIssuesError,
     error: issuesError,
-  } = useIssuesByProperty(propertyId);
+  } = useIssues(true, propertyId);
 
   useEffect(() => {
     if (!property) return;
